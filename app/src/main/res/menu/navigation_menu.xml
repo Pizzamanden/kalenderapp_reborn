@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_event"
+        android:icon="@drawable/ic_add_circle_outline_black_24dp"
+        android:title="@string/drawermenu_newevent"></item>
+
+    <item
+        android:id="@+id/nav_schedule"
+        android:icon="@drawable/ic_baseline_calendar_today_24px"
+        android:title="@string/drawermenu_seeevents">
+    </item>
+
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="@string/drawermenu_settings">
+    </item>
+
+    <item
+        android:id="@+id/nav_exit"
+        android:icon="@drawable/ic_exit_to_app_black_24dp"
+        android:title="@string/drawermenu_exit">
+    </item>
+</menu>

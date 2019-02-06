@@ -1,0 +1,67 @@
+<resources>
+    <string name="app_name">Kalender Reborn</string>
+
+    <string-array name="weekDays">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </string-array>
+
+    <string-array name="weekDaysS">
+        <item>Sun</item>
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+    </string-array>
+
+    <string-array name="weekDaysSS">
+        <item>S</item>
+        <item>M</item>
+        <item>T</item>
+        <item>W</item>
+        <item>T</item>
+        <item>F</item>
+        <item>S</item>
+    </string-array>
+
+    <string-array name="months">
+        <item>Januar</item>
+        <item>Februar</item>
+        <item>Marts</item>
+        <item>April</item>
+        <item>Maj</item>
+        <item>Juni</item>
+        <item>Juli</item>
+        <item>August</item>
+        <item>September</item>
+        <item>Oktober</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+    <string name="drawerToggleOpen">Open</string>
+    <string name="drawerToggleClose">Close</string>
+
+    <string name="dummy_date">05</string>
+    <string name="dummy_weekday">Mon</string>
+    <string name="dummy_text">Nothing scheduled</string>
+
+    <string name="drawermenu_newevent">New event</string>
+    <string name="drawermenu_seeevents">See events</string>
+    <string name="drawermenu_settings">Settings</string>
+    <string name="drawermenu_exit">Exit app</string>
+
+    <string name="DL_ok">Ok</string>
+    <string name="DL_cancel">Cancel</string>
+    <string name="DL_exit_MSG">Do you wanna exit the app?</string>
+    <string name="DL_exit_TTL">Exit app</string>
+
+    <string name="WORD_week">Week</string>
+</resources>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingLeft="10dp"
+    android:layout_marginBottom="2dp"
+    android:background="#eee">
+
+
+    <TextView
+        android:id="@+id/textView_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:includeFontPadding="false"
+        android:lineSpacingExtra="0dp"
+        android:text="@string/dummy_date"
+        android:textColor="#000"
+        android:textSize="30sp"
+        app:fontFamily="@font/roboto_thin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView_weekday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:includeFontPadding="false"
+        android:lineSpacingExtra="0dp"
+        android:minWidth="50dp"
+        android:text="@string/dummy_weekday"
+        android:textSize="22sp"
+        android:textColor="#f00"
+        app:fontFamily="@font/roboto_thin"
+        app:layout_constraintBottom_toBottomOf="@+id/textView_date"
+        app:layout_constraintStart_toEndOf="@+id/textView_date" />
+
+    <TextView
+        android:id="@+id/textView_plans"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:includeFontPadding="false"
+        android:lineSpacingExtra="0dp"
+        android:text="@string/dummy_text"
+        android:textSize="15sp"
+        app:fontFamily="@font/roboto_thin"
+        app:layout_constraintBottom_toBottomOf="@+id/textView_weekday"
+        app:layout_constraintStart_toEndOf="@+id/textView_weekday" />
+
+    <ImageView
+        android:id="@+id/imageView_addbutt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_add_circle_outline_black_36dp"
+        android:contentDescription="TODO" />
+
+</android.support.constraint.ConstraintLayout>
