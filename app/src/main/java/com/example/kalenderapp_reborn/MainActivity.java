@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         mToggleButton.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        DrawerNavigationClass addnavigation = new DrawerNavigationClass(MainActivity.this);
+        DrawerNavigationClass addnavigation = new DrawerNavigationClass(MainActivity.this, this);
         addnavigation.setupDrawerClickable(mNavView);
     }
 
