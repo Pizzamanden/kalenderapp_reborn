@@ -114,20 +114,20 @@ public class Calendar_RecViewAdap extends RecyclerView.Adapter<Calendar_RecViewA
             public void onClick(View v) {
                 // Setup dialog for making new calendar entry
                 final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setPositiveButton(R.string.dialogAddEntryMainActivity_agree, new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.dialogAddEntryCalendar_RecViewAdap_agree, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Log.d(TAG, "addNewEntry onClick: Agree entry");
                         // User wants to make entry
                         // Start new entry AddEvent Acitivity
                     }
                 });
-                builder.setNegativeButton(R.string.dialogAddEntryMainActivity_decline, new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(R.string.dialogAddEntryCalendar_RecViewAdap_decline, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Log.d(TAG, "addNewEntry onClick: Cancel entry");
                         // User cancels
                     }
                 });
-                builder.setMessage(R.string.dialogAddEntryMainActivity_message)
+                builder.setMessage(R.string.dialogAddEntryCalendar_RecViewAdap_message)
                         .setTitle(aWeakString);
                 final AlertDialog dialog = builder.create();
 

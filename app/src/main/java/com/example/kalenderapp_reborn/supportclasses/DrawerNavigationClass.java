@@ -1,5 +1,6 @@
 package com.example.kalenderapp_reborn.supportclasses;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,8 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.example.kalenderapp_reborn.EventAddActivity;
+import com.example.kalenderapp_reborn.EventViewActivity;
 import com.example.kalenderapp_reborn.R;
 
 public class DrawerNavigationClass {
@@ -16,9 +19,11 @@ public class DrawerNavigationClass {
     private static final String TAG = "DrawerNavigationClass";
 
     Context mContext;
+    Activity mActivity;
 
-    public DrawerNavigationClass(Context context){
+    public DrawerNavigationClass(Context context, Activity activity){
         mContext = context;
+        mActivity = activity;
     }
 
     public void setupDrawerClickable(NavigationView navigationView)
@@ -56,13 +61,16 @@ public class DrawerNavigationClass {
                 if (id == R.id.nav_event) {
                     Log.d(TAG, "onNavigationItemSelected: event nav_event");
 
-                    //i = new Intent(mContext, AddEvent.class);
-                    //startActivity(i);
+                    i = new Intent(mContext, EventAddActivity.class);
+                    mContext.startActivity(i);
+                    mActivity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
                 } else if (id == R.id.nav_schedule) {
                     Log.d(TAG, "onNavigationItemSelected: sched nav_event");
 
-                    //i = new Intent(mContext, SeeEvents.class);
-                    //startActivity(i);
+                    i = new Intent(mContext, EventViewActivity.class);
+                    mContext.startActivity(i);
+                    mActivity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 } else if (id == R.id.nav_settings) {
                     Log.d(TAG, "onNavigationItemSelected: sett nav_event");
 
