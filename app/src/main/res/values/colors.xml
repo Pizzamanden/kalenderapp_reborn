@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Main Objects -->
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+
+    <!-- Normal Theme -->
+    <color name="colorBackgroundPrimary">#fff</color>
+    <color name="colorBackgroundSecondary">#eee</color>
+    <color name="colorTextPrimary">#111</color>
+    <color name="colorTextSecondary">#008577</color>
+    <color name="colorTextHighlight">#f00</color>
+
+
+    <!-- Dark Theme -->
+    <color name="colorBackgroundPrimaryDark">#222</color>
+    <color name="colorBackgroundSecondaryDark">#555</color>
+    <color name="colorTextPrimaryDark">#eee</color>
+    <color name="colorTextSecondaryDark">#00574B</color>
+    <color name="colorTextHighlightDark">#f00</color>
+
+
+
 </resources>

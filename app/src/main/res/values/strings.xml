@@ -64,4 +64,13 @@
     <string name="DL_exit_TTL">Exit app</string>
 
     <string name="WORD_week">Week</string>
+
+
+    <string name="activity_title_addevent">Add Event</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="dialogAddEntryMainActivity_title">New Entry</string>
+    <string name="dialogAddEntryMainActivity_message">Make a new entry from this date?</string>
+    <string name="dialogAddEntryMainActivity_agree">Yes</string>
+    <string name="dialogAddEntryMainActivity_decline">Cancel</string>
 </resources>
