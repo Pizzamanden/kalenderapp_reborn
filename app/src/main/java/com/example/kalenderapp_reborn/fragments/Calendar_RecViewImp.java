@@ -11,13 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.kalenderapp_reborn.R;
+import com.example.kalenderapp_reborn.interfaces.RecyclerViewClickListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class Calendar_RecViewImp extends Fragment {
+public class Calendar_RecViewImp extends Fragment implements RecyclerViewClickListener {
 
     // Tag D
     private static final String TAG = "Calendar_RecViewImp";
@@ -99,6 +101,11 @@ public class Calendar_RecViewImp extends Fragment {
         }
 
         initRecyclerView();
+    }
+
+    @Override
+    public void recyclerViewListClicked(View v, int position) {
+        Toast.makeText(mContext, "Yads", Toast.LENGTH_SHORT).show();
     }
 
     public void initRecyclerView(){
