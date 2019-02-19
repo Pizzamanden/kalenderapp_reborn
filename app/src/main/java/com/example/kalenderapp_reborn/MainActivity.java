@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
         setupDrawerNav();
     }
 
+
+
     public void setupDrawerNav() {
         mNavView = findViewById(R.id.drawer_nav_view);
         mDrawerLayout = findViewById(R.id.drawerLayout_nav);
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         DrawerNavigationClass addnavigation = new DrawerNavigationClass(MainActivity.this, this);
         addnavigation.setupDrawerClickable(mNavView);
+
     }
 
     @Override

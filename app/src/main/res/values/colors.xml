@@ -18,7 +18,7 @@
     <!-- Dark Theme -->
     <color name="colorBackgroundPrimaryDark">#222</color>
     <color name="colorBackgroundSecondaryDark">#555</color>
-    <color name="colorTextPrimaryDark">#eee</color>
+    <color name="colorTextPrimaryDark">#EEEEEE</color>
     <color name="colorTextSecondaryDark">#00574B</color>
     <color name="colorTextHighlightDark">#f00</color>
 

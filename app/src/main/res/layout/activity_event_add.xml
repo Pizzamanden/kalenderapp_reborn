@@ -2,6 +2,8 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".EventAddActivity">
@@ -20,6 +22,8 @@
         app:layout_constraintTop_toTopOf="parent" >
 
         <ImageView
+            android:id="@+id/imageview_checkmark"
+            android:onClick="buttonConfirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
@@ -28,126 +32,252 @@
             />
     </android.support.v7.widget.Toolbar>
 
-    <TableLayout
+    <ScrollView
+        android:id="@+id/scrollview_contentroot"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_1">
 
-        <TableRow
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="20dp"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:gravity="right"
-                android:text="TextView"
-                android:textSize="20sp" />
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar_1">
 
-            <EditText
-                android:id="@+id/editText1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name" />
-        </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp"
+                    android:background="@color/colorBackgroundSecondaryDark"
+                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
+                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="20dp"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp">
+                    <TextView
+                        android:id="@+id/textView_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="@string/addevent_titlelabel"
+                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:gravity="right"
-                android:text="dad"
-                android:textSize="20sp" />
+                    <EditText
+                        android:id="@+id/editText_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/addevent_titleplaceholder"
+                        android:inputType="textShortMessage"
+                        android:textColor="@color/colorTextPrimaryDark" />
+                </TableRow>
 
-            <EditText
-                android:id="@+id/editText2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name" />
-        </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp"
+                    android:background="@color/colorBackgroundSecondaryDark"
+                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
+                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="20dp"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp">
+                    <TextView
+                        android:id="@+id/textView_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="@string/addevent_startlabel"
+                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:gravity="right"
-                android:text="TextView"
-                android:textSize="20sp" />
+                    <EditText
+                        android:id="@+id/editText_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/addevent_startplaceholder"
+                        android:inputType="datetime"
+                        android:textColor="@color/colorTextPrimaryDark" />
+                </TableRow>
 
-            <EditText
-                android:id="@+id/editText3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name" />
-        </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp"
+                    android:background="@color/colorBackgroundSecondaryDark"
+                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
+                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="20dp"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp">
+                    <TextView
+                        android:id="@+id/textView_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="@string/addevent_endlabel"
+                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:gravity="right"
-                android:text="TextVihh"
-                android:textSize="20sp" />
+                    <EditText
+                        android:id="@+id/editText_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/addevent_endplaceholder"
+                        android:inputType="datetime"
+                        android:textColor="@color/colorTextPrimaryDark" />
+                </TableRow>
 
-            <EditText
-                android:id="@+id/editText4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name" />
-        </TableRow>
-    </TableLayout>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp"
+                    android:background="@color/colorBackgroundSecondaryDark"
+                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
+                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
+
+                    <TextView
+                        android:id="@+id/textView_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="@string/addevent_typelabel"
+                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
+
+                    <Spinner
+                        android:id="@+id/spinner_eventtype"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        android:spinnerMode="dialog" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp"
+                    android:background="@color/colorBackgroundSecondaryDark"
+                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
+                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
+
+                    <TextView
+                        android:id="@+id/textView_setalarm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="@string/addevent_setalarmlabel"
+                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
+
+                    <EditText
+                        android:id="@+id/editText_setalarm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/colorTextPrimaryDark" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp"
+                    android:background="@color/colorBackgroundSecondaryDark"
+                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
+                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
+                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
+                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
+
+                    <TextView
+                        android:id="@+id/textView_alarmtime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="@string/addevent_alarmtimelabel"
+                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
+
+                    <EditText
+                        android:id="@+id/editText_alarmtime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/addevent_alarmtimeplaceholder"
+                        android:inputType="time"
+                        android:textColor="@color/colorTextPrimaryDark" />
+                </TableRow>
+
+            </TableLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:layout_editor_absoluteY="56dp">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/successPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:layout_editor_absoluteY="56dp"
+        android:background="#00f">
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/failurePanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:layout_editor_absoluteY="56dp"
+        android:background="#f00">
+    </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>

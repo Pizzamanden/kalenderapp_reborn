@@ -4,6 +4,10 @@
     <dimen name="material_content_keyline">16dp</dimen>
 
 
-
+    <dimen name="addEvent_tableRow_leftPadd">24dp</dimen>
+    <dimen name="addEvent_tableRow_topPadd">20dp</dimen>
+    <dimen name="addEvent_tableRow_rightPadd">24dp</dimen>
+    <dimen name="addEvent_tableRow_bottomPadd">40dp</dimen>
+    <dimen name="addEvent_tableRow_labelFontSize">16sp</dimen>
 
 </resources>
