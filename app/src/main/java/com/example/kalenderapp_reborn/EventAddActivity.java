@@ -31,20 +31,25 @@ import okhttp3.Response;
 
 public class EventAddActivity extends AppCompatActivity {
 
-    public String savedDate;
+
     private static final String TAG = "EventAddActivity";
 
-    EditText editText_name, editText_start, editText_end;
+    EditText editText_name, editText_start_datefield, editText_start_timefield, editText_end_datefield, editText_end_timefield;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: i");
         setContentView(R.layout.activity_event_add);
 
+        Log.d(TAG, "onCreate: o");
+        
         editText_name = findViewById(R.id.editText_name);
-        editText_start = findViewById(R.id.editText_start);
-        editText_end = findViewById(R.id.editText_end);
+        editText_start_datefield = findViewById(R.id.editText_start_datefield);
+        editText_start_timefield = findViewById(R.id.editText_start_timefield);
+        editText_end_datefield = findViewById(R.id.editText_end_datefield);
+        editText_end_timefield = findViewById(R.id.editText_end_timefield);
 
         Toolbar toolbar = findViewById(R.id.toolbar_1);
 
@@ -54,26 +59,26 @@ public class EventAddActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_close_gray_36dp);
 
 
+        // Setup dialogs, edittext, date or time (1 or 2)
+        setDialogFieldsListener(editText_start_datefield, 1);
+        setDialogFieldsListener(editText_start_timefield, 2);
+        setDialogFieldsListener(editText_end_datefield, 1);
+        setDialogFieldsListener(editText_end_timefield, 2);
+
         initSpinner();
+    }
 
-
-
-
-        editText_start.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+    private void setDialogFieldsListener(final EditText v, final int type){
+        v.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
-                    setDate(editText_start);
-                    editText_start.clearFocus();
-                }
-            }
-        });
-        editText_end.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                    setDate(editText_end);
-                    editText_end.clearFocus();
+                    if(type == 2){
+                        setTime(v);
+                    } else {
+                        setDate(v);
+                    }
+                    v.clearFocus();
                 }
             }
         });
@@ -129,14 +134,15 @@ public class EventAddActivity extends AppCompatActivity {
         final Handler handler = new Handler();
         Log.d(TAG, "httpPOSTdata: fired");
         String mToken = "1fb52hb2j3hk623kj2v";
+        // TODO fix datefields
         String futureJSON = "{" +
                 "\"userId\":2," +
                 "\"eventName\":\"" +
                 editText_name.getText().toString() +
                 "\",\"eventStart\":\"" +
-                editText_start.getText().toString() +
+                editText_start_datefield.getText().toString() + " " + editText_start_timefield.getText().toString() +
                 "\",\"eventEnd\":\"" +
-                editText_end.getText().toString() +
+                editText_end_datefield.getText().toString() + " " + editText_end_timefield.getText().toString() +
                 "\",\"eventType\":2," +
                 "\"eventAlarmEnabled\":true," +
                 "\"eventAlarmTime\":\"02-09-2019 02:02\"," +
@@ -169,6 +175,7 @@ public class EventAddActivity extends AppCompatActivity {
                 Log.d(TAG, "httpPOSTdata: Response code " + response.code());
                 if (response.code() == 200) {
                     final String myResponse = response.body().string();
+                    Log.d(TAG, "onResponse: " + myResponse);
                     Log.d(TAG, "httpPOSTdata: 200");
                     EventAddActivity.this.runOnUiThread(new Runnable() {
                         @Override
@@ -200,7 +207,7 @@ public class EventAddActivity extends AppCompatActivity {
     public void setDate(final EditText v) {
 
         final Calendar c = Calendar.getInstance();
-        int year, month, day;
+        final int year, month, day;
         year = c.get(Calendar.YEAR);
         month = c.get(Calendar.MONTH);
         day = c.get(Calendar.DAY_OF_MONTH);
@@ -212,7 +219,7 @@ public class EventAddActivity extends AppCompatActivity {
                     public void onDateSet(DatePicker view, int year,
                                           int monthOfYear, int dayOfMonth) {
 
-
+                        String savedDate;
                         if(dayOfMonth < 10){
                             savedDate = "0" + dayOfMonth + "-";
                         } else {
@@ -224,7 +231,7 @@ public class EventAddActivity extends AppCompatActivity {
                             savedDate += (monthOfYear + 1);
                         }
                         savedDate += "-" + year;
-                        setTime(v);
+                        v.setText(savedDate);
 
                     }
                 }, year, month, day);
@@ -233,28 +240,27 @@ public class EventAddActivity extends AppCompatActivity {
 
     public void setTime(final EditText v){
         final Calendar c = Calendar.getInstance();
-        int hour, minute;
+        final int hour, minute;
         hour = c.get(Calendar.HOUR);
         minute = c.get(Calendar.MINUTE);
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+        final TimePickerDialog timePickerDialog = new TimePickerDialog(this,
                 new TimePickerDialog.OnTimeSetListener() {
 
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay,
                                           int minute) {
-
+                        String savedDate;
                         if(hourOfDay < 10){
-                            savedDate += " 0" + hourOfDay + ":";
+                            savedDate = " 0" + hourOfDay + ":";
                         } else {
-                            savedDate += " " + hourOfDay + ":";
+                            savedDate = " " + hourOfDay + ":";
                         }
                         if(minute < 10){
                             savedDate += "0" + minute;
                         } else {
                             savedDate += minute;
                         }
-
                         v.setText(savedDate);
                     }
                 }, hour, minute, true);
@@ -266,9 +272,9 @@ public class EventAddActivity extends AppCompatActivity {
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
+        //Find the currently focused view, then grab the correct window token from it.
         View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        //If no view currently has focus, create a new one, then grab a window token from it
         if (view == null) {
             view = new View(activity);
         }

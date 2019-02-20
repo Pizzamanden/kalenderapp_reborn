@@ -41,209 +41,263 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_1">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TableLayout
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar_1">
+                android:layout_height="wrap_content"
+                android:background="@color/colorBackgroundSecondaryDark">
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="2dp"
-                    android:background="@color/colorBackgroundSecondaryDark"
-                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
-                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
+                <android.support.constraint.Barrier
+                    android:id="@+id/barrier_end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="end"
+                    app:constraint_referenced_ids="textView_1, textView_2, textView_3" />
 
-                    <TextView
-                        android:id="@+id/textView_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="@string/addevent_titlelabel"
-                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
 
-                    <EditText
-                        android:id="@+id/editText_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/addevent_titleplaceholder"
-                        android:inputType="textShortMessage"
-                        android:textColor="@color/colorTextPrimaryDark" />
-                </TableRow>
+                <TextView
+                    android:id="@+id/textView_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
+                    android:gravity="center_vertical|right"
+                    android:minWidth="75dp"
+                    android:text="@string/addevent_titlelabel"
+                    android:textSize="@dimen/addEvent_block_labelFontSize"
+                    app:layout_constraintBottom_toBottomOf="@+id/editText_name"
+                    app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintTop_toTopOf="@+id/editText_name" />
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="2dp"
-                    android:background="@color/colorBackgroundSecondaryDark"
-                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
-                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
+                <EditText
+                    android:id="@+id/editText_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginLeft="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginTop="@dimen/addEvent_block_topMargin"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
+                    android:textColor="@color/colorTextPrimaryDark"
+                    android:hint="@string/addevent_titleplaceholder"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier_end"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/textView_start"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="@string/addevent_startlabel"
-                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
+                <View
+                    android:id="@+id/divider_1"
+                    style="@style/Divider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editText_name"/>
 
-                    <EditText
-                        android:id="@+id/editText_start"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/addevent_startplaceholder"
-                        android:inputType="datetime"
-                        android:textColor="@color/colorTextPrimaryDark" />
-                </TableRow>
+                <TextView
+                    android:id="@+id/textView_startlabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
+                    android:gravity="center_vertical|right"
+                    android:text="@string/addevent_startlabel_date"
+                    android:textSize="@dimen/addEvent_block_labelFontSize"
+                    app:layout_constraintBottom_toBottomOf="@+id/editText_start_datefield"
+                    app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintTop_toTopOf="@+id/editText_start_datefield" />
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="2dp"
-                    android:background="@color/colorBackgroundSecondaryDark"
-                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
-                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
+                <EditText
+                    android:id="@+id/editText_start_datefield"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginLeft="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginTop="@dimen/addEvent_block_topMargin"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
+                    android:textColor="@color/colorTextPrimaryDark"
+                    android:hint="@string/addevent_startplaceholder_date"
+                    app:layout_constraintEnd_toStartOf="@+id/editText_start_timefield"
+                    app:layout_constraintStart_toEndOf="@+id/barrier_end"
+                    app:layout_constraintTop_toBottomOf="@+id/divider_1" />
 
-                    <TextView
-                        android:id="@+id/textView_end"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="@string/addevent_endlabel"
-                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
+                <EditText
+                    android:id="@+id/editText_start_timefield"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
+                    android:textColor="@color/colorTextPrimaryDark"
+                    android:hint="@string/addevent_startplaceholder_time"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/editText_start_datefield"
+                    app:layout_constraintTop_toTopOf="@+id/editText_start_datefield"
+                    app:layout_constraintBottom_toBottomOf="@+id/editText_start_datefield"/>
 
-                    <EditText
-                        android:id="@+id/editText_end"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/addevent_endplaceholder"
-                        android:inputType="datetime"
-                        android:textColor="@color/colorTextPrimaryDark" />
-                </TableRow>
+                <View
+                    android:id="@+id/divider_2"
+                    style="@style/Divider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editText_start_datefield"/>
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="2dp"
-                    android:background="@color/colorBackgroundSecondaryDark"
-                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
-                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
+                <TextView
+                    android:id="@+id/textView_endlabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
+                    android:gravity="center_vertical|right"
+                    android:text="@string/addevent_endlabel_date"
+                    android:textSize="@dimen/addEvent_block_labelFontSize"
+                    app:layout_constraintBottom_toBottomOf="@+id/editText_end_datefield"
+                    app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintTop_toTopOf="@+id/editText_end_datefield" />
 
-                    <TextView
-                        android:id="@+id/textView_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="@string/addevent_typelabel"
-                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
+                <EditText
+                    android:id="@+id/editText_end_datefield"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginLeft="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginTop="@dimen/addEvent_block_topMargin"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:textColor="@color/colorTextPrimaryDark"
+                    android:hint="@string/addevent_endplaceholder_date"
+                    app:layout_constraintEnd_toStartOf="@+id/editText_end_timefield"
+                    app:layout_constraintStart_toEndOf="@+id/barrier_end"
+                    app:layout_constraintTop_toBottomOf="@+id/divider_2" />
 
-                    <Spinner
-                        android:id="@+id/spinner_eventtype"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.AppCompat.Spinner.Underlined"
-                        android:spinnerMode="dialog" />
-                </TableRow>
+                <EditText
+                    android:id="@+id/editText_end_timefield"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
+                    android:textColor="@color/colorTextPrimaryDark"
+                    android:hint="@string/addevent_endplaceholder_time"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/editText_end_datefield"
+                    app:layout_constraintTop_toTopOf="@+id/editText_end_datefield"
+                    app:layout_constraintBottom_toBottomOf="@+id/editText_end_datefield"/>
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="2dp"
-                    android:background="@color/colorBackgroundSecondaryDark"
-                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
-                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
+                <View
+                    android:id="@+id/divider_3"
+                    style="@style/Divider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editText_end_datefield"/>
 
-                    <TextView
-                        android:id="@+id/textView_setalarm"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="@string/addevent_setalarmlabel"
-                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
+                <TextView
+                    android:id="@+id/textView_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
+                    android:gravity="center_vertical|right"
+                    android:minWidth="75dp"
+                    android:text="@string/addevent_typelabel"
+                    android:textSize="@dimen/addEvent_block_labelFontSize"
+                    app:layout_constraintBottom_toBottomOf="@+id/spinner_eventtype"
+                    app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintTop_toTopOf="@+id/spinner_eventtype" />
 
-                    <EditText
-                        android:id="@+id/editText_setalarm"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:inputType="textPersonName"
-                        android:textColor="@color/colorTextPrimaryDark" />
-                </TableRow>
+                <Spinner
+                    android:id="@+id/spinner_eventtype"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.AppCompat.Spinner.Underlined"
+                    android:spinnerMode="dialog"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginLeft="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginTop="@dimen/addEvent_block_topMargin"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier_end"
+                    app:layout_constraintTop_toBottomOf="@+id/divider_3"/>
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="2dp"
-                    android:background="@color/colorBackgroundSecondaryDark"
-                    android:paddingStart="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingLeft="@dimen/addEvent_tableRow_leftPadd"
-                    android:paddingTop="@dimen/addEvent_tableRow_topPadd"
-                    android:paddingEnd="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingRight="@dimen/addEvent_tableRow_rightPadd"
-                    android:paddingBottom="@dimen/addEvent_tableRow_bottomPadd">
+                <View
+                    android:id="@+id/divider_4"
+                    style="@style/Divider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/spinner_eventtype"/>
 
-                    <TextView
-                        android:id="@+id/textView_alarmtime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="@string/addevent_alarmtimelabel"
-                        android:textSize="@dimen/addEvent_tableRow_labelFontSize" />
+                <TextView
+                    android:id="@+id/textView_setalarm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
+                    android:gravity="center_vertical|right"
+                    android:minWidth="75dp"
+                    android:text="@string/addevent_setalarmlabel"
+                    android:textSize="@dimen/addEvent_block_labelFontSize"
+                    app:layout_constraintBottom_toBottomOf="@+id/switch_alarmenable"
+                    app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintTop_toTopOf="@+id/switch_alarmenable" />
 
-                    <EditText
-                        android:id="@+id/editText_alarmtime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/addevent_alarmtimeplaceholder"
-                        android:inputType="time"
-                        android:textColor="@color/colorTextPrimaryDark" />
-                </TableRow>
 
-            </TableLayout>
+                <Switch
+                    android:id="@+id/switch_alarmenable"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginLeft="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginTop="@dimen/addEvent_block_topMargin"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    android:text=""
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier_end"
+                    app:layout_constraintTop_toBottomOf="@+id/divider_4" />
 
-        </LinearLayout>
+                <View
+                    android:id="@+id/divider_5"
+                    style="@style/Divider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/switch_alarmenable"/>
+
+                <TextView
+                    android:id="@+id/textView_alarmtime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginLeft="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
+                    android:gravity="center_vertical|right"
+                    android:text="@string/addevent_alarmtimelabel"
+                    android:textSize="@dimen/addEvent_block_labelFontSize"
+                    app:layout_constraintBottom_toBottomOf="@+id/editText_alarmtime"
+                    app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/editText_alarmtime" />
+
+                <EditText
+                    android:id="@+id/editText_alarmtime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginLeft="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginTop="@dimen/addEvent_block_topMargin"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginBottom="@dimen/addEvent_block_botMargin"
+                    android:ems="10"
+                    android:hint="@string/addevent_alarmtimeplaceholder"
+                    android:inputType="time"
+                    android:textColor="@color/colorTextPrimaryDark"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier_end"
+                    app:layout_constraintTop_toBottomOf="@+id/divider_5"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            </android.support.constraint.ConstraintLayout>
     </ScrollView>
 
     <RelativeLayout

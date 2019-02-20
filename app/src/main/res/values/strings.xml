@@ -60,7 +60,7 @@
 
     <string name="DL_ok">Ok</string>
     <string name="DL_cancel">Cancel</string>
-    <string name="DL_exit_MSG">Do you wanna exit the app?</string>
+    <string name="DL_exit_MSG">Do you want to exit the app?</string>
     <string name="DL_exit_TTL">Exit app</string>
 
     <string name="WORD_week">Week</string>
@@ -76,11 +76,15 @@
 
 
     <string name="addevent_titlelabel">Name</string>
-    <string name="addevent_titleplaceholder">Event name</string>
-    <string name="addevent_startlabel">Start</string>
-    <string name="addevent_startplaceholder">Time event starts</string>
-    <string name="addevent_endlabel">End</string>
-    <string name="addevent_endplaceholder">Time event ends</string>
+    <string name="addevent_titleplaceholder">Name of event</string>
+    <string name="addevent_startlabel_date">Start date</string>
+    <string name="addevent_startplaceholder_date">Date</string>
+    <string name="addevent_startlabel_time">Start time</string>
+    <string name="addevent_startplaceholder_time">Time</string>
+    <string name="addevent_endlabel_date">End date</string>
+    <string name="addevent_endplaceholder_date">Date</string>
+    <string name="addevent_endlabel_time">End time</string>
+    <string name="addevent_endplaceholder_time">Time</string>
     <string name="addevent_typelabel">Type</string>
     <string-array name="addevent_typespinner">
         <item>Choose event type…</item>

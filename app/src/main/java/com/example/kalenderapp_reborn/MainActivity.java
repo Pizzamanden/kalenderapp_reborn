@@ -9,15 +9,15 @@ import android.view.MenuItem;
 
 import com.example.kalenderapp_reborn.supportclasses.DrawerNavigationClass;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
 
     // Tag D
     private static final String TAG = "MainActivity";
 
     // Views
-    private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggleButton;
-    private NavigationView mNavView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +30,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void setupDrawerNav() {
-        mNavView = findViewById(R.id.drawer_nav_view);
-        mDrawerLayout = findViewById(R.id.drawerLayout_nav);
+        DrawerLayout mDrawerLayout = findViewById(R.id.drawerLayout_nav);
+        NavigationView mNavView = findViewById(R.id.drawer_nav_view);
         mToggleButton = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawerToggleOpen, R.string.drawerToggleClose);
         mDrawerLayout.addDrawerListener(mToggleButton);
         mToggleButton.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         DrawerNavigationClass addnavigation = new DrawerNavigationClass(MainActivity.this, this);
         addnavigation.setupDrawerClickable(mNavView);

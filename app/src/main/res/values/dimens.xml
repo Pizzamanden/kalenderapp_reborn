@@ -2,4 +2,25 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="material_content_keyline">16dp</dimen>
+
+
+    <dimen name="addEvent_tableRow_leftPadd">20dp</dimen>
+    <dimen name="addEvent_tableRow_topPadd">20dp</dimen>
+    <dimen name="addEvent_tableRow_rightPadd">20dp</dimen>
+    <dimen name="addEvent_tableRow_bottomPadd">40dp</dimen>
+
+
+    <dimen name="addEvent_block_topMargin">32dp</dimen>
+    <dimen name="addEvent_block_botMargin">32dp</dimen>
+    <dimen name="addEvent_block_horiInnerMargin">8dp</dimen>
+    <dimen name="addEvent_block_horiOuterMargin">16dp</dimen>
+
+    <dimen name="addEvent_divider_height">2dp</dimen>
+    <dimen name="addEvent_divider_horiMargin">0dp</dimen>
+
+
+    <dimen name="addEvent_block_labelFontSize">16sp</dimen>
+
 </resources>
