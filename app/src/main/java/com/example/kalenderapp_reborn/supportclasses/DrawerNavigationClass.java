@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -35,7 +36,7 @@ public class DrawerNavigationClass {
                 Log.d(TAG, "onNavigationItemSelected onClick: Agree Exit");
 
                 // User wants to exit
-                // TODO
+                shutdownApp();
             }
         });
         builder.setNegativeButton(mContext.getString(R.string.DL_cancel), new DialogInterface.OnClickListener() {
@@ -83,5 +84,14 @@ public class DrawerNavigationClass {
                 return true;
             }
         });
+    }
+
+    private void shutdownApp(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mActivity.finishAffinity();
+        } else {
+            mActivity.finish();
+        }
+
     }
 }

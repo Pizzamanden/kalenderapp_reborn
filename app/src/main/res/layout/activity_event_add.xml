@@ -51,13 +51,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:barrierDirection="end"
-                    app:constraint_referenced_ids="textView_1, textView_2, textView_3" />
+                    app:constraint_referenced_ids="textView_1, textView_2, textView_3"
+                    tools:layout_editor_absoluteX="103dp" />
 
 
                 <TextView
                     android:id="@+id/textView_name"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
                     android:gravity="center_vertical|right"
@@ -66,6 +69,7 @@
                     android:textSize="@dimen/addEvent_block_labelFontSize"
                     app:layout_constraintBottom_toBottomOf="@+id/editText_name"
                     app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/editText_name" />
 
                 <EditText
@@ -94,6 +98,8 @@
                     android:id="@+id/textView_startlabel"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
                     android:gravity="center_vertical|right"
@@ -101,6 +107,7 @@
                     android:textSize="@dimen/addEvent_block_labelFontSize"
                     app:layout_constraintBottom_toBottomOf="@+id/editText_start_datefield"
                     app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/editText_start_datefield" />
 
                 <EditText
@@ -143,6 +150,8 @@
                     android:id="@+id/textView_endlabel"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
                     android:gravity="center_vertical|right"
@@ -150,6 +159,7 @@
                     android:textSize="@dimen/addEvent_block_labelFontSize"
                     app:layout_constraintBottom_toBottomOf="@+id/editText_end_datefield"
                     app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/editText_end_datefield" />
 
                 <EditText
@@ -192,6 +202,8 @@
                     android:id="@+id/textView_type"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
                     android:gravity="center_vertical|right"
@@ -200,6 +212,7 @@
                     android:textSize="@dimen/addEvent_block_labelFontSize"
                     app:layout_constraintBottom_toBottomOf="@+id/spinner_eventtype"
                     app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/spinner_eventtype" />
 
                 <Spinner
@@ -215,6 +228,7 @@
                     android:layout_marginTop="@dimen/addEvent_block_topMargin"
                     android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
                     android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
+                    android:prompt="@string/addevent_typespinner_default"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/barrier_end"
                     app:layout_constraintTop_toBottomOf="@+id/divider_3"/>
@@ -230,6 +244,8 @@
                     android:id="@+id/textView_setalarm"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
                     android:gravity="center_vertical|right"
@@ -238,6 +254,7 @@
                     android:textSize="@dimen/addEvent_block_labelFontSize"
                     app:layout_constraintBottom_toBottomOf="@+id/switch_alarmenable"
                     app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/switch_alarmenable" />
 
 
@@ -247,55 +264,47 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginLeft="@dimen/addEvent_block_horiInnerMargin"
-                    android:layout_marginTop="@dimen/addEvent_block_topMargin"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="@dimen/addEvent_block_botMargin"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
                     android:text=""
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/barrier_end"
                     app:layout_constraintTop_toBottomOf="@+id/divider_4" />
 
-                <View
-                    android:id="@+id/divider_5"
-                    style="@style/Divider"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/switch_alarmenable"/>
-
-                <TextView
-                    android:id="@+id/textView_alarmtime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="@dimen/addEvent_block_horiOuterMargin"
-                    android:layout_marginLeft="@dimen/addEvent_block_horiOuterMargin"
-                    android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
-                    android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
-                    android:gravity="center_vertical|right"
-                    android:text="@string/addevent_alarmtimelabel"
-                    android:textSize="@dimen/addEvent_block_labelFontSize"
-                    app:layout_constraintBottom_toBottomOf="@+id/editText_alarmtime"
-                    app:layout_constraintEnd_toStartOf="@+id/barrier_end"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/editText_alarmtime" />
-
                 <EditText
-                    android:id="@+id/editText_alarmtime"
+                    android:id="@+id/editText_alarmdate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginLeft="@dimen/addEvent_block_horiInnerMargin"
-                    android:layout_marginTop="@dimen/addEvent_block_topMargin"
-                    android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
-                    android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginBottom="@dimen/addEvent_block_botMargin"
+                    android:ems="10"
+                    android:hint="@string/addevent_alarmdateplaceholder"
+                    android:inputType="time"
+                    android:textColor="@color/colorTextPrimaryDark"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/editText_alarmtime"
+                    app:layout_constraintStart_toEndOf="@id/barrier_end"
+                    app:layout_constraintTop_toBottomOf="@id/switch_alarmenable" />
+
+                <EditText
+                    android:id="@+id/editText_alarmtime"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
+
                     android:ems="10"
                     android:hint="@string/addevent_alarmtimeplaceholder"
                     android:inputType="time"
                     android:textColor="@color/colorTextPrimaryDark"
+                    app:layout_constraintBottom_toBottomOf="@id/editText_alarmdate"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/barrier_end"
-                    app:layout_constraintTop_toBottomOf="@+id/divider_5"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintTop_toTopOf="@id/editText_alarmdate"
+                    app:layout_constraintStart_toEndOf="@id/editText_alarmdate"/>
 
             </android.support.constraint.ConstraintLayout>
     </ScrollView>

@@ -86,12 +86,16 @@
     <string name="addevent_endlabel_time">End time</string>
     <string name="addevent_endplaceholder_time">Time</string>
     <string name="addevent_typelabel">Type</string>
+    <string name="addevent_typespinner_default">Choose event type</string>
     <string-array name="addevent_typespinner">
-        <item>Choose event type…</item>
+        <item>Set a type…</item>
+        <item>Watching birds</item>
+        <item>Playing with Lego</item>
+        <item>Pondering about life</item>
     </string-array>
     <string name="addevent_setalarmlabel">Set alarm</string>
-    <string name="addevent_alarmtimelabel">Alarm time</string>
-    <string name="addevent_alarmtimeplaceholder">something with time spinners</string>
+    <string name="addevent_alarmdateplaceholder">Alarm date</string>
+    <string name="addevent_alarmtimeplaceholder">Alarm time</string>
     <string name="title_activity_login">Sign in</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

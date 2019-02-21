@@ -12,10 +12,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TimePicker;
 
 import java.io.IOException;
@@ -34,7 +37,11 @@ public class EventAddActivity extends AppCompatActivity {
 
     private static final String TAG = "EventAddActivity";
 
-    EditText editText_name, editText_start_datefield, editText_start_timefield, editText_end_datefield, editText_end_timefield;
+    EditText editText_name, editText_start_datefield, editText_start_timefield, editText_end_datefield, editText_end_timefield, editText_alarmdate, editText_alarmtime;
+    Switch switchAlarmEnable;
+    private int spinner_index = 0;
+    private boolean switch_state = false;
+
 
 
     @Override
@@ -50,7 +57,9 @@ public class EventAddActivity extends AppCompatActivity {
         editText_start_timefield = findViewById(R.id.editText_start_timefield);
         editText_end_datefield = findViewById(R.id.editText_end_datefield);
         editText_end_timefield = findViewById(R.id.editText_end_timefield);
-
+        editText_alarmdate = findViewById(R.id.editText_alarmdate);
+        editText_alarmtime = findViewById(R.id.editText_alarmtime);
+        switchAlarmEnable = findViewById(R.id.switch_alarmenable);
         Toolbar toolbar = findViewById(R.id.toolbar_1);
 
         setSupportActionBar(toolbar);
@@ -60,15 +69,17 @@ public class EventAddActivity extends AppCompatActivity {
 
 
         // Setup dialogs, edittext, date or time (1 or 2)
-        setDialogFieldsListener(editText_start_datefield, 1);
-        setDialogFieldsListener(editText_start_timefield, 2);
-        setDialogFieldsListener(editText_end_datefield, 1);
-        setDialogFieldsListener(editText_end_timefield, 2);
-
+        initDialogFields(editText_start_datefield, 1);
+        initDialogFields(editText_start_timefield, 2);
+        initDialogFields(editText_end_datefield, 1);
+        initDialogFields(editText_end_timefield, 2);
+        initDialogFields(editText_alarmdate, 1);
+        initDialogFields(editText_alarmtime, 2);
+        initSwitch();
         initSpinner();
     }
 
-    private void setDialogFieldsListener(final EditText v, final int type){
+    private void initDialogFields(final EditText v, final int type){
         v.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
@@ -84,50 +95,44 @@ public class EventAddActivity extends AppCompatActivity {
         });
     }
 
-
     private void initSpinner(){
-        Spinner spinner = findViewById(R.id.spinner_eventtype);
+        Spinner spinner_type = findViewById(R.id.spinner_eventtype);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.addevent_typespinner, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        spinner.getBackground().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+        spinner_type.setAdapter(adapter);
+        spinner_type.getBackground().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+
+        spinner_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                parent.getItemAtPosition(position);
+                Log.d(TAG, "onItemSelected: " + position);
+                spinner_index = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
-
-    public void buttonConfirm(View view){
-        // UI changes and delays for showing butter smooth animations,
-        final Handler handler = new Handler();
-        hideKeyboard(this);
-
-        // Hide current views with small delay
-        handler.postDelayed(new Runnable() {
+    private void initSwitch(){
+        switchAlarmEnable.setChecked(false);
+        switchAlarmEnable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void run() {
-                findViewById(R.id.scrollview_contentroot).setVisibility(View.GONE);
-                findViewById(R.id.toolbar_1).setVisibility(View.GONE);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                switch_state = isChecked;
+                editText_alarmdate.setFocusable(isChecked);
+                editText_alarmtime.setFocusable(isChecked);
+                editText_alarmdate.setEnabled(isChecked);
+                editText_alarmtime.setEnabled(isChecked);
             }
-        }, 400);
-
-        // Show loading animation, medium delay in total for facade of doing stuff with data
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-            }
-        }, 1800);
-
-        // After large delay, actual information starts to get processed
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                httpPOSTdata();
-            }
-        }, 2600);
-
+        });
     }
 
     private void httpPOSTdata(){
@@ -135,7 +140,7 @@ public class EventAddActivity extends AppCompatActivity {
         Log.d(TAG, "httpPOSTdata: fired");
         String mToken = "1fb52hb2j3hk623kj2v";
         // TODO fix datefields
-        String futureJSON = "{" +
+        String postFormdataJSON = "{" +
                 "\"userId\":2," +
                 "\"eventName\":\"" +
                 editText_name.getText().toString() +
@@ -143,10 +148,13 @@ public class EventAddActivity extends AppCompatActivity {
                 editText_start_datefield.getText().toString() + " " + editText_start_timefield.getText().toString() +
                 "\",\"eventEnd\":\"" +
                 editText_end_datefield.getText().toString() + " " + editText_end_timefield.getText().toString() +
-                "\",\"eventType\":2," +
-                "\"eventAlarmEnabled\":true," +
-                "\"eventAlarmTime\":\"02-09-2019 02:02\"," +
-                "\"tokenId\":\"" +
+                "\",\"eventType\":" +
+                spinner_index +
+                ",\"eventAlarmEnabled\":" +
+                switch_state +
+                ",\"eventAlarmTime\":\"" +
+                editText_alarmdate.getText().toString() + " " + editText_alarmtime.getText().toString() +
+                "\",\"tokenId\":\"" +
                 mToken + "\"}";
 
         OkHttpClient client = new OkHttpClient();
@@ -155,7 +163,7 @@ public class EventAddActivity extends AppCompatActivity {
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("postJSON", futureJSON)
+                .addFormDataPart("postJSON", postFormdataJSON)
                 .build();
 
         Request request = new Request.Builder()
@@ -202,9 +210,7 @@ public class EventAddActivity extends AppCompatActivity {
 
 
 
-
-
-    public void setDate(final EditText v) {
+    private void setDate(final EditText v) {
 
         final Calendar c = Calendar.getInstance();
         final int year, month, day;
@@ -238,7 +244,7 @@ public class EventAddActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    public void setTime(final EditText v){
+    private void setTime(final EditText v){
         final Calendar c = Calendar.getInstance();
         final int hour, minute;
         hour = c.get(Calendar.HOUR);
@@ -267,6 +273,38 @@ public class EventAddActivity extends AppCompatActivity {
         timePickerDialog.show();
 
 
+
+    }
+
+    public void buttonConfirm(View view){
+        // UI changes and delays for showing butter smooth animations,
+        final Handler handler = new Handler();
+        hideKeyboard(this);
+
+        // Hide current views with small delay
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                findViewById(R.id.scrollview_contentroot).setVisibility(View.GONE);
+                findViewById(R.id.toolbar_1).setVisibility(View.GONE);
+            }
+        }, 400);
+
+        // Show loading animation, medium delay in total for facade of doing stuff with data
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+            }
+        }, 1800);
+
+        // After large delay, actual information starts to get processed
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                httpPOSTdata();
+            }
+        }, 2600);
 
     }
 
