@@ -21,6 +21,9 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TimePicker;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.Calendar;
 
@@ -50,6 +53,8 @@ public class EventAddActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: i");
         setContentView(R.layout.activity_event_add);
 
+
+
         Log.d(TAG, "onCreate: o");
         
         editText_name = findViewById(R.id.editText_name);
@@ -62,10 +67,14 @@ public class EventAddActivity extends AppCompatActivity {
         switchAlarmEnable = findViewById(R.id.switch_alarmenable);
         Toolbar toolbar = findViewById(R.id.toolbar_1);
 
+        if(getIntent().getStringExtra("DATE_FROM_MAINACT") != null){
+            editText_start_datefield.setText(getIntent().getStringExtra("DATE_FROM_MAINACT"));
+        }
+
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationIcon(R.drawable.ic_close_gray_36dp);
+        toolbar.setNavigationIcon(R.drawable.ic_close_gray_24dp);
 
 
         // Setup dialogs, edittext, date or time (1 or 2)
@@ -157,6 +166,16 @@ public class EventAddActivity extends AppCompatActivity {
                 "\",\"tokenId\":\"" +
                 mToken + "\"}";
 
+        JSONObject jsonObject;
+        try {
+            jsonObject = new JSONObject(postFormdataJSON);
+            String name = jsonObject.getString("eventName");
+            Log.d(TAG, "httpPOSTdata: " + name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
         OkHttpClient client = new OkHttpClient();
         Log.d(TAG, "httpPOSTdata: making client");
         String url = "http://www.folderol.dk/";
@@ -203,12 +222,6 @@ public class EventAddActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-
-
-
 
     private void setDate(final EditText v) {
 

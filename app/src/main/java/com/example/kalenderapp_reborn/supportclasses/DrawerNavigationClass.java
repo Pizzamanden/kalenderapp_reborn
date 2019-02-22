@@ -19,8 +19,8 @@ public class DrawerNavigationClass {
     // Tag D
     private static final String TAG = "DrawerNavigationClass";
 
-    Context mContext;
-    Activity mActivity;
+    private Context mContext;
+    private Activity mActivity;
 
     public DrawerNavigationClass(Context context, Activity activity){
         mContext = context;
@@ -57,21 +57,12 @@ public class DrawerNavigationClass {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
                 int id = item.getItemId();
-                Intent i;
-
                 if (id == R.id.nav_event) {
-                    Log.d(TAG, "onNavigationItemSelected: event nav_event");
-
-                    i = new Intent(mContext, EventAddActivity.class);
+                    Intent i = new Intent(mContext, EventAddActivity.class);
                     mContext.startActivity(i);
-                    mActivity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
                 } else if (id == R.id.nav_schedule) {
-                    Log.d(TAG, "onNavigationItemSelected: sched nav_event");
-
-                    i = new Intent(mContext, EventViewActivity.class);
+                    Intent i = new Intent(mContext, EventViewActivity.class);
                     mContext.startActivity(i);
-                    mActivity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 } else if (id == R.id.nav_settings) {
                     Log.d(TAG, "onNavigationItemSelected: sett nav_event");
 

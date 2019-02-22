@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kalenderapp_reborn.R;
+import com.example.kalenderapp_reborn.adapters.CalendarRecyclerAdapter;
 import com.example.kalenderapp_reborn.interfaces.RecyclerViewClickListener;
 
 import java.util.ArrayList;
@@ -41,12 +42,14 @@ public class Calendar_RecViewImp extends Fragment implements RecyclerViewClickLi
     private ArrayList<Integer> mWeekDays = new ArrayList<>();
     private ArrayList<Integer> mDOY = new ArrayList<>();
     Calendar cal_flexible = Calendar.getInstance();
+    Calendar cal_today = Calendar.getInstance();
 
 
 
     // Called when creating views
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: Inflated");
         return inflater.inflate(R.layout.fragment_recveiwimp, parent, false);
     }
 
@@ -59,16 +62,23 @@ public class Calendar_RecViewImp extends Fragment implements RecyclerViewClickLi
         recyclerView = view.findViewById(R.id.recyclerview_calendarlist);
         recViewHeader = view.findViewById(R.id.textView_recviewheader);
 
-        mContext = getActivity();
+        mContext = getContext();
 
 
         cal_flexible.setFirstDayOfWeek(Calendar.MONDAY);
         cal_flexible.setMinimalDaysInFirstWeek(4);
         cal_flexible.set(cal_flexible.get(Calendar.YEAR), cal_flexible.get(Calendar.MONTH), cal_flexible.get(Calendar.DAY_OF_MONTH));
 
-
+        Log.d(TAG, "onViewCreated: Views Created");
         initStringArrays();
         initRecyclerData();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: Resumed");
+        recyclerView.scrollToPosition(cal_today.get(Calendar.DAY_OF_YEAR) - 1);
     }
 
     public void initStringArrays()
@@ -80,7 +90,7 @@ public class Calendar_RecViewImp extends Fragment implements RecyclerViewClickLi
     }
 
     public void initRecyclerData(){
-
+        Log.d(TAG, "initRecyclerData: ");
         Calendar fillingCalendar = Calendar.getInstance();
         fillingCalendar.setMinimalDaysInFirstWeek(4);
         fillingCalendar.set(Calendar.DAY_OF_YEAR, 1);
@@ -116,14 +126,13 @@ public class Calendar_RecViewImp extends Fragment implements RecyclerViewClickLi
             Log.d(TAG, "initRecyclerView: Making View");
 
 
-            Calendar_RecViewAdap adapter = new Calendar_RecViewAdap(mContext, mDates, mWeekDays, mDOY);
+            CalendarRecyclerAdapter adapter = new CalendarRecyclerAdapter(mContext, mDates, mWeekDays, mDOY);
             recyclerView.setAdapter(adapter);
             final LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext);
             recyclerView.setLayoutManager(mLayoutManager);
 
 
-            Calendar cal_today = Calendar.getInstance();
-            recyclerView.scrollToPosition(cal_today.get(Calendar.DAY_OF_YEAR) - 3);
+            recyclerView.scrollToPosition(cal_today.get(Calendar.DAY_OF_YEAR) - 1);
 
 
             // Manages scrolling, finds view relative to screen

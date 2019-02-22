@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="2dp"
-    android:background="#555">
+    android:background="@color/colorBackgroundPrimaryDark">
 
 
     <TextView
@@ -20,7 +20,7 @@
         android:includeFontPadding="false"
         android:lineSpacingExtra="0dp"
         android:text="@string/dummy_date"
-        android:textColor="#f00"
+        android:textColor="#eee"
         android:textSize="30sp"
         app:fontFamily="@font/roboto_thin"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -67,6 +67,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="8dp"
         android:contentDescription="TODO"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

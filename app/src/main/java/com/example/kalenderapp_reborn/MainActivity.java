@@ -5,6 +5,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.example.kalenderapp_reborn.supportclasses.DrawerNavigationClass;
@@ -18,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Views
     private ActionBarDrawerToggle mToggleButton;
+    DrawerLayout mDrawerLayout;
+    NavigationView mNavView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,11 +30,15 @@ public class MainActivity extends AppCompatActivity {
         setupDrawerNav();
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mDrawerLayout.closeDrawer(Gravity.START);
+    }
 
     public void setupDrawerNav() {
-        DrawerLayout mDrawerLayout = findViewById(R.id.drawerLayout_nav);
-        NavigationView mNavView = findViewById(R.id.drawer_nav_view);
+        mDrawerLayout = findViewById(R.id.drawerLayout_nav);
+        mNavView = findViewById(R.id.drawer_nav_view);
         mToggleButton = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawerToggleOpen, R.string.drawerToggleClose);
         mDrawerLayout.addDrawerListener(mToggleButton);
         mToggleButton.syncState();
@@ -39,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
         DrawerNavigationClass addnavigation = new DrawerNavigationClass(MainActivity.this, this);
         addnavigation.setupDrawerClickable(mNavView);
-
     }
 
     @Override

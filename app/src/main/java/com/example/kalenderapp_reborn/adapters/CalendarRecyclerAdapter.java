@@ -1,7 +1,8 @@
-package com.example.kalenderapp_reborn.fragments;
+package com.example.kalenderapp_reborn.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
@@ -13,15 +14,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.kalenderapp_reborn.EventAddActivity;
 import com.example.kalenderapp_reborn.R;
 import com.example.kalenderapp_reborn.interfaces.RecyclerViewClickListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class Calendar_RecViewAdap extends RecyclerView.Adapter<Calendar_RecViewAdap.ViewHolder> {
+public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecyclerAdapter.ViewHolder> {
 
-    private static final String TAG = "RecyclerViewAdapter";
+    private static final String TAG = "CalendarRecyclerAdapter";
 
 
     // Dates
@@ -38,7 +40,7 @@ public class Calendar_RecViewAdap extends RecyclerView.Adapter<Calendar_RecViewA
     private static RecyclerViewClickListener itemListener;
 
 
-    public Calendar_RecViewAdap(Context context, ArrayList<Integer> dates, ArrayList<Integer> weekdays, ArrayList<Integer> doy) {
+    public CalendarRecyclerAdapter(Context context, ArrayList<Integer> dates, ArrayList<Integer> weekdays, ArrayList<Integer> doy) {
         // Construct for external data
         this.mContext = context;
         mDates = dates;
@@ -61,8 +63,13 @@ public class Calendar_RecViewAdap extends RecyclerView.Adapter<Calendar_RecViewA
 
         // Match True for layout 1, false for 2
 
-        if (position == (cal_today.get(Calendar.DAY_OF_YEAR)) - 1) return 1;
-        else return 2;
+        if (position == (cal_today.get(Calendar.DAY_OF_YEAR)) - 1){
+            return 1;
+        } else if(position < (cal_today.get(Calendar.DAY_OF_YEAR)) - 1) {
+            return 2;
+        } else {
+            return 3;
+        }
     }
 
     @NonNull
@@ -72,11 +79,14 @@ public class Calendar_RecViewAdap extends RecyclerView.Adapter<Calendar_RecViewA
         // Bind layout to manager
         if (i == 1) {
             // Concluded true, special layout
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_recviewadap_spec1, viewGroup, false);
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_recviewadap_atdate, viewGroup, false);
+            return new ViewHolder(view);
+        } else if(i == 2) {
+            // Concluded false, basic layout
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_recviewadap_beforedate, viewGroup, false);
             return new ViewHolder(view);
         } else {
-            // Concluded false, basic layout
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_recviewadap_basic, viewGroup, false);
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_recviewadap_afterdate, viewGroup, false);
             return new ViewHolder(view);
         }
 
@@ -98,16 +108,26 @@ public class Calendar_RecViewAdap extends RecyclerView.Adapter<Calendar_RecViewA
         }
         viewHolder.dateView.setText(datetext);
         viewHolder.weekdayView.setText(weekDays[mWeekDays.get(i) - 1]);
-        //viewHolder.plansView.setText(mContext.getResources().getString(R.string.dummy_text));
+        viewHolder.plansView.setText(mContext.getResources().getString(R.string.dummy_text));
 
-
-        //viewHolder.weekdayView.setText(cal_flexible.get(Calendar.MONDAY) + "");
-        viewHolder.plansView.setText(cal_flexible.get(Calendar.WEEK_OF_YEAR) + "");
 
 
         String[] stringArrayMonths;
         stringArrayMonths = mContext.getResources().getStringArray(R.array.months);
         final String aWeakString = "" + cal_flexible.get(Calendar.DAY_OF_MONTH) + ". " + stringArrayMonths[cal_flexible.get(Calendar.MONTH)] + " " + cal_flexible.get(Calendar.YEAR);
+        String dateForAddEvent;
+        if(cal_flexible.get(Calendar.DAY_OF_MONTH) < 10){
+            dateForAddEvent = "0" + cal_flexible.get(Calendar.DAY_OF_MONTH) + "-";
+        } else {
+            dateForAddEvent = "" + cal_flexible.get(Calendar.DAY_OF_MONTH) + "-";
+        }
+        if((cal_flexible.get(Calendar.MONTH)+1) < 10){
+            dateForAddEvent += "0";
+        }
+        dateForAddEvent += (cal_flexible.get(Calendar.MONTH)+1);
+
+        dateForAddEvent += "-" + cal_flexible.get(Calendar.YEAR);
+        final String finalDateForAddEvent = dateForAddEvent;
 
         viewHolder.addImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +139,9 @@ public class Calendar_RecViewAdap extends RecyclerView.Adapter<Calendar_RecViewA
                         Log.d(TAG, "addNewEntry onClick: Agree entry");
                         // User wants to make entry
                         // Start new entry AddEvent Acitivity
+                        Intent i = new Intent(mContext, EventAddActivity.class);
+                        i.putExtra("DATE_FROM_MAINACT", finalDateForAddEvent);
+                        mContext.startActivity(i);
                     }
                 });
                 builder.setNegativeButton(R.string.dialogAddEntryCalendar_RecViewAdap_decline, new DialogInterface.OnClickListener() {
