@@ -78,5 +78,5 @@
         app:layout_constraintBottom_toBottomOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView2"
-        app:srcCompat="@drawable/ic_delete_gray_24dp" />
+        android:src="@drawable/ic_delete_gray_24dp" />
 </android.support.constraint.ConstraintLayout>

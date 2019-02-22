@@ -70,6 +70,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_add_circle_outline_gray_36dp" />
+        android:src="@drawable/ic_add_circle_outline_gray_36dp" />
 
 </android.support.constraint.ConstraintLayout>
