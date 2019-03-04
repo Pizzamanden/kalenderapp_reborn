@@ -82,8 +82,10 @@
     <string name="WORD_week">Week</string>
 
 
-    <string name="activity_title_addevent">Add Event</string>
-    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_addevent1">Add Event</string>
+    <string name="title_activity_addevent2">Edit Event</string>
+    <string name="title_activity_viewevent">View Events</string>
+    <string name="title_activity_settings">Settings</string>
 
     <string name="dialogAddEntryCalendar_RecViewAdap_title">New Entry</string>
     <string name="dialogAddEntryCalendar_RecViewAdap_message">Make a new entry from this date?</string>
@@ -112,6 +114,20 @@
     <string name="addevent_setalarmlabel">Set alarm</string>
     <string name="addevent_alarmdateplaceholder">Alarm date</string>
     <string name="addevent_alarmtimeplaceholder">Alarm time</string>
+
+
+    // AddEvent validtaion
+    <string name="addevent_val_spinErrToast">You must select a type</string>
+    <string name="addevent_val_nameTooShort">Choose a name for the event</string>
+    <string name="addevent_val_startDateNotSet">Please set a start date</string>
+    <string name="addevent_val_startTimeNotSet">Please set a start time</string>
+    <string name="addevent_val_endDateNotSet">Please set a end date</string>
+    <string name="addevent_val_endTimeNotSet">Please set a end time</string>
+    <string name="addevent_val_alarmDateNotSet">Please set a alarm date</string>
+    <string name="addevent_val_alarmTimeNotSet">Please set a alarm time</string>
+
+
+
     <string name="title_activity_login">Sign in</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

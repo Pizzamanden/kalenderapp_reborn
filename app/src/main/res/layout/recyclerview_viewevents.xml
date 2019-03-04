@@ -13,7 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="end"
-        app:constraint_referenced_ids="textView_labelstart, textView_labelend, textView_labelalarm" />
+        app:constraint_referenced_ids="textView_labelstart, textView_labelend, textView_labelalarm"
+        tools:layout_editor_absoluteX="65dp" />
 
     <TextView
         android:id="@+id/textView_title"
@@ -81,7 +82,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="32dp"
         android:text="Alarm:"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/barrier_end"
@@ -89,7 +90,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView_labelend" />
 
     <TextView
-        android:id="@+id/textView_statusalarm"
+        android:id="@+id/textView_alarmstatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -98,16 +99,6 @@
         android:text="Yes,"
         app:layout_constraintStart_toEndOf="@+id/barrier_end"
         app:layout_constraintTop_toBottomOf="@+id/textView_timeend" />
-
-    <TextView
-        android:id="@+id/textView_timealarm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:text="2 hours, 16 minutes before"
-        app:layout_constraintStart_toEndOf="@+id/textView_statusalarm"
-        app:layout_constraintTop_toTopOf="@+id/textView_statusalarm" />
 
     <ImageView
         android:id="@+id/imageView_edit"

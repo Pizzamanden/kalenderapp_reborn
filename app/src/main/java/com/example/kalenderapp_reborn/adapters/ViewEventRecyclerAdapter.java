@@ -1,6 +1,7 @@
 package com.example.kalenderapp_reborn.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.kalenderapp_reborn.EventAddActivity;
 import com.example.kalenderapp_reborn.R;
 
 import org.json.JSONArray;
@@ -29,7 +31,7 @@ public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecy
     private ArrayList<String> eventAlarmTime;
     private ArrayList<Integer> eventId;
 
-    public ViewEventRecyclerAdapter(Context context, ArrayList<String> titles, ArrayList<String> timeends, ArrayList<String> timestarts, ArrayList<Integer> ids, ArrayList<Boolean> alarmstatus, ArrayList<String> alarmtime){
+    public ViewEventRecyclerAdapter(Context context, ArrayList<String> titles, ArrayList<String> timestarts, ArrayList<String> timeends, ArrayList<Integer> ids, ArrayList<Boolean> alarmstatus, ArrayList<String> alarmtime){
         mContext = context;
         eventTitle = titles;
         eventStart = timestarts;
@@ -47,21 +49,23 @@ public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecy
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
         viewHolder.textView_title.setText(eventTitle.get(i));
         viewHolder.textView_timestart.setText(eventStart.get(i));
         viewHolder.textView_timeend.setText(eventEnd.get(i));
         if(eventAlarmStatus.get(i)){
-            viewHolder.textView_statusalarm.setText("Yes, ");
-            viewHolder.textView_timealarm.setText(eventAlarmTime.get(i));
+            viewHolder.textView_alarmstatus.setText(eventAlarmTime.get(i));
         } else {
-            viewHolder.textView_statusalarm.setText("No");
-            viewHolder.textView_timealarm.setText("");
+            viewHolder.textView_alarmstatus.setText("No");
         }
         viewHolder.imageView_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: Edit " + eventId.get(viewHolder.getAdapterPosition()));
+
+                Intent i = new Intent(mContext, EventAddActivity.class);
+                i.putExtra("EDIT_CALENDAR_ENTRY", eventId.get(viewHolder.getAdapterPosition()));
+                mContext.startActivity(i);
             }
         });
         viewHolder.imageView_delete.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +87,7 @@ public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecy
         // Declare views
         ConstraintLayout constraintLayout_parent;
         ImageView imageView_edit, imageView_delete;
-        TextView textView_title, textView_timestart, textView_timeend, textView_statusalarm, textView_timealarm;
+        TextView textView_title, textView_timestart, textView_timeend, textView_alarmstatus, textView_timealarm;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -92,7 +96,7 @@ public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecy
             textView_title = itemView.findViewById(R.id.textView_title);
             textView_timestart = itemView.findViewById(R.id.textView_timestart);
             textView_timeend = itemView.findViewById(R.id.textView_timeend);
-            textView_statusalarm = itemView.findViewById(R.id.textView_statusalarm);
+            textView_alarmstatus = itemView.findViewById(R.id.textView_alarmstatus);
             textView_timealarm = itemView.findViewById(R.id.textView_timealarm);
             imageView_edit = itemView.findViewById(R.id.imageView_edit);
             imageView_delete = itemView.findViewById(R.id.imageView_delete);

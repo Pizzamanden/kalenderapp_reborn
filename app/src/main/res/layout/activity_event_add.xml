@@ -119,8 +119,9 @@
                     android:layout_marginTop="@dimen/addEvent_block_topMargin"
                     android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
-                    android:textColor="@color/colorTextPrimaryDark"
                     android:hint="@string/addevent_startplaceholder_date"
+                    android:inputType="date"
+                    android:textColor="@color/colorTextPrimaryDark"
                     app:layout_constraintEnd_toStartOf="@+id/editText_start_timefield"
                     app:layout_constraintStart_toEndOf="@+id/barrier_end"
                     app:layout_constraintTop_toBottomOf="@+id/divider_1" />
@@ -129,15 +130,15 @@
                     android:id="@+id/editText_start_timefield"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
                     android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
                     android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
-                    android:textColor="@color/colorTextPrimaryDark"
                     android:hint="@string/addevent_startplaceholder_time"
+                    android:inputType="time"
+                    android:textColor="@color/colorTextPrimaryDark"
+                    app:layout_constraintBottom_toBottomOf="@+id/editText_start_datefield"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/editText_start_datefield"
-                    app:layout_constraintTop_toTopOf="@+id/editText_start_datefield"
-                    app:layout_constraintBottom_toBottomOf="@+id/editText_start_datefield"/>
+                    app:layout_constraintTop_toTopOf="@+id/editText_start_datefield" />
 
                 <View
                     android:id="@+id/divider_2"
@@ -171,8 +172,9 @@
                     android:layout_marginTop="@dimen/addEvent_block_topMargin"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:textColor="@color/colorTextPrimaryDark"
                     android:hint="@string/addevent_endplaceholder_date"
+                    android:inputType="date"
+                    android:textColor="@color/colorTextPrimaryDark"
                     app:layout_constraintEnd_toStartOf="@+id/editText_end_timefield"
                     app:layout_constraintStart_toEndOf="@+id/barrier_end"
                     app:layout_constraintTop_toBottomOf="@+id/divider_2" />
@@ -181,15 +183,15 @@
                     android:id="@+id/editText_end_timefield"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
                     android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
                     android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
-                    android:textColor="@color/colorTextPrimaryDark"
                     android:hint="@string/addevent_endplaceholder_time"
+                    android:inputType="time"
+                    android:textColor="@color/colorTextPrimaryDark"
+                    app:layout_constraintBottom_toBottomOf="@+id/editText_end_datefield"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/editText_end_datefield"
-                    app:layout_constraintTop_toTopOf="@+id/editText_end_datefield"
-                    app:layout_constraintBottom_toBottomOf="@+id/editText_end_datefield"/>
+                    app:layout_constraintTop_toTopOf="@+id/editText_end_datefield" />
 
                 <View
                     android:id="@+id/divider_3"
@@ -283,7 +285,7 @@
                     android:layout_marginBottom="@dimen/addEvent_block_botMargin"
                     android:ems="10"
                     android:hint="@string/addevent_alarmdateplaceholder"
-                    android:inputType="time"
+                    android:inputType="date"
                     android:textColor="@color/colorTextPrimaryDark"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/editText_alarmtime"

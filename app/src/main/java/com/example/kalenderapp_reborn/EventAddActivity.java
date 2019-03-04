@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,15 +38,12 @@ import okhttp3.Response;
 
 public class EventAddActivity extends AppCompatActivity {
 
-
     private static final String TAG = "EventAddActivity";
 
     EditText editText_name, editText_start_datefield, editText_start_timefield, editText_end_datefield, editText_end_timefield, editText_alarmdate, editText_alarmtime;
     Switch switchAlarmEnable;
     private int spinner_index = 0;
     private boolean switch_state = false;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +68,17 @@ public class EventAddActivity extends AppCompatActivity {
         if(getIntent().getStringExtra("DATE_FROM_MAINACT") != null){
             editText_start_datefield.setText(getIntent().getStringExtra("DATE_FROM_MAINACT"));
         }
+        if(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0) != 0){
+            setTitle(getResources().getString(R.string.title_activity_addevent2));
+            setAddEntryView(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0));
+        } else {
+            setTitle(getResources().getString(R.string.title_activity_addevent1));
+        }
 
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.drawable.ic_close_gray_24dp);
-
 
         // Setup dialogs, edittext, date or time (1 or 2)
         initDialogFields(editText_start_datefield, 1);
@@ -271,9 +274,9 @@ public class EventAddActivity extends AppCompatActivity {
                                           int minute) {
                         String savedDate;
                         if(hourOfDay < 10){
-                            savedDate = " 0" + hourOfDay + ":";
+                            savedDate = "0" + hourOfDay + ":";
                         } else {
-                            savedDate = " " + hourOfDay + ":";
+                            savedDate = hourOfDay + ":";
                         }
                         if(minute < 10){
                             savedDate += "0" + minute;
@@ -284,41 +287,82 @@ public class EventAddActivity extends AppCompatActivity {
                     }
                 }, hour, minute, true);
         timePickerDialog.show();
-
-
-
     }
 
     public void buttonConfirm(View view){
-        // UI changes and delays for showing butter smooth animations,
-        final Handler handler = new Handler();
-        hideKeyboard(this);
+        // Validate users input
+        if(inputValidation()) {
+            // UI changes and delays for showing butter smooth animations,
+            final Handler handler = new Handler();
+            hideKeyboard(this);
 
-        // Hide current views with small delay
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                findViewById(R.id.scrollview_contentroot).setVisibility(View.GONE);
-                findViewById(R.id.toolbar_1).setVisibility(View.GONE);
+            // Hide current views with small delay
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    findViewById(R.id.scrollview_contentroot).setVisibility(View.GONE);
+                    findViewById(R.id.toolbar_1).setVisibility(View.GONE);
+                }
+            }, 400);
+
+            // Show loading animation, medium delay in total for facade of doing stuff with data
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                }
+            }, 1800);
+
+            // After large delay, actual information starts to get processed
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    httpPOSTdata();
+                }
+            }, 2600);
+        }
+    }
+
+    private boolean inputValidation(){
+        if(editText_name.getText().length() <= 0){
+            return createErrToast(getResources().getString(R.string.addevent_val_nameTooShort));
+        }
+        if(editText_start_datefield.getText().length() != 10){
+            return createErrToast(getResources().getString(R.string.addevent_val_startDateNotSet));
+        }
+        if(editText_start_timefield.getText().length() != 5){
+            return createErrToast(getResources().getString(R.string.addevent_val_startTimeNotSet));
+        }
+        if(editText_end_datefield.getText().length() != 10){
+            return createErrToast(getResources().getString(R.string.addevent_val_endDateNotSet));
+        }
+        if(editText_end_timefield.getText().length() != 5){
+            return createErrToast(getResources().getString(R.string.addevent_val_endTimeNotSet));
+        }
+        if(spinner_index == 0){
+            return createErrToast(getResources().getString(R.string.addevent_val_spinErrToast));
+        }
+        if(switch_state) {
+            if (editText_alarmdate.getText().length() != 10) {
+                return createErrToast(getResources().getString(R.string.addevent_val_alarmDateNotSet));
             }
-        }, 400);
-
-        // Show loading animation, medium delay in total for facade of doing stuff with data
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+            if (editText_alarmtime.getText().length() != 5) {
+                return createErrToast(getResources().getString(R.string.addevent_val_alarmTimeNotSet));
             }
-        }, 1800);
+        }
+        return true;
+    }
 
-        // After large delay, actual information starts to get processed
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                httpPOSTdata();
-            }
-        }, 2600);
+    private boolean createErrToast(String toastText){
+        Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
+        return false;
+    }
 
+    private void setAddEntryView(int id){
+        Log.d(TAG, "setAddEntryView: Setting fields");
+        // TODO set views with text from already made entries
+        // This is the edit an entry part, with CRD done, i only need U ;)
+        Log.d(TAG, "setAddEntryView: " + id);
     }
 
     public static void hideKeyboard(Activity activity) {
