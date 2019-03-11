@@ -90,7 +90,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView_labelend" />
 
     <TextView
-        android:id="@+id/textView_alarmstatus"
+        android:id="@+id/textView_alarmtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -104,9 +104,8 @@
         android:id="@+id/imageView_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="8dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:src="@drawable/ic_edit_gray_24dp"
         app:layout_constraintEnd_toStartOf="@+id/imageView_delete"
         app:layout_constraintTop_toBottomOf="@+id/textView_title" />
@@ -115,6 +114,7 @@
         android:id="@+id/imageView_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"

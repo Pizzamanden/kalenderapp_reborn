@@ -2,10 +2,13 @@ package com.example.kalenderapp_reborn;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.example.kalenderapp_reborn.adapters.ViewEventRecyclerAdapter;
 
@@ -130,38 +133,39 @@ public class EventViewActivity extends AppCompatActivity {
         Log.d(TAG, "initRecyclerView: " + jsonString);
 
         ArrayList<String> eventNames = new ArrayList<>();
-        ArrayList<String> eventStart = new ArrayList<>();
-        ArrayList<String> eventEnd = new ArrayList<>();
+        ArrayList<String> eventStartString = new ArrayList<>();
+        ArrayList<String> eventEndString = new ArrayList<>();
         ArrayList<Boolean> eventAlarmStatus = new ArrayList<>();
-        ArrayList<String> eventAlarmTime = new ArrayList<>();
+        ArrayList<String> eventAlarmTimeString = new ArrayList<>();
         ArrayList<Integer> eventIds = new ArrayList<>();
 
         // Setup arraylists for recyclerview
         try {
             JSONArray mJSONArray = new JSONArray(jsonString);
             for(int i = 0;i<mJSONArray.length(); i++){
+
+                // Add json fields to arrays for recyclerview
                 JSONObject json = mJSONArray.getJSONObject(i);
                 eventNames.add(json.getString("event_name"));
-                eventStart.add(datetimeToString(json.getInt("event_start")));
-                eventEnd.add(datetimeToString(json.getInt("event_end")));
+                eventStartString.add(datetimeToString(json.getInt("event_start")));
+                eventEndString.add(datetimeToString(json.getInt("event_end")));
                 eventAlarmStatus.add(json.getBoolean("event_alarmenable"));
-                Log.d(TAG, "initRecyclerView: " + json.getBoolean("event_alarmenable"));
                 if(json.getBoolean("event_alarmenable")){
-                    eventAlarmTime.add(datetimeToAlarmString(json.getInt("event_start"), json.getInt("event_alarmtime")));
+                    eventAlarmTimeString.add(datetimeToAlarmString(json.getInt("event_start"), json.getInt("event_alarmtime")));
                 } else {
-                    eventAlarmTime.add("No");
+                    eventAlarmTimeString.add("No");
                 }
-
                 eventIds.add(json.getInt("post_id"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         RecyclerView recyclerView = findViewById(R.id.recyclerview_viewEvents);
-        ViewEventRecyclerAdapter adapter = new ViewEventRecyclerAdapter(mContext, eventNames, eventStart, eventEnd, eventIds, eventAlarmStatus, eventAlarmTime);
+        ViewEventRecyclerAdapter adapter = new ViewEventRecyclerAdapter(mContext, eventNames, eventStartString, eventEndString, eventIds, eventAlarmStatus, eventAlarmTimeString);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext);
         recyclerView.setLayoutManager(mLayoutManager);
+        isReady();
     }
 
     // Method job: Create a stitched date-string to put into views, using only an epoch-time(int/long)
@@ -204,10 +208,125 @@ public class EventViewActivity extends AppCompatActivity {
         return dateString;
     }
 
+    public void makeDeleteHTTP(final int id){
+            // UI changes and delays for showing butter smooth animations,
+            final Handler handler = new Handler();
+
+            // Hide current views with small delay
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    findViewById(R.id.recyclerview_viewEvents).setVisibility(View.GONE);
+                }
+            }, 400);
+
+            // Show loading animation, medium delay in total for facade of doing stuff with data
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                }
+            }, 1800);
+
+            // After large delay, actual information starts to get processed
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    postDeleteRequest(id);
+                }
+            }, 2600);
+    }
+
+    public void postDeleteRequest(int id){
+        final Handler handler = new Handler();
+        Log.d(TAG, "postDeleteRequest: " + id);
+        String postedRequest = "deleteevent";
+        String userToken = "f213412ui1g2";
+        int userId = 2;
+
+        String requestJSON = "{" +
+                "\"userId\":" +
+                userId +
+                ",\"request\":\"" +
+                postedRequest +
+                "\",\"arg\":" +
+                id +
+                ", \"userToken\":\"" +
+                userToken +
+                "\"}";
+        Log.d(TAG, "postDeleteRequest: " + requestJSON);
+        OkHttpClient client = new OkHttpClient();
+        Log.d(TAG, "postDeleteRequest: making client");
+        String url = "http://www.folderol.dk/";
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("retrieveJSON", requestJSON)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+        Log.d(TAG, "postDeleteRequest: making call");
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d(TAG, "onFailure: Failure");
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d(TAG, "postDeleteRequest: Response code " + response.code());
+                if (response.code() == 200) {
+                    final String myResponse = response.body().string();
+                    Log.d(TAG, "onResponse: " + myResponse);
+                    Log.d(TAG, "postDeleteRequest: 200");
+                    EventViewActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                            //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
+                            findViewById(R.id.successPanel).setVisibility(View.VISIBLE);
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getDataJSON();
+                                    findViewById(R.id.successPanel).setVisibility(View.GONE);
+                                    findViewById(R.id.recyclerview_viewEvents).setVisibility(View.GONE);
+                                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                                }
+                            }, 3000);
+                        }
+                    });
+                } else {
+                    EventViewActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                            //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
+                            findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getDataJSON();
+                                    findViewById(R.id.failurePanel).setVisibility(View.GONE);
+                                    findViewById(R.id.recyclerview_viewEvents).setVisibility(View.GONE);
+                                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                                }
+                            }, 3000);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     // Method job: Creates a string to visualize a epoch long in a readable format
     // Requires: Joda-Time
     // Accepts: 2 longs, as an epoch-number, either in seconds or milliseconds.
-    // Notes: the seconds long should be LESS than the first (alarms trigger before events)
+    // Notes: the second long should be LESS than the first (alarms trigger before events)
     public String datetimeToAlarmString(long epochTimeStart, long epochTimeAlarm){
         Log.d(TAG, "datetimeToAlarmString: " + epochTimeStart);
         Log.d(TAG, "datetimeToAlarmString: " + epochTimeAlarm);
@@ -276,5 +395,12 @@ public class EventViewActivity extends AppCompatActivity {
         }
         returnString += " before";
         return returnString;
+    }
+
+    public void isReady(){
+        RecyclerView recV = findViewById(R.id.recyclerview_viewEvents);
+        RelativeLayout relL = findViewById(R.id.loadingPanel);
+        recV.setVisibility(View.VISIBLE);
+        relL.setVisibility(View.GONE);
     }
 }

@@ -22,6 +22,7 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,6 +40,8 @@ import okhttp3.Response;
 public class EventAddActivity extends AppCompatActivity {
 
     private static final String TAG = "EventAddActivity";
+
+    private String postType;
 
     EditText editText_name, editText_start_datefield, editText_start_timefield, editText_end_datefield, editText_end_timefield, editText_alarmdate, editText_alarmtime;
     Switch switchAlarmEnable;
@@ -65,16 +68,6 @@ public class EventAddActivity extends AppCompatActivity {
         switchAlarmEnable = findViewById(R.id.switch_alarmenable);
         Toolbar toolbar = findViewById(R.id.toolbar_1);
 
-        if(getIntent().getStringExtra("DATE_FROM_MAINACT") != null){
-            editText_start_datefield.setText(getIntent().getStringExtra("DATE_FROM_MAINACT"));
-        }
-        if(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0) != 0){
-            setTitle(getResources().getString(R.string.title_activity_addevent2));
-            setAddEntryView(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0));
-        } else {
-            setTitle(getResources().getString(R.string.title_activity_addevent1));
-        }
-
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -87,8 +80,21 @@ public class EventAddActivity extends AppCompatActivity {
         initDialogFields(editText_end_timefield, 2);
         initDialogFields(editText_alarmdate, 1);
         initDialogFields(editText_alarmtime, 2);
+
         initSwitch();
         initSpinner();
+
+        if(getIntent().getStringExtra("DATE_FROM_MAINACT") != null){
+            editText_start_datefield.setText(getIntent().getStringExtra("DATE_FROM_MAINACT"));
+        }
+        if(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0) != 0){
+            setTitle(getResources().getString(R.string.title_activity_addevent2));
+            setAddEntryView(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0));
+        } else {
+            setTitle(getResources().getString(R.string.title_activity_addevent1));
+            Log.d(TAG, "onCreate: switch state set");
+            switchStateSync(false);
+        }
     }
 
     private void initDialogFields(final EditText v, final int type){
@@ -134,27 +140,40 @@ public class EventAddActivity extends AppCompatActivity {
     }
 
     private void initSwitch(){
-        switchAlarmEnable.setChecked(false);
         switchAlarmEnable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                switch_state = isChecked;
-                editText_alarmdate.setFocusable(isChecked);
-                editText_alarmtime.setFocusable(isChecked);
-                editText_alarmdate.setEnabled(isChecked);
-                editText_alarmtime.setEnabled(isChecked);
+                switchStateSync(isChecked);
+                Log.d(TAG, "onCheckedChanged: listener fired, state: " + isChecked);
             }
         });
+        Log.d(TAG, "initSwitch: listener setup complete");
+    }
+
+    private void switchStateSync(boolean switchState){
+        switch_state = switchState;
+        if(switchAlarmEnable.isChecked() != switchState){
+            switchAlarmEnable.setChecked(switchState);
+        }
+        editText_alarmdate.setFocusable(switchState);
+        editText_alarmtime.setFocusable(switchState);
+        editText_alarmdate.setEnabled(switchState);
+        editText_alarmtime.setEnabled(switchState);
     }
 
     private void httpPOSTdata(){
         final Handler handler = new Handler();
         Log.d(TAG, "httpPOSTdata: fired");
         String mToken = "1fb52hb2j3hk623kj2v";
+        int thisuserId = 2;
         // TODO fix datefields
+        // TODO find out what the above todo means
         String postFormdataJSON = "{" +
-                "\"userId\":2," +
-                "\"eventName\":\"" +
+                "\"userId\":" +
+                thisuserId +
+                ",\"request\":\"" +
+                "insert" +
+                "\",\"eventName\":\"" +
                 editText_name.getText().toString() +
                 "\",\"eventStart\":\"" +
                 editText_start_datefield.getText().toString() + " " + editText_start_timefield.getText().toString() +
@@ -169,20 +188,11 @@ public class EventAddActivity extends AppCompatActivity {
                 "\",\"tokenId\":\"" +
                 mToken + "\"}";
 
-        JSONObject jsonObject;
-        try {
-            jsonObject = new JSONObject(postFormdataJSON);
-            String name = jsonObject.getString("eventName");
-            Log.d(TAG, "httpPOSTdata: " + name);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
 
 
         OkHttpClient client = new OkHttpClient();
-        Log.d(TAG, "httpPOSTdata: making client");
         String url = "http://www.folderol.dk/";
-
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("postJSON", postFormdataJSON)
@@ -199,12 +209,11 @@ public class EventAddActivity extends AppCompatActivity {
                 Log.d(TAG, "onFailure: Failure");
                 e.printStackTrace();
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Log.d(TAG, "httpPOSTdata: Response code " + response.code());
+                final String myResponse = response.body().string();
                 if (response.code() == 200) {
-                    final String myResponse = response.body().string();
                     Log.d(TAG, "onResponse: " + myResponse);
                     Log.d(TAG, "httpPOSTdata: 200");
                     EventAddActivity.this.runOnUiThread(new Runnable() {
@@ -213,6 +222,21 @@ public class EventAddActivity extends AppCompatActivity {
                             findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                             //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
                             findViewById(R.id.successPanel).setVisibility(View.VISIBLE);
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finish();
+                                }
+                            }, 3000);
+                        }
+                    });
+                } else {
+                    EventAddActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                            //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
+                            findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -359,10 +383,80 @@ public class EventAddActivity extends AppCompatActivity {
     }
 
     private void setAddEntryView(int id){
-        Log.d(TAG, "setAddEntryView: Setting fields");
-        // TODO set views with text from already made entries
-        // This is the edit an entry part, with CRD done, i only need U ;)
-        Log.d(TAG, "setAddEntryView: " + id);
+        String postedRequest = "editevent";
+        String userToken = "f213412ui1g2";
+        int userId = 2;
+
+        String requestJSON = "{" +
+                "\"userId\":" +
+                userId +
+                ",\"request\":\"" +
+                postedRequest +
+                "\",\"arg\":" +
+                id +
+                ", \"userToken\":\"" +
+                userToken +
+                "\"}";
+        Log.d(TAG, "setAddEntryView: " + requestJSON);
+        OkHttpClient client = new OkHttpClient();
+        Log.d(TAG, "setAddEntryView: making client");
+        String url = "http://www.folderol.dk/";
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("retrieveJSON", requestJSON)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+        Log.d(TAG, "setAddEntryView: making call");
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d(TAG, "onFailure: Failure");
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d(TAG, "setAddEntryView: Response code " + response.code());
+                if (response.code() == 200) {
+                    final String myResponse = response.body().string();
+                    Log.d(TAG, "onResponse: " + myResponse);
+                    Log.d(TAG, "setAddEntryView: 200");
+                    EventAddActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setupViewData(myResponse);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public void setupViewData(String jsonString){
+        try {
+            JSONArray mJSONArray = new JSONArray(jsonString);
+            for(int i = 0;i<mJSONArray.length(); i++){
+                // Add json fields to edit text views
+                JSONObject json = mJSONArray.getJSONObject(i);
+                editText_name.setText(json.getString("event_name"));
+                editText_start_datefield.setText(json.getString("event_startDate"));
+                editText_start_timefield.setText(json.getString("event_startTime"));
+                editText_end_datefield.setText(json.getString("event_endDate"));
+                editText_end_timefield.setText(json.getString("event_endTime"));
+                editText_alarmdate.setText(json.getString("event_alarmDate"));
+                editText_alarmtime.setText(json.getString("event_alarmTime"));
+                Log.d(TAG, "setupViewData: adding switch state");
+                switchStateSync(json.getBoolean("event_alarmenable"));
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void hideKeyboard(Activity activity) {

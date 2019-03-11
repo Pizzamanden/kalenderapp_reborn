@@ -116,7 +116,7 @@
     <string name="addevent_alarmtimeplaceholder">Alarm time</string>
 
 
-    // AddEvent validtaion
+    <!-- AddEvent validtaion -->
     <string name="addevent_val_spinErrToast">You must select a type</string>
     <string name="addevent_val_nameTooShort">Choose a name for the event</string>
     <string name="addevent_val_startDateNotSet">Please set a start date</string>
@@ -127,6 +127,11 @@
     <string name="addevent_val_alarmTimeNotSet">Please set a alarm time</string>
 
 
+    <!-- AddEvent validtaion -->
+    <string name="viewevent_delete_title">Delete Entry</string>
+    <string name="viewevent_delete_desc">Are you sure you want to delete this entry?</string>
+    <string name="viewevent_delete_positive">Yes</string>
+    <string name="viewevent_delete_negative">No</string>
 
     <string name="title_activity_login">Sign in</string>
     <!-- Strings related to login -->
