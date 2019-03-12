@@ -101,13 +101,13 @@ public class EventAddActivity extends AppCompatActivity {
         v.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
+                Log.d(TAG, "onFocusChange: got focus");
                 if (hasFocus) {
                     if(type == 2){
                         setTime(v);
                     } else {
                         setDate(v);
                     }
-                    v.clearFocus();
                 }
             }
         });
@@ -157,8 +157,11 @@ public class EventAddActivity extends AppCompatActivity {
         }
         editText_alarmdate.setFocusable(switchState);
         editText_alarmtime.setFocusable(switchState);
+        editText_alarmdate.setFocusableInTouchMode(switchState);
+        editText_alarmtime.setFocusableInTouchMode(switchState);
         editText_alarmdate.setEnabled(switchState);
         editText_alarmtime.setEnabled(switchState);
+
     }
 
     private void httpPOSTdata(){
@@ -282,6 +285,7 @@ public class EventAddActivity extends AppCompatActivity {
                     }
                 }, year, month, day);
         datePickerDialog.show();
+        v.clearFocus();
     }
 
     private void setTime(final EditText v){
@@ -311,6 +315,7 @@ public class EventAddActivity extends AppCompatActivity {
                     }
                 }, hour, minute, true);
         timePickerDialog.show();
+        v.clearFocus();
     }
 
     public void buttonConfirm(View view){

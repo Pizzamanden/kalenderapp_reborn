@@ -6,6 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".EventViewActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_1"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        app:contentInsetEnd="@dimen/material_content_keyline"
+        app:contentInsetStart="@dimen/material_content_keyline"
+        app:navigationContentDescription="@string/abc_action_bar_up_description"
+        android:background="@color/colorPrimary"
+        android:visibility="gone"
+        app:titleTextColor="#eee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+    </android.support.v7.widget.Toolbar>
+
     <android.support.v7.widget.RecyclerView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -14,7 +29,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar_1" />
 
     <RelativeLayout
         android:id="@+id/loadingPanel"

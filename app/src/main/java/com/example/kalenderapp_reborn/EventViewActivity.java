@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -55,8 +56,9 @@ public class EventViewActivity extends AppCompatActivity {
 
         stringArrayMonths = getResources().getStringArray(R.array.monthss);
         stringArrayWeekDays = getResources().getStringArray(R.array.weekDaysS);
+        Toolbar toolbar = findViewById(R.id.toolbar_1);
 
-
+        setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -64,6 +66,10 @@ public class EventViewActivity extends AppCompatActivity {
 
         getDataJSON();
     }
+
+
+
+
 
     public void getDataJSON(){
 
@@ -119,11 +125,18 @@ public class EventViewActivity extends AppCompatActivity {
         });
     }
 
+
+
+
+
     @Override
     public boolean onSupportNavigateUp(){
         finish();
         return true;
     }
+
+
+
 
     // Method job: Creates and inits recyclerview
     // Uses: datetimeToString
@@ -168,6 +181,10 @@ public class EventViewActivity extends AppCompatActivity {
         isReady();
     }
 
+
+
+
+
     // Method job: Create a stitched date-string to put into views, using only an epoch-time(int/long)
     // Accepts: Takes an int that should function as an unix epoch time unit, either milliseconds or just seconds
     public String datetimeToString(long epochTime){
@@ -208,6 +225,9 @@ public class EventViewActivity extends AppCompatActivity {
         return dateString;
     }
 
+
+
+
     public void makeDeleteHTTP(final int id){
             // UI changes and delays for showing butter smooth animations,
             final Handler handler = new Handler();
@@ -217,6 +237,7 @@ public class EventViewActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     findViewById(R.id.recyclerview_viewEvents).setVisibility(View.GONE);
+                    findViewById(R.id.toolbar_1).setVisibility(View.GONE);
                 }
             }, 400);
 
@@ -236,6 +257,10 @@ public class EventViewActivity extends AppCompatActivity {
                 }
             }, 2600);
     }
+
+
+
+
 
     public void postDeleteRequest(int id){
         final Handler handler = new Handler();
@@ -292,10 +317,12 @@ public class EventViewActivity extends AppCompatActivity {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    getDataJSON();
+                                    finish();
+                                    /*getDataJSON();
                                     findViewById(R.id.successPanel).setVisibility(View.GONE);
                                     findViewById(R.id.recyclerview_viewEvents).setVisibility(View.GONE);
-                                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                                    findViewById(R.id.toolbar_1).setVisibility(View.GONE);
+                                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);*/
                                 }
                             }, 3000);
                         }
@@ -310,10 +337,12 @@ public class EventViewActivity extends AppCompatActivity {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    getDataJSON();
+                                    finish();
+                                    /*getDataJSON();
                                     findViewById(R.id.failurePanel).setVisibility(View.GONE);
+                                    findViewById(R.id.toolbar_1).setVisibility(View.GONE);
                                     findViewById(R.id.recyclerview_viewEvents).setVisibility(View.GONE);
-                                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);*/
                                 }
                             }, 3000);
                         }
@@ -322,6 +351,10 @@ public class EventViewActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
+
 
     // Method job: Creates a string to visualize a epoch long in a readable format
     // Requires: Joda-Time
@@ -397,9 +430,15 @@ public class EventViewActivity extends AppCompatActivity {
         return returnString;
     }
 
+
+
+
+
     public void isReady(){
         RecyclerView recV = findViewById(R.id.recyclerview_viewEvents);
         RelativeLayout relL = findViewById(R.id.loadingPanel);
+        Toolbar toolbar = findViewById(R.id.toolbar_1);
+        toolbar.setVisibility(View.VISIBLE);
         recV.setVisibility(View.VISIBLE);
         relL.setVisibility(View.GONE);
     }

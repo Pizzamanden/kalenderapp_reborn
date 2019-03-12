@@ -2,7 +2,6 @@ package com.example.kalenderapp_reborn.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
@@ -14,60 +13,43 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.kalenderapp_reborn.EventAddActivity;
+import com.example.kalenderapp_reborn.EventViewActivity;
 import com.example.kalenderapp_reborn.R;
-import com.example.kalenderapp_reborn.interfaces.RecyclerViewClickListener;
 
-import java.util.ArrayList;
-import java.util.Calendar;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
+
+import static java.security.AccessController.getContext;
 
 public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecyclerAdapter.ViewHolder> {
 
     private static final String TAG = "CalendarRecyclerAdapter";
 
+    private DateTime dateTime;
+    private DateTime dateTimeToday = new DateTime();
 
-    // Dates
-    private Calendar cal_flexible = Calendar.getInstance();
-    private Calendar cal_today = Calendar.getInstance();
+    public CalendarRecyclerAdapter() {
+        // Construct
 
-
-    private Context mContext;
-    private ArrayList<Integer> mDates;
-    private ArrayList<Integer> mWeekDays;
-    private ArrayList<Integer> mDOY;
-    private String[] weekDays;
-
-    private static RecyclerViewClickListener itemListener;
-
-
-    public CalendarRecyclerAdapter(Context context, ArrayList<Integer> dates, ArrayList<Integer> weekdays, ArrayList<Integer> doy) {
-        // Construct for external data
-        this.mContext = context;
-        mDates = dates;
-        mWeekDays = weekdays;
-        mDOY = doy;
-        weekDays = mContext.getResources().getStringArray(R.array.weekDaysS);
-        itemListener = itemListener;
-
-        cal_flexible.setFirstDayOfWeek(Calendar.MONDAY);
-        cal_today.setFirstDayOfWeek(Calendar.MONDAY);
-        cal_flexible.setMinimalDaysInFirstWeek(4);
-        cal_today.setMinimalDaysInFirstWeek(4);
-        cal_today.set(cal_today.get(Calendar.YEAR), cal_today.get(Calendar.MONTH), cal_today.get(Calendar.DAY_OF_MONTH));
-        cal_flexible.set(cal_flexible.get(Calendar.YEAR), cal_flexible.get(Calendar.MONTH), cal_flexible.get(Calendar.DAY_OF_MONTH));
+        // The datetime start, used to output and make logic on
+        dateTime = new DateTime(946684800);
     }
 
 
     @Override
     public int getItemViewType(int position) {
-
-        // Match True for layout 1, false for 2
-
-        if (position == (cal_today.get(Calendar.DAY_OF_YEAR)) - 1){
+        // 1 = Today
+        // 2 = Past
+        // 3 = Future
+        // TODO have set year to year 2000 (needs testing/confirmation) and below dosen't work
+        if (dateTime.plusDays(position).getDayOfYear() == dateTimeToday.getDayOfYear() && dateTime.plusDays(position).getYear() == dateTimeToday.getYear()){
+            // Today
             return 1;
-        } else if(position < (cal_today.get(Calendar.DAY_OF_YEAR)) - 1) {
+        } else if(position < dateTimeToday.getDayOfYear()) {
+            // Days already passed
             return 2;
         } else {
+            // Days to pass in the future
             return 3;
         }
     }
@@ -78,18 +60,22 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
 
         // Bind layout to manager
         if (i == 1) {
-            // Concluded true, special layout
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_recviewadap_atdate, viewGroup, false);
+            // is 1, layout for today
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_today, viewGroup, false);
             return new ViewHolder(view);
         } else if(i == 2) {
-            // Concluded false, basic layout
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_recviewadap_beforedate, viewGroup, false);
+            // is 2, layout for days before today
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_beforedate, viewGroup, false);
+            return new ViewHolder(view);
+        } else if(i == 3){
+            // is 3, layout for days after today
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_afterdate, viewGroup, false);
             return new ViewHolder(view);
         } else {
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_recviewadap_afterdate, viewGroup, false);
+            // Basic layout (in this case its the future layout)
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_afterdate, viewGroup, false);
             return new ViewHolder(view);
         }
-
     }
 
     @Override
@@ -97,83 +83,22 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
         Log.d(TAG, "onBindViewHolder: called");
 
         // Bind data to layout
-
-        cal_flexible.set(Calendar.DAY_OF_YEAR, i + 1);
-
-        String datetext;
-        if(mDates.get(i) < 10){
-            datetext = "0" + mDates.get(i);
-        } else {
-            datetext = mDates.get(i) + "";
-        }
-        viewHolder.dateView.setText(datetext);
-        viewHolder.weekdayView.setText(weekDays[mWeekDays.get(i) - 1]);
-        viewHolder.plansView.setText(mContext.getResources().getString(R.string.dummy_text));
-
-
-
-        String[] stringArrayMonths;
-        stringArrayMonths = mContext.getResources().getStringArray(R.array.months);
-        final String aWeakString = "" + cal_flexible.get(Calendar.DAY_OF_MONTH) + ". " + stringArrayMonths[cal_flexible.get(Calendar.MONTH)] + " " + cal_flexible.get(Calendar.YEAR);
-        String dateForAddEvent;
-        if(cal_flexible.get(Calendar.DAY_OF_MONTH) < 10){
-            dateForAddEvent = "0" + cal_flexible.get(Calendar.DAY_OF_MONTH) + "-";
-        } else {
-            dateForAddEvent = "" + cal_flexible.get(Calendar.DAY_OF_MONTH) + "-";
-        }
-        if((cal_flexible.get(Calendar.MONTH)+1) < 10){
-            dateForAddEvent += "0";
-        }
-        dateForAddEvent += (cal_flexible.get(Calendar.MONTH)+1);
-
-        dateForAddEvent += "-" + cal_flexible.get(Calendar.YEAR);
-        final String finalDateForAddEvent = dateForAddEvent;
-
-        viewHolder.addImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Setup dialog for making new calendar entry
-                final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setPositiveButton(R.string.dialogAddEntryCalendar_RecViewAdap_agree, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Log.d(TAG, "addNewEntry onClick: Agree entry");
-                        // User wants to make entry
-                        // Start new entry AddEvent Acitivity
-                        Intent i = new Intent(mContext, EventAddActivity.class);
-                        i.putExtra("DATE_FROM_MAINACT", finalDateForAddEvent);
-                        mContext.startActivity(i);
-                    }
-                });
-                builder.setNegativeButton(R.string.dialogAddEntryCalendar_RecViewAdap_decline, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Log.d(TAG, "addNewEntry onClick: Cancel entry");
-                        // User cancels
-                    }
-                });
-                builder.setMessage(R.string.dialogAddEntryCalendar_RecViewAdap_message)
-                        .setTitle(aWeakString);
-                final AlertDialog dialog = builder.create();
-
-                dialog.show();
-            }
-        });
+        viewHolder.dateView.setText("" + dateTime.plusDays(i).getDayOfMonth());
+        viewHolder.weekdayView.setText("" + dateTime.plusDays(i).getDayOfYear());
+        viewHolder.plansView.setText("" + dateTime.plusDays(i).getYear());
     }
 
     @Override
     public int getItemCount() {
-
-        // Return amount of layouts to bind
         // mArrayList.size();
-        return mDates.size();
+        return 56000;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         // Declare views
         ConstraintLayout parent_layout;
-        TextView dateView;
-        TextView weekdayView;
-        TextView plansView;
+        TextView dateView, weekdayView, plansView;
         ImageView addImage;
 
         public ViewHolder(@NonNull View itemView) {
@@ -190,7 +115,30 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
 
         @Override
         public void onClick(View v) {
-            itemListener.recyclerViewListClicked(v, this.getLayoutPosition());
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setPositiveButton(R.string.dialogAddEntryCalendar_RecViewAdap_agree, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Log.d(TAG, "onClick onClick: Accept");
+                    // User Accepts
+                    if(getContext() instanceof EventViewActivity){
+                        // TODO implement intent for adding date to AddEvent
+                        //((EventViewActivity) getContext()).makeDeleteHTTP(eventId.get(getAdapterPosition()));
+                    }
+                }
+            });
+            builder.setNegativeButton(R.string.dialogAddEntryCalendar_RecViewAdap_decline, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Log.d(TAG, "onClick onClick: Cancel");
+                    // User Cancels
+                }
+            });
+            builder.setMessage(R.string.dialogAddEntryCalendar_RecViewAdap_message)
+                    .setTitle(R.string.dialogAddEntryCalendar_RecViewAdap_title);
+            final AlertDialog dialog = builder.create();
+
+            dialog.show();
         }
+
+        public Context getContext() {return itemView.getContext();}
     }
 }
