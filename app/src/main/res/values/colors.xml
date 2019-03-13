@@ -24,6 +24,8 @@
     <color name="colorTextHighlightDark">#f00</color>
     <color name="colorImageButtonWhiteDark">#eee</color>
 
-
+    <!-- Universal -->
+    <color name="successGreen">#2AB131</color>
+    <color name="failureRed">#EB0A0A</color>
 
 </resources>

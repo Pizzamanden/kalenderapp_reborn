@@ -5,7 +5,7 @@ import android.arch.persistence.room.RoomDatabase;
 
 import com.example.kalenderapp_reborn.interfaces.DaoCalendarEntries;
 
-@Database(entities = {CalendarEntries.class}, version = 2)
+@Database(entities = {CalendarEntries.class}, version = 2, exportSchema = false)
 public abstract class DatabaseCalendarEntries extends RoomDatabase {
     public abstract DaoCalendarEntries daoCalendarEntries();
 }

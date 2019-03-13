@@ -46,4 +46,5 @@ dependencies {
 
     // Google Auth
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    implementation 'android.arch.navigation:navigation-fragment:1.0.0-rc02'
 }

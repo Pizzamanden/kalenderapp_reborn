@@ -14,10 +14,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.kalenderapp_reborn.EventViewActivity;
+import com.example.kalenderapp_reborn.MainActivity;
 import com.example.kalenderapp_reborn.R;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.Days;
 
 import static java.security.AccessController.getContext;
 
@@ -25,14 +27,20 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
 
     private static final String TAG = "CalendarRecyclerAdapter";
 
-    private DateTime dateTime;
-    private DateTime dateTimeToday = new DateTime();
+    private DateTime mDateTimeCalStart, mDateTimeCalEnd, mDateTimeToday;
+    private String[] stringArrayWeekDays;
+    private Context mContext;
 
-    public CalendarRecyclerAdapter() {
+    public CalendarRecyclerAdapter(Context context, DateTime dateTimeStart, DateTime dateTimeEnd, DateTime dateTimeToday) {
         // Construct
-
+        mContext = context;
         // The datetime start, used to output and make logic on
-        dateTime = new DateTime(946684800);
+        mDateTimeCalStart = dateTimeStart;
+        mDateTimeCalEnd = dateTimeEnd;
+        mDateTimeToday = dateTimeToday;
+
+        stringArrayWeekDays = mContext.getResources().getStringArray(R.array.weekDaysS);
+
     }
 
 
@@ -42,13 +50,16 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
         // 2 = Past
         // 3 = Future
         // TODO have set year to year 2000 (needs testing/confirmation) and below dosen't work
-        if (dateTime.plusDays(position).getDayOfYear() == dateTimeToday.getDayOfYear() && dateTime.plusDays(position).getYear() == dateTimeToday.getYear()){
+        if (mDateTimeCalStart.plusDays(position).getDayOfYear() == mDateTimeToday.getDayOfYear() && mDateTimeCalStart.plusDays(position).getYear() == mDateTimeToday.getYear()){
+            //Log.d(TAG, "getItemViewType: (Today) It is this year, and this Day of Year");
             // Today
             return 1;
-        } else if(position < dateTimeToday.getDayOfYear()) {
+        } else if(mDateTimeCalStart.plusDays(position).getYear() < mDateTimeToday.getYear() || (mDateTimeCalStart.plusDays(position).getDayOfYear() < mDateTimeToday.getDayOfYear() && mDateTimeCalStart.plusDays(position).getYear() == mDateTimeToday.getYear())) {
+            //Log.d(TAG, "getItemViewType: (Past) It is before this year, or it is this year, but before this Day of Year");
             // Days already passed
             return 2;
         } else {
+            //Log.d(TAG, "getItemViewType: (Future) It is after this year, or it is this year, but after this Day of Year");
             // Days to pass in the future
             return 3;
         }
@@ -80,18 +91,21 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        Log.d(TAG, "onBindViewHolder: called");
+        //Log.d(TAG, "onBindViewHolder: called");
 
         // Bind data to layout
-        viewHolder.dateView.setText("" + dateTime.plusDays(i).getDayOfMonth());
-        viewHolder.weekdayView.setText("" + dateTime.plusDays(i).getDayOfYear());
-        viewHolder.plansView.setText("" + dateTime.plusDays(i).getYear());
+        if(mDateTimeCalStart.plusDays(i).getDayOfMonth() < 10) {
+            viewHolder.dateView.setText(String.valueOf("0" + mDateTimeCalStart.plusDays(i).getDayOfMonth()));
+        } else {
+            viewHolder.dateView.setText(String.valueOf(mDateTimeCalStart.plusDays(i).getDayOfMonth()));
+        }
+        viewHolder.weekdayView.setText(stringArrayWeekDays[mDateTimeCalStart.plusDays(i).getDayOfWeek()]);
+        viewHolder.plansView.setText(String.valueOf(mDateTimeCalStart.plusDays(i).getWeekOfWeekyear() + " - " + i));
     }
 
     @Override
     public int getItemCount() {
-        // mArrayList.size();
-        return 56000;
+        return Days.daysBetween(mDateTimeCalStart, mDateTimeCalEnd).getDays();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

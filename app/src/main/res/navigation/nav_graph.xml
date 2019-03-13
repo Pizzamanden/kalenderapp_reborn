@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainActivity">
+
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.example.kalenderapp_reborn.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" >
+        <action
+            android:id="@+id/mainActivity_to_eventAddActivity"
+            app:destination="@id/eventAddActivity" />
+        <action
+            android:id="@+id/mainActivity_to_eventViewActivity"
+            app:destination="@id/eventViewActivity" />
+
+    </activity>
+    <activity
+        android:id="@+id/eventAddActivity"
+        android:name="com.example.kalenderapp_reborn.EventAddActivity"
+        android:label="activity_event_add"
+        tools:layout="@layout/activity_event_add">
+        <action
+            android:id="@+id/eventAddActivity_to_mainActivity"
+            app:destination="@id/mainActivity" />
+
+    </activity>
+    <activity
+        android:id="@+id/eventViewActivity"
+        android:name="com.example.kalenderapp_reborn.EventViewActivity"
+        android:label="activity_event_view"
+        tools:layout="@layout/activity_event_view" >
+        <action
+            android:id="@+id/eventViewActivity_to_eventAddActivity"
+            app:destination="@id/eventAddActivity" />
+
+    </activity>
+</navigation>

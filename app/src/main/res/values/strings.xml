@@ -9,6 +9,7 @@
         <item>Thursday</item>
         <item>Friday</item>
         <item>Saturday</item>
+        <item>Sunday</item>
     </string-array>
 
     <string-array name="weekDaysS">
@@ -29,6 +30,7 @@
         <item>W</item>
         <item>T</item>
         <item>F</item>
+        <item>S</item>
         <item>S</item>
     </string-array>
 

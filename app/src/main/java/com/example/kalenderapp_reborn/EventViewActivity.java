@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -61,7 +62,6 @@ public class EventViewActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
 
         getDataJSON();
@@ -179,50 +179,6 @@ public class EventViewActivity extends AppCompatActivity {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext);
         recyclerView.setLayoutManager(mLayoutManager);
         isReady();
-    }
-
-
-
-
-
-    // Method job: Create a stitched date-string to put into views, using only an epoch-time(int/long)
-    // Accepts: Takes an int that should function as an unix epoch time unit, either milliseconds or just seconds
-    public String datetimeToString(long epochTime){
-        Calendar calToday = Calendar.getInstance();
-        Calendar calendar = Calendar.getInstance();
-        Date mDate;
-        int length = String.valueOf(epochTime).length();
-        if(length < 12){
-            mDate = new Date(epochTime * 1000);
-        } else {
-            mDate = new Date(epochTime);
-        }
-        calendar.setTime(mDate);
-        String dateString = "";
-        // Week day as 3 letters
-        dateString += stringArrayWeekDays[calendar.get(Calendar.DAY_OF_WEEK) - 1] + " ";
-        // Day of the month
-        if(calendar.get(Calendar.DAY_OF_MONTH)<10){
-            dateString += "0";
-        }
-        dateString += calendar.get(Calendar.DAY_OF_MONTH);
-        // Month as 3 letters
-        dateString += ". " + stringArrayMonths[calendar.get(Calendar.MONTH)] + ", ";
-        // Time as HH/MM
-        // Hours
-        if(calendar.get(Calendar.HOUR)<10){
-            dateString += "0";
-        }
-        dateString += calendar.get(Calendar.HOUR) + ":";
-        // Minutes
-        if(calendar.get(Calendar.MINUTE)<10){
-            dateString += "0";
-        }
-        dateString += calendar.get(Calendar.MINUTE);
-        if(calendar.get(Calendar.YEAR) != calToday.get(Calendar.YEAR)){
-            dateString += " - " + calendar.get(Calendar.YEAR);
-        }
-        return dateString;
     }
 
 
@@ -353,6 +309,49 @@ public class EventViewActivity extends AppCompatActivity {
     }
 
 
+
+    // Method job: Create a stitched date-string to put into views, using only an epoch-time(int/long)
+    // Accepts: Takes an int that should function as an unix epoch time unit, either milliseconds or just seconds
+    public String datetimeToString(long epochTime){
+        Log.d(TAG, "datetimeToString: " + epochTime);
+
+        int epochOffset = TimeZone.getDefault().getOffset(epochTime);
+        Log.d(TAG, "datetimeToString: " + epochOffset);
+        DateTime mDate;
+        int length = String.valueOf(epochTime).length();
+        if(length < 12){
+            mDate = new DateTime((epochTime * 1000) + epochOffset);
+        } else {
+            mDate = new DateTime(epochTime + epochOffset);
+        }
+        Log.d(TAG, "datetimeToString: " + mDate);
+        String dateString = "";
+        // Week day as 3 letters
+        dateString += stringArrayWeekDays[mDate.getDayOfWeek()] + " ";
+        // Day of the month
+        if(mDate.getDayOfMonth()<10){
+            dateString += "0";
+        }
+        dateString += mDate.getDayOfMonth();
+
+        // Month as 3 letters
+        dateString += ". " + stringArrayMonths[mDate.getMonthOfYear() - 1] + ", ";
+        // Time as HH/MM
+        // Hours
+        if(mDate.getHourOfDay()<10){
+            dateString += "0";
+        }
+        dateString += mDate.getHourOfDay() + ".";
+        // Minutes
+        if(mDate.getMinuteOfHour()<10){
+            dateString += "0";
+        }
+        dateString += mDate.getMinuteOfHour();
+        if(mDate.getYear() != new DateTime().getYear()){
+            dateString += " - " + mDate.getYear();
+        }
+        return dateString;
+    }
 
 
 

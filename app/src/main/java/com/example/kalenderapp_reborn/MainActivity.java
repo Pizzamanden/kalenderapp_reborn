@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +20,25 @@ import com.example.kalenderapp_reborn.adapters.CalendarRecyclerAdapter;
 import com.example.kalenderapp_reborn.adapters.ViewEventRecyclerAdapter;
 import com.example.kalenderapp_reborn.supportclasses.DrawerNavigationClass;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
+import org.joda.time.Minutes;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Objects;
+import java.util.TimeZone;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,8 +51,10 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView mNavView;
     private RecyclerView recyclerView;
     private Toolbar toolbar;
-    private ConstraintLayout contentroot;
-    private RelativeLayout loadingpanel;
+    private ConstraintLayout contentRoot;
+    private RelativeLayout loadingPanel;
+
+    private String timezoneDiffMilli;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,8 +66,10 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         mDrawerLayout = findViewById(R.id.drawerLayout_nav);
         mNavView = findViewById(R.id.drawer_nav_view);
-        contentroot = findViewById(R.id.content_root);
-        loadingpanel = findViewById(R.id.loadingPanel);
+        contentRoot = findViewById(R.id.content_root);
+        loadingPanel = findViewById(R.id.loadingPanel);
+
+        timezoneDiffMilli = TimeZone.getDefault().getID();
 
         setupDrawerNav();
     }
@@ -55,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume()
     {
         super.onResume();
+        Log.d(TAG, "onResume: Resumed");
         mDrawerLayout.closeDrawer(Gravity.START);
     }
 
@@ -72,19 +96,95 @@ public class MainActivity extends AppCompatActivity {
 
 
         isLoading();
-        // get data, when data is here, init recview
-        initRecyclerView();
+        // get data, init recyclerview, set status to ready
+        getEventJSON();
     }
 
-    private void initRecyclerView()
+    private void getEventJSON(){
+        String postedRequest = "getallevents";
+        int userId = 2;
+        String userToken = "f213412ui1g2";
+
+        String requestJSON = "{" +
+                "\"userId\":" +
+                userId +
+                ",\"request\":\"" +
+                postedRequest +
+                "\", \"userToken\":\"" +
+                userToken +
+                "\"}";
+
+        OkHttpClient client = new OkHttpClient();
+        Log.d(TAG, "getEventJSON: making client");
+        String url = "http://www.folderol.dk/";
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("retrieveJSON", requestJSON)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+        Log.d(TAG, "getEventJSON: making call");
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d(TAG, "onFailure: Failure");
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d(TAG, "getEventJSON: Response code " + response.code());
+                if (response.code() == 200) {
+                    final String myResponse = response.body().string();
+                    Log.d(TAG, "onResponse: " + myResponse);
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initRecyclerView(myResponse);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void initRecyclerView(String jsonString)
     {
-        CalendarRecyclerAdapter adapter = new CalendarRecyclerAdapter();
+        // A datetime of the current moment, timezone is within
+        DateTime dateTimeToday = new DateTime();
+
+        // Dummy long, used in start-date and is the datetime of 2000-01-01T00:00:00
+        long calEndYear = dateTimeToday.plusYears(5).getMillis();
+        long calStartYear = dateTimeToday.minusYears(1).getMillis();
+
+        // This datetime is where the calendar is supposed to start
+        // Math done on this is always position as added days, or compared vs dateTimeToday
+        DateTime dateTimeCalStart = new DateTime(calStartYear);
+        DateTime dateTimeCalEnd = new DateTime(calEndYear);
+
+
+        Log.d(TAG, "initRecyclerView: " + timezoneDiffMilli);
+
+
+        CalendarRecyclerAdapter adapter = new CalendarRecyclerAdapter(this, dateTimeCalStart, dateTimeCalEnd, dateTimeToday);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
+
+
+        // Days between start and today as days, can be used as a position within layout manager
+        int daysBetween = Days.daysBetween(dateTimeCalStart, dateTimeToday).getDays();
+        // Scroll to current day
+        mLayoutManager.scrollToPosition(daysBetween);
+        Log.d(TAG, "initRecyclerView: Scrolled");
+
+        // Declare ready to show content
         isReady();
     }
-
 
 
 
@@ -103,16 +203,20 @@ public class MainActivity extends AppCompatActivity {
 
     public void isLoading()
     {
-        loadingpanel.setVisibility(View.VISIBLE);
+        // Hides content, and shows placeholders/loading icons
+        loadingPanel.setVisibility(View.VISIBLE);
         toolbar.setVisibility(View.GONE);
-        contentroot.setVisibility(View.GONE);
+        contentRoot.setVisibility(View.GONE);
+        Log.d(TAG, "isLoading: Loadstatus");
     }
 
     public void isReady()
     {
-        loadingpanel.setVisibility(View.GONE);
+        // Shows content, and hides placeholders/loading icons
+        loadingPanel.setVisibility(View.GONE);
         toolbar.setVisibility(View.VISIBLE);
-        contentroot.setVisibility(View.VISIBLE);
+        contentRoot.setVisibility(View.VISIBLE);
+        Log.d(TAG, "isReady: Loadstatus");
     }
 
 }
