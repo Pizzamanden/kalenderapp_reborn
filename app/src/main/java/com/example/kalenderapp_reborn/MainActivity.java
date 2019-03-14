@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.TimeZone;
 
@@ -156,28 +157,64 @@ public class MainActivity extends AppCompatActivity {
     {
         // A datetime of the current moment, timezone is within
         DateTime dateTimeToday = new DateTime();
-
         // Dummy long, used in start-date and is the datetime of 2000-01-01T00:00:00
         long calEndYear = dateTimeToday.plusYears(5).getMillis();
         long calStartYear = dateTimeToday.minusYears(1).getMillis();
-
         // This datetime is where the calendar is supposed to start
         // Math done on this is always position as added days, or compared vs dateTimeToday
         DateTime dateTimeCalStart = new DateTime(calStartYear);
         DateTime dateTimeCalEnd = new DateTime(calEndYear);
+        // Days between start and today as days, can be used as a position within layout manager
+        int daysBetween = Days.daysBetween(dateTimeCalStart, dateTimeToday).getDays();
+
+
+        ArrayList<String> eventNames = new ArrayList<>();
+        ArrayList<Integer> eventIndex = new ArrayList<>();
+        ArrayList<String> eventTime = new ArrayList<>();
+        ArrayList<Integer> eventType = new ArrayList<>();
+        ArrayList<Integer> eventID = new ArrayList<>();
+
+        // Setup arraylists for recyclerview
+        try {
+            JSONArray mJSONArray = new JSONArray(jsonString);
+            for(int i = 0;i<mJSONArray.length(); i++){
+                // Add json fields to arrays for recyclerview
+                JSONObject json = mJSONArray.getJSONObject(i);
+
+                // For loop in for loop, because
+                for(int typeInsert = 0; typeInsert < 2; typeInsert++){
+                    eventNames.add(json.getString("event_name"));
+                    String toGet;
+                    if(typeInsert < 1){
+                        toGet = "event_start";
+                    } else {
+                        toGet = "event_end";
+                    }
+                    Log.d(TAG, "initRecyclerView: " + json.getString("event_name"));
+                    long jsonEpoch = json.getInt(toGet);
+                    DateTime jsonDate = new DateTime(jsonEpoch * 1000);
+                    eventIndex.add(Days.daysBetween(dateTimeCalStart, jsonDate).getDays() + 1);
+                    eventTime.add(String.valueOf(jsonDate.getMinuteOfDay()));
+                    eventType.add(typeInsert);
+                    eventID.add(json.getInt("post_id"));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
 
         Log.d(TAG, "initRecyclerView: " + timezoneDiffMilli);
 
 
-        CalendarRecyclerAdapter adapter = new CalendarRecyclerAdapter(this, dateTimeCalStart, dateTimeCalEnd, dateTimeToday);
+        CalendarRecyclerAdapter adapter = new CalendarRecyclerAdapter(this, dateTimeCalStart, dateTimeCalEnd, dateTimeToday, eventNames, eventIndex, eventTime, eventType, eventID);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
 
 
-        // Days between start and today as days, can be used as a position within layout manager
-        int daysBetween = Days.daysBetween(dateTimeCalStart, dateTimeToday).getDays();
+
         // Scroll to current day
         mLayoutManager.scrollToPosition(daysBetween);
         Log.d(TAG, "initRecyclerView: Scrolled");

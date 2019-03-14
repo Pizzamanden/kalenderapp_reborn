@@ -32,6 +32,7 @@ android:id="@+id/drawerLayout_nav">
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_home_gray_24dp"
                 />
+
         </android.support.v7.widget.Toolbar>
 
         <android.support.constraint.ConstraintLayout

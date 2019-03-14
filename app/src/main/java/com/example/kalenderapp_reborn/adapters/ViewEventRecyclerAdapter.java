@@ -22,6 +22,8 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import static java.security.AccessController.getContext;
+
 public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecyclerAdapter.ViewHolder> {
 
     final static private String TAG = "ViewEventRecycler";
@@ -122,11 +124,13 @@ public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecy
                     final AlertDialog dialog = builder.create();
 
                     dialog.show();
+
                     break;
                 default:
 
                     break;
             }
         }
+
     }
 }
