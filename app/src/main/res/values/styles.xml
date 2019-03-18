@@ -59,5 +59,22 @@
         android:background="@color/colorBackgroundPrimaryDark"
     </style>
 
+    <style name="calendar_eventBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="calendar_eventName" parent="calendar_eventBox">
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">0dp</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="calendar_eventTime" parent="calendar_eventBox">
+
+
+    </style>
+
 
 </resources>

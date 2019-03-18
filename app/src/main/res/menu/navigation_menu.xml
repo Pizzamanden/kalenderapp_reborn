@@ -15,8 +15,7 @@
     <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings_black_24dp"
-        android:title="@string/drawermenu_settings">
-    </item>
+        android:title="@string/dummy_for_test"></item>
 
     <item
         android:id="@+id/nav_exit"

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import com.example.kalenderapp_reborn.EventAddActivity;
 import com.example.kalenderapp_reborn.EventViewActivity;
+import com.example.kalenderapp_reborn.LoginActivity;
 import com.example.kalenderapp_reborn.R;
 
 public class DrawerNavigationClass {
@@ -34,7 +35,6 @@ public class DrawerNavigationClass {
         builder.setPositiveButton(mContext.getString(R.string.DL_ok), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Log.d(TAG, "onNavigationItemSelected onClick: Agree Exit");
-
                 // User wants to exit
                 shutdownApp();
             }
@@ -42,9 +42,7 @@ public class DrawerNavigationClass {
         builder.setNegativeButton(mContext.getString(R.string.DL_cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Log.d(TAG, "onNavigationItemSelected onClick: Cancel Exit");
-
-                // User cancels exit, just do nothing?
-                // TODO
+                // User cancels exit, do nothing
             }
         });
         builder.setMessage(mContext.getString(R.string.DL_exit_MSG))
@@ -65,7 +63,8 @@ public class DrawerNavigationClass {
                     mContext.startActivity(i);
                 } else if (id == R.id.nav_settings) {
                     Log.d(TAG, "onNavigationItemSelected: sett nav_event");
-
+                    Intent i = new Intent(mContext, LoginActivity.class);
+                    mContext.startActivity(i);
                     // TODO make setting activity
                 } else if (id == R.id.nav_exit) {
                     Log.d(TAG, "onNavigationItemSelected: exit nav_event");

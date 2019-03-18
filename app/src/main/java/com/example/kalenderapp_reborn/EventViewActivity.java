@@ -68,9 +68,6 @@ public class EventViewActivity extends AppCompatActivity {
     }
 
 
-
-
-
     public void getDataJSON(){
 
         String postedRequest = "getevents";
@@ -126,16 +123,11 @@ public class EventViewActivity extends AppCompatActivity {
     }
 
 
-
-
-
     @Override
     public boolean onSupportNavigateUp(){
         finish();
         return true;
     }
-
-
 
 
     // Method job: Creates and inits recyclerview
@@ -182,8 +174,6 @@ public class EventViewActivity extends AppCompatActivity {
     }
 
 
-
-
     public void makeDeleteHTTP(final int id){
             // UI changes and delays for showing butter smooth animations,
             final Handler handler = new Handler();
@@ -213,9 +203,6 @@ public class EventViewActivity extends AppCompatActivity {
                 }
             }, 2600);
     }
-
-
-
 
 
     public void postDeleteRequest(int id){
@@ -309,7 +296,6 @@ public class EventViewActivity extends AppCompatActivity {
     }
 
 
-
     // Method job: Create a stitched date-string to put into views, using only an epoch-time(int/long)
     // Accepts: Takes an int that should function as an unix epoch time unit, either milliseconds or just seconds
     public String datetimeToString(long epochTime){
@@ -325,34 +311,32 @@ public class EventViewActivity extends AppCompatActivity {
             mDate = new DateTime(epochTime + epochOffset);
         }
         Log.d(TAG, "datetimeToString: " + mDate);
-        String dateString = "";
+
+        // Start building string
+        String dateString;
+
         // Week day as 3 letters
-        dateString += stringArrayWeekDays[mDate.getDayOfWeek()] + " ";
+        dateString = stringArrayWeekDays[mDate.getDayOfWeek()] + " ";
+
         // Day of the month
-        if(mDate.getDayOfMonth()<10){
-            dateString += "0";
-        }
-        dateString += mDate.getDayOfMonth();
+        dateString += timeToTwoNum(mDate.getDayOfMonth());
 
         // Month as 3 letters
         dateString += ". " + stringArrayMonths[mDate.getMonthOfYear() - 1] + ", ";
-        // Time as HH/MM
+
+        // Time as HH.MM
         // Hours
-        if(mDate.getHourOfDay()<10){
-            dateString += "0";
-        }
-        dateString += mDate.getHourOfDay() + ".";
+        dateString += timeToTwoNum(mDate.getHourOfDay()) + ".";
         // Minutes
-        if(mDate.getMinuteOfHour()<10){
-            dateString += "0";
-        }
-        dateString += mDate.getMinuteOfHour();
+        dateString += timeToTwoNum(mDate.getMinuteOfHour());
+
+        // If it isnt this current year, also add what year its for
         if(mDate.getYear() != new DateTime().getYear()){
             dateString += " - " + mDate.getYear();
         }
+        // Return built string
         return dateString;
     }
-
 
 
     // Method job: Creates a string to visualize a epoch long in a readable format
@@ -360,8 +344,6 @@ public class EventViewActivity extends AppCompatActivity {
     // Accepts: 2 longs, as an epoch-number, either in seconds or milliseconds.
     // Notes: the second long should be LESS than the first (alarms trigger before events)
     public String datetimeToAlarmString(long epochTimeStart, long epochTimeAlarm){
-        Log.d(TAG, "datetimeToAlarmString: " + epochTimeStart);
-        Log.d(TAG, "datetimeToAlarmString: " + epochTimeAlarm);
         int length = String.valueOf(epochTimeStart).length();
         DateTime eventStart;
         DateTime eventAlarm;
@@ -375,22 +357,11 @@ public class EventViewActivity extends AppCompatActivity {
         LocalDateTime localStart = eventStart.toLocalDateTime();
         LocalDateTime localalarm = eventAlarm.toLocalDateTime();
 
-
-
-
         int minBefore = Minutes.minutesBetween(localalarm, localStart).getMinutes();
-        Log.d(TAG, "datetimeToAlarmString: " + minBefore);
         int hoursTotal = minBefore / 60;
         int hoursRest = minBefore % 60;
         int daysTotal = (minBefore / 60) / 24;
         int daysRest = (minBefore / 60) % 24;
-        Log.d(TAG, "datetimeToAlarmString: " + hoursTotal);
-        Log.d(TAG, "datetimeToAlarmString: " + hoursRest);
-        Log.d(TAG, "datetimeToAlarmString: " + daysTotal);
-        Log.d(TAG, "datetimeToAlarmString: " + daysRest);
-        Log.d(TAG, "datetimeToAlarmString: ");
-
-
 
         String returnString = "";
         if(daysTotal > 0){
@@ -430,7 +401,13 @@ public class EventViewActivity extends AppCompatActivity {
     }
 
 
-
+    public String timeToTwoNum(int timeToFormat){
+        if(timeToFormat < 10){
+            return "0" + timeToFormat;
+        } else {
+            return "" + timeToFormat;
+        }
+    }
 
 
     public void isReady(){

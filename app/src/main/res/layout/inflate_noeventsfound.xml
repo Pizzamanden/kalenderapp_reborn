@@ -15,13 +15,7 @@
         android:lineSpacingExtra="0dp"
         android:text="@string/dummy_text"
         android:textSize="15sp"
-        app:fontFamily="@font/roboto_thin"/>
-
-    <TextView
-        android:id="@+id/textView_planTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:fontFamily="@font/roboto_thin"
-        android:text="19.05" />
+        android:textColor="@color/colorTextWeakDark"
+        app:fontFamily="@font/roboto_thin" />
 
 </LinearLayout>

@@ -58,34 +58,8 @@
         app:layout_constraintStart_toEndOf="@+id/textView_weekday"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/linearLayout_scheduleBox"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView_planName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:includeFontPadding="false"
-                android:lineSpacingExtra="0dp"
-                android:text="@string/dummy_text"
-                android:textSize="15sp"
-                app:fontFamily="@font/roboto_thin"
-                app:layout_constraintBottom_toBottomOf="@+id/textView_date"
-                app:layout_constraintStart_toEndOf="@+id/textView_weekday" />
-
-            <TextView
-                android:id="@+id/textView_planTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="19.05" />
-        </LinearLayout>
-
         <TextView
-            android:id="@+id/textView_planName_none"
+            android:id="@+id/textView_planFallBack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
@@ -93,9 +67,8 @@
             android:lineSpacingExtra="0dp"
             android:text="@string/dummy_text"
             android:textSize="15sp"
-            app:fontFamily="@font/roboto_thin"
-            app:layout_constraintBottom_toBottomOf="@+id/textView_date"
-            app:layout_constraintStart_toEndOf="@+id/textView_weekday" />
+            android:visibility="visible"
+            app:fontFamily="@font/roboto_thin" />
 
     </LinearLayout>
 

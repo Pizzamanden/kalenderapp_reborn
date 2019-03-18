@@ -107,7 +107,7 @@ public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecy
                         public void onClick(DialogInterface dialog, int id) {
                             Log.d(TAG, "onClick onClick: Accept");
                             // User Accepts
-                            // TODO make delete function in both php and here (needs interface?)
+                            // Fire delete method from owner activity
                             if(mContext instanceof EventViewActivity){
                                 ((EventViewActivity) mContext).makeDeleteHTTP(eventId.get(getAdapterPosition()));
                             }

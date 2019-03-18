@@ -158,12 +158,14 @@ public class MainActivity extends AppCompatActivity {
         // A datetime of the current moment, timezone is within
         DateTime dateTimeToday = new DateTime();
         // Dummy long, used in start-date and is the datetime of 2000-01-01T00:00:00
-        long calEndYear = dateTimeToday.plusYears(5).getMillis();
-        long calStartYear = dateTimeToday.minusYears(1).getMillis();
+        long calStartYear = dateTimeToday.minusYears(1).minusMinutes(dateTimeToday.getMinuteOfDay()).minusSeconds(dateTimeToday.getSecondOfMinute()).getMillis();
+        long calEndYear = dateTimeToday.plusYears(5).minusMinutes(dateTimeToday.getMinuteOfDay()).minusSeconds(dateTimeToday.getSecondOfMinute()).getMillis();
         // This datetime is where the calendar is supposed to start
         // Math done on this is always position as added days, or compared vs dateTimeToday
         DateTime dateTimeCalStart = new DateTime(calStartYear);
         DateTime dateTimeCalEnd = new DateTime(calEndYear);
+        Log.d(TAG, "initRecyclerView: " + dateTimeCalStart);
+        Log.d(TAG, "initRecyclerView: " + dateTimeCalEnd);
         // Days between start and today as days, can be used as a position within layout manager
         int daysBetween = Days.daysBetween(dateTimeCalStart, dateTimeToday).getDays();
 
@@ -181,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 // Add json fields to arrays for recyclerview
                 JSONObject json = mJSONArray.getJSONObject(i);
 
-                // For loop in for loop, because
+                // For loop in for loop, because theres 2 types in a single row
                 for(int typeInsert = 0; typeInsert < 2; typeInsert++){
                     eventNames.add(json.getString("event_name"));
                     String toGet;
@@ -190,12 +192,21 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         toGet = "event_end";
                     }
-                    Log.d(TAG, "initRecyclerView: " + json.getString("event_name"));
+
                     long jsonEpoch = json.getInt(toGet);
                     DateTime jsonDate = new DateTime(jsonEpoch * 1000);
-                    eventIndex.add(Days.daysBetween(dateTimeCalStart, jsonDate).getDays() + 1);
-                    eventTime.add(String.valueOf(jsonDate.getMinuteOfDay()));
+                    Log.d(TAG, "initRecyclerView: " + json.getString("event_name"));
+                    Log.d(TAG, "initRecyclerView: " + jsonDate);
+                    Log.d(TAG, "initRecyclerView: " + Days.daysBetween(dateTimeCalStart, jsonDate).getDays());
+                    Log.d(TAG, "initRecyclerView: ");
+                    // Adding a relative number to what should share index with recyclerview index
+                    eventIndex.add(Days.daysBetween(dateTimeCalStart, jsonDate).getDays());
+                    // Adding string to show what time of day it happens
+                    // this is either the start or end of an event, chosen by what typeInsert is
+                    eventTime.add(timeToTwoNum(jsonDate.getHourOfDay()) + "." + timeToTwoNum(jsonDate.getMinuteOfHour()));
+                    // Adding typeInsert, a saved instance of whether it is the start or end
                     eventType.add(typeInsert);
+                    // Adding ID (directly taken from SQL) to be able to reference this entry in the future
                     eventID.add(json.getInt("post_id"));
                 }
             }
@@ -221,6 +232,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Declare ready to show content
         isReady();
+    }
+
+    public String timeToTwoNum(int timeToFormat){
+        if(timeToFormat < 10){
+            return "0" + timeToFormat;
+        } else {
+            return "" + timeToFormat;
+        }
     }
 
 

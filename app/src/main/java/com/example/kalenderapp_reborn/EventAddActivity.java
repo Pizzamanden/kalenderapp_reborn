@@ -169,8 +169,6 @@ public class EventAddActivity extends AppCompatActivity {
         Log.d(TAG, "httpPOSTdata: fired");
         String mToken = "1fb52hb2j3hk623kj2v";
         int thisuserId = 2;
-        // TODO fix datefields
-        // TODO find out what the above todo means
         String postFormdataJSON = "{" +
                 "\"userId\":" +
                 thisuserId +
