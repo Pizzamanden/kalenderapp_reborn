@@ -167,7 +167,7 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
 
         // Declare views
         ConstraintLayout parent_layout;
-        LinearLayout linearLayout_scheduleCont, linearLayout_scheduleBox;
+        LinearLayout linearLayout_scheduleCont;
         TextView textView_date, textView_weekDay;
         ImageView addImage;
 
@@ -177,7 +177,6 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
             // Setup views
             parent_layout = itemView.findViewById(R.id.parent_layout);
             linearLayout_scheduleCont = itemView.findViewById(R.id.linearLayout_scheduleCont);
-            linearLayout_scheduleBox = itemView.findViewById(R.id.linearLayout_scheduleBox);
             textView_date = itemView.findViewById(R.id.textView_date);
             textView_weekDay = itemView.findViewById(R.id.textView_weekday);
             addImage = itemView.findViewById(R.id.imageView_addbutt);

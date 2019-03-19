@@ -185,16 +185,17 @@ public class MainActivity extends AppCompatActivity {
 
                 // For loop in for loop, because theres 2 types in a single row
                 for(int typeInsert = 0; typeInsert < 2; typeInsert++){
-                    eventNames.add(json.getString("event_name"));
                     String toGet;
+                    String nameEnd;
                     if(typeInsert < 1){
                         toGet = "event_start";
+                        nameEnd = " Starts";
                     } else {
                         toGet = "event_end";
+                        nameEnd = " Ends";
                     }
-
-                    long jsonEpoch = json.getInt(toGet);
-                    DateTime jsonDate = new DateTime(jsonEpoch * 1000);
+                    eventNames.add(json.getString("event_name") + nameEnd);
+                    DateTime jsonDate = new DateTime(json.getString(toGet));
                     Log.d(TAG, "initRecyclerView: " + json.getString("event_name"));
                     Log.d(TAG, "initRecyclerView: " + jsonDate);
                     Log.d(TAG, "initRecyclerView: " + Days.daysBetween(dateTimeCalStart, jsonDate).getDays());

@@ -152,11 +152,11 @@ public class EventViewActivity extends AppCompatActivity {
                 // Add json fields to arrays for recyclerview
                 JSONObject json = mJSONArray.getJSONObject(i);
                 eventNames.add(json.getString("event_name"));
-                eventStartString.add(datetimeToString(json.getInt("event_start")));
-                eventEndString.add(datetimeToString(json.getInt("event_end")));
+                eventStartString.add(datetimeToString(json.getString("event_start")));
+                eventEndString.add(datetimeToString(json.getString("event_end")));
                 eventAlarmStatus.add(json.getBoolean("event_alarmenable"));
                 if(json.getBoolean("event_alarmenable")){
-                    eventAlarmTimeString.add(datetimeToAlarmString(json.getInt("event_start"), json.getInt("event_alarmtime")));
+                    eventAlarmTimeString.add(datetimeToAlarmString(json.getString("event_start"), json.getString("event_alarmtime")));
                 } else {
                     eventAlarmTimeString.add("No");
                 }
@@ -298,19 +298,9 @@ public class EventViewActivity extends AppCompatActivity {
 
     // Method job: Create a stitched date-string to put into views, using only an epoch-time(int/long)
     // Accepts: Takes an int that should function as an unix epoch time unit, either milliseconds or just seconds
-    public String datetimeToString(long epochTime){
-        Log.d(TAG, "datetimeToString: " + epochTime);
-
-        int epochOffset = TimeZone.getDefault().getOffset(epochTime);
-        Log.d(TAG, "datetimeToString: " + epochOffset);
-        DateTime mDate;
-        int length = String.valueOf(epochTime).length();
-        if(length < 12){
-            mDate = new DateTime((epochTime * 1000) + epochOffset);
-        } else {
-            mDate = new DateTime(epochTime + epochOffset);
-        }
-        Log.d(TAG, "datetimeToString: " + mDate);
+    public String datetimeToString(String epochTime){
+        // TODO fix this, it is no lonnger epoch nums, but a joda-time string
+        DateTime mDate = new DateTime(epochTime);
 
         // Start building string
         String dateString;
@@ -343,21 +333,12 @@ public class EventViewActivity extends AppCompatActivity {
     // Requires: Joda-Time
     // Accepts: 2 longs, as an epoch-number, either in seconds or milliseconds.
     // Notes: the second long should be LESS than the first (alarms trigger before events)
-    public String datetimeToAlarmString(long epochTimeStart, long epochTimeAlarm){
-        int length = String.valueOf(epochTimeStart).length();
-        DateTime eventStart;
-        DateTime eventAlarm;
-        if(length < 12){
-            eventStart = new DateTime(epochTimeStart * 1000);
-            eventAlarm = new DateTime(epochTimeAlarm * 1000);
-        } else {
-            eventStart = new DateTime(epochTimeStart);
-            eventAlarm = new DateTime(epochTimeAlarm);
-        }
-        LocalDateTime localStart = eventStart.toLocalDateTime();
-        LocalDateTime localalarm = eventAlarm.toLocalDateTime();
+    public String datetimeToAlarmString(String startTime, String alarmTime){
 
-        int minBefore = Minutes.minutesBetween(localalarm, localStart).getMinutes();
+        DateTime startDT = new DateTime(startTime);
+        DateTime alarmDT = new DateTime(startTime);
+
+        int minBefore = Minutes.minutesBetween(alarmDT, startDT).getMinutes();
         int hoursTotal = minBefore / 60;
         int hoursRest = minBefore % 60;
         int daysTotal = (minBefore / 60) / 24;

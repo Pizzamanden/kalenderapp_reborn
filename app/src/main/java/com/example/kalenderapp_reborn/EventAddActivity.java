@@ -1,5 +1,6 @@
 package com.example.kalenderapp_reborn;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -22,6 +23,7 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,12 +43,11 @@ public class EventAddActivity extends AppCompatActivity {
 
     private static final String TAG = "EventAddActivity";
 
-    private String postType;
-
     EditText editText_name, editText_start_datefield, editText_start_timefield, editText_end_datefield, editText_end_timefield, editText_alarmdate, editText_alarmtime;
     Switch switchAlarmEnable;
     private int spinner_index = 0;
     private boolean switch_state = false;
+    private int typeOfPost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,11 +90,13 @@ public class EventAddActivity extends AppCompatActivity {
         }
         if(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0) != 0){
             setTitle(getResources().getString(R.string.title_activity_addevent2));
+            typeOfPost = 2;
             setAddEntryView(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0));
         } else {
             setTitle(getResources().getString(R.string.title_activity_addevent1));
             Log.d(TAG, "onCreate: switch state set");
             switchStateSync(false);
+            typeOfPost = 1;
         }
     }
 
@@ -168,18 +171,26 @@ public class EventAddActivity extends AppCompatActivity {
         final Handler handler = new Handler();
         Log.d(TAG, "httpPOSTdata: fired");
         String mToken = "1fb52hb2j3hk623kj2v";
+        // TODO get a real user ID
+        // As extension, create users and login section
         int thisuserId = 2;
+        // TODO find correct zone with code
+        String timeZone = "Europe/Copenhagen";
+
+        String postMessage;
+
+
         String postFormdataJSON = "{" +
                 "\"userId\":" +
                 thisuserId +
-                ",\"request\":\"" +
-                "insert" +
                 "\",\"eventName\":\"" +
                 editText_name.getText().toString() +
                 "\",\"eventStart\":\"" +
                 editText_start_datefield.getText().toString() + " " + editText_start_timefield.getText().toString() +
                 "\",\"eventEnd\":\"" +
                 editText_end_datefield.getText().toString() + " " + editText_end_timefield.getText().toString() +
+                "\",\"eventTimeZone\":\"" +
+                timeZone +
                 "\",\"eventType\":" +
                 spinner_index +
                 ",\"eventAlarmEnabled\":" +
@@ -190,13 +201,19 @@ public class EventAddActivity extends AppCompatActivity {
                 mToken + "\"}";
 
 
-
+        if(typeOfPost == 1){
+            postMessage = "insert";
+        } else if (typeOfPost == 2){
+            postMessage = "update";
+        } else {
+            postMessage = "insert";
+        }
 
         OkHttpClient client = new OkHttpClient();
         String url = "http://www.folderol.dk/";
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("postJSON", postFormdataJSON)
+                .addFormDataPart(postMessage, postFormdataJSON)
                 .build();
 
         Request request = new Request.Builder()
@@ -407,7 +424,7 @@ public class EventAddActivity extends AppCompatActivity {
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("retrieveJSON", requestJSON)
+                .addFormDataPart("select", requestJSON)
                 .build();
 
         Request request = new Request.Builder()
@@ -440,20 +457,31 @@ public class EventAddActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("SetTextI18n")
     public void setupViewData(String jsonString){
         try {
             JSONArray mJSONArray = new JSONArray(jsonString);
             for(int i = 0;i<mJSONArray.length(); i++){
-                // Add json fields to edit text views
+                // Get current json object
                 JSONObject json = mJSONArray.getJSONObject(i);
+
+
+                // Setup DateTime objects with relevant dates & time (surprise)
+                DateTime startDT = new DateTime(json.getString("event_start"));
+                DateTime endDT = new DateTime(json.getString("event_end"));
+                DateTime alarmDT = new DateTime(json.getString("event_alarmTime"));
+
+
+
+                // Add json fields to edit text views
                 editText_name.setText(json.getString("event_name"));
-                editText_start_datefield.setText(json.getString("event_startDate"));
-                editText_start_timefield.setText(json.getString("event_startTime"));
-                editText_end_datefield.setText(json.getString("event_endDate"));
-                editText_end_timefield.setText(json.getString("event_endTime"));
-                editText_alarmdate.setText(json.getString("event_alarmDate"));
-                editText_alarmtime.setText(json.getString("event_alarmTime"));
-                Log.d(TAG, "setupViewData: adding switch state");
+                editText_start_datefield.setText(startDT.getDayOfMonth() + "-" + startDT.getMonthOfYear() + "-" + startDT.getYear());
+                editText_start_timefield.setText(startDT.getHourOfDay() + ":" + startDT.getMinuteOfHour());
+                editText_end_datefield.setText(endDT.getDayOfMonth() + "-" + endDT.getMonthOfYear() + "-" + endDT.getYear());
+                editText_end_timefield.setText(endDT.getHourOfDay() + ":" + endDT.getMinuteOfHour());
+                editText_alarmdate.setText(alarmDT.getDayOfMonth() + "-" + alarmDT.getMonthOfYear() + "-" + alarmDT.getYear());
+                editText_alarmtime.setText(alarmDT.getHourOfDay() + ":" + alarmDT.getMinuteOfHour());
+                // Set switch state to reflect alarm status
                 switchStateSync(json.getBoolean("event_alarmenable"));
 
             }
