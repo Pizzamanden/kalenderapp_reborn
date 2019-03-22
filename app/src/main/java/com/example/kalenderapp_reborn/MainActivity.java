@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onFailure: Failure");
                 e.printStackTrace();
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Log.d(TAG, "getEventJSON: Response code " + response.code());
