@@ -7,20 +7,31 @@
     tools:context=".LoginActivity">
 
     <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:text="Login"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/textView_labelEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="110dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp"
+        android:layout_marginTop="40dp"
         android:text="Email"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <EditText
         android:id="@+id/editText_email"
@@ -69,6 +80,16 @@
         app:layout_constraintStart_toEndOf="@+id/editText_password"
         app:layout_constraintTop_toTopOf="@+id/editText_password" />
 
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="REMEMBER_DEVICE"
+        app:layout_constraintEnd_toEndOf="@+id/textView_labelEmail"
+        app:layout_constraintStart_toStartOf="@+id/textView_labelEmail"
+        app:layout_constraintTop_toBottomOf="@+id/editText_password" />
+
     <Button
         android:id="@+id/button_login"
         android:layout_width="0dp"
@@ -81,14 +102,14 @@
         android:text="Login"
         app:layout_constraintEnd_toEndOf="@+id/textView_labelEmail"
         app:layout_constraintStart_toStartOf="@+id/textView_labelEmail"
-        app:layout_constraintTop_toBottomOf="@+id/editText_password" />
+        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
 
     <TextView
         android:id="@+id/textView_forgotPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Forgot password?"
+        android:text="RECOVER_ACCOUNT"
         android:textColor="@color/design_default_color_primary"
         app:layout_constraintEnd_toStartOf="@+id/textView_newUser"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -99,12 +120,13 @@
         android:id="@+id/textView_newUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register new user"
+        android:onClick="gotoSignup"
+        android:text="REGISTER_INSTEAD"
         android:textColor="@color/design_default_color_primary"
         app:layout_constraintBottom_toBottomOf="@+id/textView_forgotPassword"
         app:layout_constraintEnd_toEndOf="@+id/textView_labelEmail"
         app:layout_constraintStart_toEndOf="@+id/textView_forgotPassword"
         app:layout_constraintTop_toTopOf="@+id/textView_forgotPassword" />
 
-
+    
 </android.support.constraint.ConstraintLayout>

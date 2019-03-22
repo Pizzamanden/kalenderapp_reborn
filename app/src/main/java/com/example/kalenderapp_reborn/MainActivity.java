@@ -13,24 +13,20 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.example.kalenderapp_reborn.adapters.CalendarRecyclerAdapter;
-import com.example.kalenderapp_reborn.adapters.ViewEventRecyclerAdapter;
 import com.example.kalenderapp_reborn.supportclasses.DrawerNavigationClass;
+import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
-import org.joda.time.Minutes;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.TimeZone;
 
 import okhttp3.Call;
@@ -115,20 +111,13 @@ public class MainActivity extends AppCompatActivity {
                 userToken +
                 "\"}";
 
+
+        // Make Client
         OkHttpClient client = new OkHttpClient();
-        Log.d(TAG, "getEventJSON: making client");
-        String url = "http://www.folderol.dk/";
-
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("retrieveJSON", requestJSON)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-        Log.d(TAG, "getEventJSON: making call");
+        // Use self-made class HttpRequestBuidler to make request
+        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
+                .buildPost("retrieveJSON", requestJSON);
+        // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

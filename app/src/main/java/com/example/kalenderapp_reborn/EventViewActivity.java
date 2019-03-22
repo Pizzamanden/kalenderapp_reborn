@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.example.kalenderapp_reborn.adapters.ViewEventRecyclerAdapter;
+import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -83,20 +84,12 @@ public class EventViewActivity extends AppCompatActivity {
                 userToken +
                 "\"}";
 
+        // Make Client
         OkHttpClient client = new OkHttpClient();
-        Log.d(TAG, "httpPOSTdata: making client");
-        String url = "http://www.folderol.dk/";
-
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("retrieveJSON", requestJSON)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-        Log.d(TAG, "httpPOSTdata: making call");
+        // Use self-made class HttpRequestBuidler to make request
+        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
+                .buildPost("retrieveJSON", requestJSON);
+        // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

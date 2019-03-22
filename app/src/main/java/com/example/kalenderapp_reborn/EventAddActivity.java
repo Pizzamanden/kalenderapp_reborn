@@ -23,6 +23,8 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
+
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -209,18 +211,12 @@ public class EventAddActivity extends AppCompatActivity {
             postMessage = "insert";
         }
 
+        // Make Client
         OkHttpClient client = new OkHttpClient();
-        String url = "http://www.folderol.dk/";
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(postMessage, postFormdataJSON)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-        Log.d(TAG, "httpPOSTdata: making call");
+        // Use self-made class HttpRequestBuidler to make request
+        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
+                .buildPost(postMessage, postFormdataJSON);
+        // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
