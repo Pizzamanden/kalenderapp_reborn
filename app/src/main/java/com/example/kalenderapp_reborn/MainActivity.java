@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String timezoneDiffMilli;
 
+    private String[] monthNames;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -68,7 +70,12 @@ public class MainActivity extends AppCompatActivity {
 
         timezoneDiffMilli = TimeZone.getDefault().getID();
 
+        initStringArrays();
         setupDrawerNav();
+    }
+
+    private void initStringArrays(){
+        monthNames = getResources().getStringArray(R.array.months);
     }
 
     @Override
@@ -91,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
         addnavigation.setupDrawerClickable(mNavView);
 
 
-
+        // Mark page as loading, hides all relevant views
         isLoading();
-        // get data, init recyclerview, set status to ready
+        // Continue progress to load activity
         getEventJSON();
     }
 
@@ -114,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Make Client
         OkHttpClient client = new OkHttpClient();
-        // Use self-made class HttpRequestBuidler to make request
+        // Use self-made class HttpRequestBuilder to make request
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
                 .buildPost("retrieveJSON", requestJSON);
         // Make call on client with request
@@ -133,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
                     MainActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            // Use data to init Recycler View
                             initRecyclerView(myResponse);
                         }
                     });
@@ -144,14 +152,19 @@ public class MainActivity extends AppCompatActivity {
     private void initRecyclerView(String jsonString)
     {
         // A datetime of the current moment, timezone is within
-        DateTime dateTimeToday = new DateTime();
+        final DateTime dateTimeToday = new DateTime();
         // Dummy long, used in start-date and is the datetime of 2000-01-01T00:00:00
+        // Why as 00:00:00?
+        // Because i want to do math on the just the date
+        // Example: 2018-10-10T21:22:59 is MORE THAN ONE DAYS after 2018-10-09T21:23:59
+        // Also is wrong when calc'ing backwards
         long calStartYear = dateTimeToday.minusYears(1).minusMinutes(dateTimeToday.getMinuteOfDay()).minusSeconds(dateTimeToday.getSecondOfMinute()).getMillis();
         long calEndYear = dateTimeToday.plusYears(5).minusMinutes(dateTimeToday.getMinuteOfDay()).minusSeconds(dateTimeToday.getSecondOfMinute()).getMillis();
         // This datetime is where the calendar is supposed to start
         // Math done on this is always position as added days, or compared vs dateTimeToday
-        DateTime dateTimeCalStart = new DateTime(calStartYear);
-        DateTime dateTimeCalEnd = new DateTime(calEndYear);
+        final DateTime dateTimeCalStart = new DateTime(calStartYear);
+        final DateTime dateTimeCalEnd = new DateTime(calEndYear);
+        // Check correctness in debug logcat
         Log.d(TAG, "initRecyclerView: " + dateTimeCalStart);
         Log.d(TAG, "initRecyclerView: " + dateTimeCalEnd);
         // Days between start and today as days, can be used as a position within layout manager
@@ -184,10 +197,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     eventNames.add(json.getString("event_name") + nameEnd);
                     DateTime jsonDate = new DateTime(json.getString(toGet));
-                    Log.d(TAG, "initRecyclerView: " + json.getString("event_name"));
-                    Log.d(TAG, "initRecyclerView: " + jsonDate);
-                    Log.d(TAG, "initRecyclerView: " + Days.daysBetween(dateTimeCalStart, jsonDate).getDays());
-                    Log.d(TAG, "initRecyclerView: ");
                     // Adding a relative number to what should share index with recyclerview index
                     eventIndex.add(Days.daysBetween(dateTimeCalStart, jsonDate).getDays());
                     // Adding string to show what time of day it happens
@@ -210,14 +219,32 @@ public class MainActivity extends AppCompatActivity {
 
         CalendarRecyclerAdapter adapter = new CalendarRecyclerAdapter(this, dateTimeCalStart, dateTimeCalEnd, dateTimeToday, eventNames, eventIndex, eventTime, eventType, eventID);
         recyclerView.setAdapter(adapter);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        final LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
 
-
+        // I want to set month name as text-title, so i put a listener on the recycler view
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                // I'll start by getting the current position
+                // I'm unsure if it should be just the first visible, or the first COMPLETELY visible
+                int firstVisible = mLayoutManager.findFirstVisibleItemPosition();
+                // Then i get the appropriate month name as string
+                String actionbarTitle = monthNames[dateTimeCalStart.plusDays(firstVisible).getMonthOfYear() - 1];
+                // I'll also put a year after my month name, but only if it isn't the current year
+                if(dateTimeToday.getYear() != dateTimeCalStart.plusDays(firstVisible).getYear()){
+                    actionbarTitle += " - " + dateTimeCalStart.plusDays(firstVisible).getYear();
+                }
+                // Then i'll set the string as the actionbar title
+                assert getSupportActionBar() != null;
+                getSupportActionBar().setTitle(actionbarTitle);
+            }
+        });
 
         // Scroll to current day
         mLayoutManager.scrollToPosition(daysBetween);
-        Log.d(TAG, "initRecyclerView: Scrolled");
+        Log.v(TAG, "initRecyclerView: Scrolled to today");
 
         // Declare ready to show content
         isReady();

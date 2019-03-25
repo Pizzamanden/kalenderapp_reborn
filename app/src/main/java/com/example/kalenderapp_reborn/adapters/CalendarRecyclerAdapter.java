@@ -1,34 +1,23 @@
 package com.example.kalenderapp_reborn.adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.kalenderapp_reborn.EventViewActivity;
-import com.example.kalenderapp_reborn.MainActivity;
 import com.example.kalenderapp_reborn.R;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
 import org.joda.time.Days;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
-
-import static java.security.AccessController.getContext;
 
 public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecyclerAdapter.ViewHolder> {
 
@@ -136,10 +125,15 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
         for(int indexNr = 0; indexNr < mEventIndex.size(); indexNr++){
             if(mEventIndex.get(indexNr) == i){
                 // The date of this day is equal to a day in arraylist
-                Log.d(TAG, "onBindViewHolder: " + i);
 
                 // Inflate layout, and insert text where needed
-                View v = inflater.inflate(R.layout.inflater_schedulebox, viewHolder.linearLayout_scheduleCont, false);
+                View v;
+                if(viewHolder.getItemViewType() == 2){
+                    v = inflater.inflate(R.layout.inflater_scheduleboxbefore, viewHolder.linearLayout_scheduleCont, false);
+                } else {
+                    v = inflater.inflate(R.layout.inflater_scheduleboxafter, viewHolder.linearLayout_scheduleCont, false);
+                }
+
                 TextView planName = v.findViewById(R.id.textView_planName);
                 TextView planTime = v.findViewById(R.id.textView_planTime);
                 planName.setText(mEventNames.get(indexNr));
@@ -151,11 +145,15 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
         }
         if(!wasPlan){
             // Insert "No Found entries" View
-            View v = inflater.inflate(R.layout.inflate_noeventsfound, viewHolder.linearLayout_scheduleCont, false);
+            View v;
+            v = inflater.inflate(R.layout.inflater_noeventsfoundbefore, viewHolder.linearLayout_scheduleCont, false);
+            /*if(viewHolder.getItemViewType() == 2){
+                v = inflater.inflate(R.layout.inflater_noeventsfoundbefore, viewHolder.linearLayout_scheduleCont, false);
+            } else {
+                v = inflater.inflate(R.layout.inflater_noeventsfoundafter, viewHolder.linearLayout_scheduleCont, false);
+            }*/
             viewHolder.linearLayout_scheduleCont.addView(v);
         }
-
-        Log.d(TAG, "onBindViewHolder: ");
     }
 
     @Override
