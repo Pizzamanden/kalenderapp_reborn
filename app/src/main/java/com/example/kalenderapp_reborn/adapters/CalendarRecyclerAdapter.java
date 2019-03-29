@@ -1,6 +1,9 @@
 package com.example.kalenderapp_reborn.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +15,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.kalenderapp_reborn.EventAddActivity;
+import com.example.kalenderapp_reborn.EventViewActivity;
+import com.example.kalenderapp_reborn.MainActivity;
 import com.example.kalenderapp_reborn.R;
 
 import org.joda.time.DateTime;
@@ -24,11 +30,12 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
     private static final String TAG = "CalendarRecyclerAdapter";
 
     private DateTime mDateTimeCalStart, mDateTimeCalEnd, mDateTimeToday;
-    private String[] stringArrayWeekDays;
+    private String[] stringArrayWeekDays, stringArrayMonths;
     private Context mContext;
 
     private ArrayList<String> mEventNames, mEventTime;
     private ArrayList<Integer> mEventType, mEventID, mEventIndex;
+    private ArrayList<Integer> baseLayouts = new ArrayList<>();
 
     public CalendarRecyclerAdapter(Context context, DateTime dateTimeStart, DateTime dateTimeEnd, DateTime dateTimeToday, ArrayList<String> eventNames, ArrayList<Integer> eventIndex, ArrayList<String> eventTime, ArrayList<Integer> eventType, ArrayList<Integer> eventID) {
         // Construct
@@ -49,56 +56,54 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
             Log.d(TAG, "CalendarRecyclerAdapter: ");
         }
 
-        stringArrayWeekDays = mContext.getResources().getStringArray(R.array.weekDaysS);
+        // This was changed to show the method to coworker
+        // ORDER MUST ALWAYS BE:
+        // Present
+        // Past
+        // Future
+        baseLayouts.add(R.layout.recyclerview_today);
+        baseLayouts.add(R.layout.recyclerview_beforedate);
+        baseLayouts.add(R.layout.recyclerview_afterdate);
 
+        stringArrayWeekDays = mContext.getResources().getStringArray(R.array.weekDaysS);
+        stringArrayMonths = mContext.getResources().getStringArray(R.array.months);
     }
 
 
     @Override
     public int getItemViewType(int position) {
-        // 1 = Today
-        // 2 = Past
-        // 3 = Future
+        // This parts job is to define what the position should mean when compared to today.
+        // As seen below, it returns a simple int, and takes an int.
+        // The logic makes sense because it is compared to the one (1) of the dates that make up the recyclerview
+        // The date is of course the start date, and since the base for this logic is to find if date is before, is the same, or is after current date, start date is compared to the present.
+        // We then need to find out if the date is indeed the past or the present
+        // If none we can then assume it is in the future
+        // 0 = Today
+        // 1 = Past
+        // 2 = Future
         if (mDateTimeCalStart.plusDays(position).getDayOfYear() == mDateTimeToday.getDayOfYear() && mDateTimeCalStart.plusDays(position).getYear() == mDateTimeToday.getYear()){
-            //Log.d(TAG, "getItemViewType: (Today) It is this year, and this Day of Year");
-            // Today
-            return 1;
+            //Log.d(TAG, "getItemViewType: (Present) It is this year, and this Day of Year");
+            // Present
+            return 0;
         } else if(mDateTimeCalStart.plusDays(position).getYear() < mDateTimeToday.getYear() || (mDateTimeCalStart.plusDays(position).getDayOfYear() < mDateTimeToday.getDayOfYear() && mDateTimeCalStart.plusDays(position).getYear() == mDateTimeToday.getYear())) {
             //Log.d(TAG, "getItemViewType: (Past) It is before this year, or it is this year, but before this Day of Year");
             // Days already passed
-            return 2;
+            return 1;
         } else {
             //Log.d(TAG, "getItemViewType: (Future) It is after this year, or it is this year, but after this Day of Year");
             // Days to pass in the future
-            return 3;
+            return 2;
         }
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-
-        // Bind layout to manager
-        if (i == 1) {
-            // is 1, layout for today
-            //Log.d(TAG, "onCreateViewHolder: Inflate 1");
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_today, viewGroup, false);
-            return new ViewHolder(view);
-        } else if(i == 2) {
-            // is 2, layout for days before today
-            //Log.d(TAG, "onCreateViewHolder: Inflate 2");
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_beforedate, viewGroup, false);
-            return new ViewHolder(view);
-        } else if(i == 3){
-            // is 3, layout for days after today
-            //Log.d(TAG, "onCreateViewHolder: Inflate 3");
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_afterdate, viewGroup, false);
-            return new ViewHolder(view);
-        } else {
-            // Basic layout (in this case its the future layout)
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_afterdate, viewGroup, false);
-            return new ViewHolder(view);
-        }
+        // Return Layout according to the argument {i}, which stems from getItemViewType, which  gets the position from getItemId
+        // The layout to inflate is to be found further up, as it contains the possible layouts to inflate
+        // Layouts should be ordered as-is, or it will take the wrong layouts for the wrong job
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(baseLayouts.get(i), viewGroup, false);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -184,15 +189,24 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
         @Override
         public void onClick(View v) {
             // TODO implement intent for adding date to AddEvent
-            /*final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            DateTime dialogDateTime = mDateTimeCalStart.plusDays(getAdapterPosition());
+            String dialogTitle = dialogDateTime.getDayOfMonth() + ". " + stringArrayMonths[dialogDateTime.getMonthOfYear() - 1] + " - " + dialogDateTime.getYear();
+            String intentDate;
+            if(mContext instanceof MainActivity){
+                // This gets day of month and month of year as at least two numbers
+                intentDate = ((MainActivity) mContext).timeToTwoNum(dialogDateTime.getDayOfMonth()) + "-" + ((MainActivity) mContext).timeToTwoNum(dialogDateTime.getMonthOfYear()) + "-" + dialogDateTime.getYear();
+            } else {
+                intentDate = dialogDateTime.getDayOfMonth() + "-" + dialogDateTime.getMonthOfYear() + "-" + dialogDateTime.getYear();
+            }
+            final String intentDateFinal = intentDate;
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setPositiveButton(R.string.dialogAddEntryCalendar_RecViewAdap_agree, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Log.d(TAG, "onClick onClick: Accept");
                     // User Accepts
-                    if(getContext() instanceof EventViewActivity){
-
-                        //((EventViewActivity) getContext()).makeDeleteHTTP(eventId.get(getAdapterPosition()));
-                    }
+                    Intent i = new Intent(mContext, EventAddActivity.class);
+                    i.putExtra("DATE_FROM_MAINACT", intentDateFinal);
+                    mContext.startActivity(i);
                 }
             });
             builder.setNegativeButton(R.string.dialogAddEntryCalendar_RecViewAdap_decline, new DialogInterface.OnClickListener() {
@@ -202,10 +216,10 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
                 }
             });
             builder.setMessage(R.string.dialogAddEntryCalendar_RecViewAdap_message)
-                    .setTitle(R.string.dialogAddEntryCalendar_RecViewAdap_title);
+                    .setTitle(dialogTitle);
             final AlertDialog dialog = builder.create();
 
-            dialog.show();*/
+            dialog.show();
             Log.d(TAG, "onClick: " + getAdapterPosition());
         }
 

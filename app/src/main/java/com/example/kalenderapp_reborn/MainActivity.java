@@ -31,10 +31,8 @@ import java.util.TimeZone;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
@@ -98,14 +96,14 @@ public class MainActivity extends AppCompatActivity {
         addnavigation.setupDrawerClickable(mNavView);
 
 
-        // Mark page as loading, hides all relevant views
+        // Mark activity as loading, hides all relevant views
         isLoading();
         // Continue progress to load activity
         getEventJSON();
     }
 
     private void getEventJSON(){
-        String postedRequest = "getallevents";
+        String postedRequest = "getAllUserEvents";
         int userId = 2;
         String userToken = "f213412ui1g2";
 
@@ -123,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         // Use self-made class HttpRequestBuilder to make request
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .buildPost("retrieveJSON", requestJSON);
+                .postBuilder("select", requestJSON);
         // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -230,8 +228,12 @@ public class MainActivity extends AppCompatActivity {
                 // I'll start by getting the current position
                 // I'm unsure if it should be just the first visible, or the first COMPLETELY visible
                 int firstVisible = mLayoutManager.findFirstVisibleItemPosition();
+                int lastVisible = mLayoutManager.findLastVisibleItemPosition();
                 // Then i get the appropriate month name as string
                 String actionbarTitle = monthNames[dateTimeCalStart.plusDays(firstVisible).getMonthOfYear() - 1];
+                if(dateTimeCalStart.plusDays(firstVisible).getMonthOfYear() != dateTimeCalStart.plusDays(lastVisible).getMonthOfYear()){
+                    actionbarTitle += " - " + monthNames[dateTimeCalStart.plusDays(lastVisible).getMonthOfYear() - 1];
+                }
                 // I'll also put a year after my month name, but only if it isn't the current year
                 if(dateTimeToday.getYear() != dateTimeCalStart.plusDays(firstVisible).getYear()){
                     actionbarTitle += " - " + dateTimeCalStart.plusDays(firstVisible).getYear();

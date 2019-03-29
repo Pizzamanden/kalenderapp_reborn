@@ -17,7 +17,7 @@ public class HttpRequestBuilder {
 
 
     // Singular get
-    public Request buildGet(String requestName, String requestValue){
+    public Request getBuilder(String requestName, String requestValue){
         // Build url string
         String concatUrl = getUrl() + "?" + requestName + "=" + requestValue;
         // Build request with url string
@@ -29,7 +29,7 @@ public class HttpRequestBuilder {
     }
 
     // Singular post
-    public Request buildPost(String requestName, String requestValue){
+    public Request postBuilder(String requestName, String requestValue){
         // Build request body
         // Only needs requestname and value
         RequestBody requestBody = new MultipartBody.Builder()
@@ -46,7 +46,7 @@ public class HttpRequestBuilder {
     }
 
     // Arraylist get
-    public Request buildGet(ArrayList<String> requestName, ArrayList<String> requestValue){
+    public Request getBuilder(ArrayList<String> requestName, ArrayList<String> requestValue){
         // Build url string
         String concatUrl = getUrl() + "?";
         for(int i = 0; i < requestName.size(); i++){
@@ -67,7 +67,7 @@ public class HttpRequestBuilder {
     }
 
     // Arraylist post
-    public Request buildPost(ArrayList<String> requestName, ArrayList<String> requestValue){
+    public Request postBuilder(ArrayList<String> requestName, ArrayList<String> requestValue){
         // Start building multipart body
         MultipartBody.Builder mBody = new MultipartBody.Builder();
         mBody.setType(MultipartBody.FORM);

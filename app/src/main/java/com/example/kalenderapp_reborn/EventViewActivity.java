@@ -17,7 +17,6 @@ import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 import org.joda.time.Minutes;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,9 +24,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -71,24 +67,27 @@ public class EventViewActivity extends AppCompatActivity {
 
     public void getDataJSON(){
 
-        String postedRequest = "getevents";
+        String postedRequest = "getUserEventsPastToday";
         int userId = 2;
         String userToken = "f213412ui1g2";
 
         String requestJSON = "{" +
-                "\"userId\":" +
-                userId +
-                ",\"request\":\"" +
+                "\"request\":\"" +
                 postedRequest +
-                "\", \"userToken\":\"" +
+                "\", \"identifiers\":{" +
+                    "\"userID\":" +
+                    userId +
+                "}, \"userToken\":\"" +
                 userToken +
                 "\"}";
+
+        Log.d(TAG, "getDataJSON: " + requestJSON);
 
         // Make Client
         OkHttpClient client = new OkHttpClient();
         // Use self-made class HttpRequestBuidler to make request
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .buildPost("retrieveJSON", requestJSON);
+                .postBuilder("select", requestJSON);
         // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override

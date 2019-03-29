@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         // Use self-made class HttpRequestBuilder to make request
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .buildPost("checkInfo", jsonString);
+                .postBuilder("checkInfo", jsonString);
         // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -119,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         // Use self-made class HttpRequestBuilder to make request
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .buildPost("checkInfo", jsonString);
+                .postBuilder("checkInfo", jsonString);
         // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override

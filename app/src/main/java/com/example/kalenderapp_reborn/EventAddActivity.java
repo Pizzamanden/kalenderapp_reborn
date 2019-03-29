@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import okhttp3.Call;
@@ -183,9 +185,13 @@ public class EventAddActivity extends AppCompatActivity {
 
 
         String postFormdataJSON = "{" +
+                "\"tableName\":" +
+                "\"calendar_entries\"," +
+                "\"data\":" +
+                "{" +
                 "\"userId\":" +
                 thisuserId +
-                "\",\"eventName\":\"" +
+                ",\"eventName\":\"" +
                 editText_name.getText().toString() +
                 "\",\"eventStart\":\"" +
                 editText_start_datefield.getText().toString() + " " + editText_start_timefield.getText().toString() +
@@ -200,9 +206,10 @@ public class EventAddActivity extends AppCompatActivity {
                 ",\"eventAlarmTime\":\"" +
                 editText_alarmdate.getText().toString() + " " + editText_alarmtime.getText().toString() +
                 "\",\"tokenId\":\"" +
-                mToken + "\"}";
+                mToken + "\"}" +
+                "}";
 
-
+        Log.d(TAG, "httpPOSTdata: " + postFormdataJSON);
         if(typeOfPost == 1){
             postMessage = "insert";
         } else if (typeOfPost == 2){
@@ -215,7 +222,7 @@ public class EventAddActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         // Use self-made class HttpRequestBuidler to make request
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .buildPost(postMessage, postFormdataJSON);
+                .postBuilder(postMessage, postFormdataJSON);
         // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -399,34 +406,28 @@ public class EventAddActivity extends AppCompatActivity {
     }
 
     private void setAddEntryView(int id){
-        String postedRequest = "editevent";
+        String postedRequest = "getSingleEventToEdit";
         String userToken = "f213412ui1g2";
         int userId = 2;
 
         String requestJSON = "{" +
-                "\"userId\":" +
-                userId +
-                ",\"request\":\"" +
+                "\"request\":\"" +
                 postedRequest +
-                "\",\"arg\":" +
+                "\", \"identifiers\":{" +
+                "\"userID\":" +
+                userId +
+                "\"postID\":" +
                 id +
-                ", \"userToken\":\"" +
+                "}, \"userToken\":\"" +
                 userToken +
                 "\"}";
-        Log.d(TAG, "setAddEntryView: " + requestJSON);
+
+        // Make Client
         OkHttpClient client = new OkHttpClient();
-        Log.d(TAG, "setAddEntryView: making client");
-        String url = "http://www.folderol.dk/";
-
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("select", requestJSON)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
+        // Use self-made class HttpRequestBuilder to make request
+        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
+                .postBuilder("select", requestJSON);
+        // Make call on client with request
         Log.d(TAG, "setAddEntryView: making call");
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -501,5 +502,13 @@ public class EventAddActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp(){
         finish();
         return true;
+    }
+
+
+    public ArrayList<Fragment> fragmentArrayList = new ArrayList<>();
+
+    public Fragment myFragmentSelecter(int position){
+
+        return fragmentArrayList.get(position);
     }
 }
