@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
+import com.example.kalenderapp_reborn.supportclasses.SessionManager;
 
 import java.io.IOException;
 
@@ -18,11 +19,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements SessionManager.HttpResponseInterface {
 
     private static final String TAG = "LoginActivity";
 
     private EditText editText_email, editText_password;
+    private SessionManager sessionManager = new SessionManager();
 
 
     @Override
@@ -32,24 +34,7 @@ public class LoginActivity extends AppCompatActivity {
 
         editText_email = findViewById(R.id.editText_email);
         editText_password = findViewById(R.id.editText_password);
-
-        // Check for eligible login existence
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("LoginStatus", MODE_PRIVATE);
-        if(pref.getString("token_timestamp", null) != null){
-            Log.d(TAG, "onCreate: " + "Timestamp found");
-            // A timestamp is found, check legit-ness
-            validatePrefInfo();
-        } else {
-            Log.d(TAG, "onCreate: " + "No Timestamp found");
-        }
-
-    }
-
-    private void validatePrefInfo(){
-
-
-        // If it checks out in format and dates and such, check with server
-        checkPrefsHttp();
+        sessionManager.setOnHttpResponseListener(this);
     }
 
     public void gotoSignup(View view){
@@ -58,94 +43,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void doLogin(View view){
-        Log.d(TAG, "doLogin: " + "Attempt login");
-        // Login button is clicked, initiate login
-
-        // Build json string
-        String jsonString = "" +
-                "\"request\":" +
-                "login" +
-                "\",\"email\":\"" +
-                editText_email.getText() +
-                "\", \"password\":\"" +
-                editText_password.getText() +
-                "\"}";
-
-        // Make Client
-        OkHttpClient client = new OkHttpClient();
-        // Use self-made class HttpRequestBuilder to make request
-        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder("checkInfo", jsonString);
-        // Make call on client with request
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d(TAG, "onFailure: Failure");
-                e.printStackTrace();
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "getEventJSON: Response code " + response.code());
-                if (response.code() == 200) {
-                    final String myResponse = response.body().string();
-                    Log.d(TAG, "onResponse: " + myResponse);
-                    LoginActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Use data to init Recycler View
-                            setupPrefs(myResponse);
-                        }
-                    });
-                }
-            }
-        });
+        sessionManager.testMethod();
     }
 
-    private void checkPrefsHttp(){
-        Log.d(TAG, "checkPrefs: " + "Check prefs");
-        // Login button is clicked, initiate login
 
-        // Build json string
-        String jsonString = "" +
-                "\"request\":" +
-                "checkPrefs" +
-                "\",\"email\":\"" +
-                editText_email.getText() +
-                "\", \"password\":\"" +
-                editText_password.getText() +
-                "\"}";
-
-        // Make Client
-        OkHttpClient client = new OkHttpClient();
-        // Use self-made class HttpRequestBuilder to make request
-        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder("checkInfo", jsonString);
-        // Make call on client with request
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d(TAG, "onFailure: Failure");
-                e.printStackTrace();
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "getEventJSON: Response code " + response.code());
-                if (response.code() == 200) {
-                    final String myResponse = response.body().string();
-                    Log.d(TAG, "onResponse: " + myResponse);
-                    LoginActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Use data to init Recycler View
-                            setupPrefs(myResponse);
-                        }
-                    });
-                }
-            }
-        });
+    private void startupActivity(){
+        // This starts the main calendar activity
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
     }
 
-    private void setupPrefs(String httpResponse){
-
+    @Override
+    public void onHttpResponse(String jsonResponse) {
+        // When HTTP sends a response
+        Log.d(TAG, "onHttpResponse: a response!");
     }
 }

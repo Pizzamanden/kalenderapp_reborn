@@ -239,8 +239,9 @@ public class MainActivity extends AppCompatActivity {
                     actionbarTitle += " - " + dateTimeCalStart.plusDays(firstVisible).getYear();
                 }
                 // Then i'll set the string as the actionbar title
-                assert getSupportActionBar() != null;
-                getSupportActionBar().setTitle(actionbarTitle);
+                if(getSupportActionBar() != null){
+                    getSupportActionBar().setTitle(actionbarTitle);
+                }
             }
         });
 

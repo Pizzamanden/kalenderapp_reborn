@@ -503,12 +503,4 @@ public class EventAddActivity extends AppCompatActivity {
         finish();
         return true;
     }
-
-
-    public ArrayList<Fragment> fragmentArrayList = new ArrayList<>();
-
-    public Fragment myFragmentSelecter(int position){
-
-        return fragmentArrayList.get(position);
-    }
 }

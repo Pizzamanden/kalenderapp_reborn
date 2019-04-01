@@ -291,7 +291,7 @@ public class EventViewActivity extends AppCompatActivity {
     // Method job: Create a stitched date-string to put into views, using only an epoch-time(int/long)
     // Accepts: Takes an int that should function as an unix epoch time unit, either milliseconds or just seconds
     public String datetimeToString(String epochTime){
-        // TODO fix this, it is no lonnger epoch nums, but a joda-time string
+        // TODO fix this, it is no longer epoch nums, but a joda-time string
         DateTime mDate = new DateTime(epochTime);
 
         // Start building string
