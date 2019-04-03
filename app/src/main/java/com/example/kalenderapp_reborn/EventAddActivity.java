@@ -49,6 +49,7 @@ public class EventAddActivity extends AppCompatActivity {
 
     EditText editText_name, editText_start_datefield, editText_start_timefield, editText_end_datefield, editText_end_timefield, editText_alarmdate, editText_alarmtime;
     Switch switchAlarmEnable;
+    Spinner spinner_type;
     private int spinner_index = 0;
     private boolean switch_state = false;
     private int typeOfPost;
@@ -71,6 +72,7 @@ public class EventAddActivity extends AppCompatActivity {
         editText_alarmdate = findViewById(R.id.editText_alarmdate);
         editText_alarmtime = findViewById(R.id.editText_alarmtime);
         switchAlarmEnable = findViewById(R.id.switch_alarmenable);
+        spinner_type = findViewById(R.id.spinner_eventtype);
         Toolbar toolbar = findViewById(R.id.toolbar_1);
 
         setSupportActionBar(toolbar);
@@ -121,7 +123,6 @@ public class EventAddActivity extends AppCompatActivity {
     }
 
     private void initSpinner(){
-        Spinner spinner_type = findViewById(R.id.spinner_eventtype);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.addevent_typespinner, android.R.layout.simple_spinner_item);
@@ -134,9 +135,8 @@ public class EventAddActivity extends AppCompatActivity {
         spinner_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                parent.getItemAtPosition(position);
-                Log.d(TAG, "onItemSelected: " + position);
-                spinner_index = position;
+                // To retrieve string from spinner: parent.getItemAtPosition(position);
+                spinnerStateSync(position);
             }
 
             @Override
@@ -144,6 +144,12 @@ public class EventAddActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void spinnerStateSync(int spinnerState){
+        spinner_index = spinnerState;
+        spinner_type.setSelection(spinnerState);
+
     }
 
     private void initSwitch(){
@@ -186,7 +192,7 @@ public class EventAddActivity extends AppCompatActivity {
 
         String postFormdataJSON = "{" +
                 "\"tableName\":" +
-                "\"calendar_entries\"," +
+                "\"example\"," +
                 "\"data\":" +
                 "{" +
                 "\"userId\":" +
@@ -286,8 +292,8 @@ public class EventAddActivity extends AppCompatActivity {
                     public void onDateSet(DatePicker view, int year,
                                           int monthOfYear, int dayOfMonth) {
 
-                        String savedDate;
-                        if(dayOfMonth < 10){
+                        String savedDate = timeToTwoNum(dayOfMonth) + "-" + timeToTwoNum((monthOfYear + 1)) + "-" + timeToTwoNum(year);
+                        /*if(dayOfMonth < 10){
                             savedDate = "0" + dayOfMonth + "-";
                         } else {
                             savedDate = dayOfMonth + "-";
@@ -297,7 +303,7 @@ public class EventAddActivity extends AppCompatActivity {
                         } else {
                             savedDate += (monthOfYear + 1);
                         }
-                        savedDate += "-" + year;
+                        savedDate += "-" + year;*/
                         v.setText(savedDate);
 
                     }
@@ -318,17 +324,7 @@ public class EventAddActivity extends AppCompatActivity {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay,
                                           int minute) {
-                        String savedDate;
-                        if(hourOfDay < 10){
-                            savedDate = "0" + hourOfDay + ":";
-                        } else {
-                            savedDate = hourOfDay + ":";
-                        }
-                        if(minute < 10){
-                            savedDate += "0" + minute;
-                        } else {
-                            savedDate += minute;
-                        }
+                        String savedDate = timeToTwoNum(hourOfDay) + ":" + timeToTwoNum(minute);
                         v.setText(savedDate);
                     }
                 }, hour, minute, true);
@@ -416,11 +412,13 @@ public class EventAddActivity extends AppCompatActivity {
                 "\", \"identifiers\":{" +
                 "\"userID\":" +
                 userId +
-                "\"postID\":" +
+                ", \"postID\":" +
                 id +
                 "}, \"userToken\":\"" +
                 userToken +
                 "\"}";
+
+        Log.d(TAG, "setAddEntryView: " + requestJSON);
 
         // Make Client
         OkHttpClient client = new OkHttpClient();
@@ -471,13 +469,16 @@ public class EventAddActivity extends AppCompatActivity {
 
 
                 // Add json fields to edit text views
+                // timeToTwoNum takes a number and if its under 10, it prepends a 0
                 editText_name.setText(json.getString("event_name"));
-                editText_start_datefield.setText(startDT.getDayOfMonth() + "-" + startDT.getMonthOfYear() + "-" + startDT.getYear());
-                editText_start_timefield.setText(startDT.getHourOfDay() + ":" + startDT.getMinuteOfHour());
-                editText_end_datefield.setText(endDT.getDayOfMonth() + "-" + endDT.getMonthOfYear() + "-" + endDT.getYear());
-                editText_end_timefield.setText(endDT.getHourOfDay() + ":" + endDT.getMinuteOfHour());
-                editText_alarmdate.setText(alarmDT.getDayOfMonth() + "-" + alarmDT.getMonthOfYear() + "-" + alarmDT.getYear());
-                editText_alarmtime.setText(alarmDT.getHourOfDay() + ":" + alarmDT.getMinuteOfHour());
+                editText_start_datefield.setText(timeToTwoNum(startDT.getDayOfMonth()) + "-" + timeToTwoNum(startDT.getMonthOfYear()) + "-" + timeToTwoNum(startDT.getYear()));
+                editText_start_timefield.setText(timeToTwoNum(startDT.getHourOfDay()) + ":" + timeToTwoNum(startDT.getMinuteOfHour()));
+                editText_end_datefield.setText(timeToTwoNum(endDT.getDayOfMonth()) + "-" + timeToTwoNum(endDT.getMonthOfYear()) + "-" + timeToTwoNum(endDT.getYear()));
+                editText_end_timefield.setText(timeToTwoNum(endDT.getHourOfDay()) + ":" + timeToTwoNum(endDT.getMinuteOfHour()));
+                editText_alarmdate.setText(timeToTwoNum(alarmDT.getDayOfMonth()) + "-" + timeToTwoNum(alarmDT.getMonthOfYear()) + "-" + timeToTwoNum(alarmDT.getYear()));
+                editText_alarmtime.setText(timeToTwoNum(alarmDT.getHourOfDay()) + ":" + timeToTwoNum(alarmDT.getMinuteOfHour()));
+                // Set spinner type to reflect type from DB
+                spinnerStateSync(json.getInt("event_type"));
                 // Set switch state to reflect alarm status
                 switchStateSync(json.getBoolean("event_alarmenable"));
 
@@ -502,5 +503,13 @@ public class EventAddActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp(){
         finish();
         return true;
+    }
+
+    public String timeToTwoNum(int timeToFormat){
+        if(timeToFormat < 10){
+            return "0" + timeToFormat;
+        } else {
+            return "" + timeToFormat;
+        }
     }
 }

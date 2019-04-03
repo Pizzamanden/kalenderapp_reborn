@@ -1,30 +1,20 @@
 package com.example.kalenderapp_reborn;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
 import com.example.kalenderapp_reborn.supportclasses.SessionManager;
 
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-public class LoginActivity extends AppCompatActivity implements SessionManager.HttpResponseInterface {
+public class LoginActivity extends AppCompatActivity implements SessionManager.SessionManagerHttpResponse {
 
     private static final String TAG = "LoginActivity";
 
     private EditText editText_email, editText_password;
-    private SessionManager sessionManager = new SessionManager();
+    private SessionManager sessionManager = new SessionManager(this);
 
 
     @Override
@@ -34,7 +24,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.H
 
         editText_email = findViewById(R.id.editText_email);
         editText_password = findViewById(R.id.editText_password);
-        sessionManager.setOnHttpResponseListener(this);
+        sessionManager.setSessionManagerListener(this);
     }
 
     public void gotoSignup(View view){
@@ -47,7 +37,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.H
     }
 
 
-    private void startupActivity(){
+    private void startMainActivity(){
         // This starts the main calendar activity
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
@@ -55,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.H
 
     @Override
     public void onHttpResponse(String jsonResponse) {
-        // When HTTP sends a response
+        // When SessionManager send a request, a response returns here as jsonResponse
         Log.d(TAG, "onHttpResponse: a response!");
     }
 }

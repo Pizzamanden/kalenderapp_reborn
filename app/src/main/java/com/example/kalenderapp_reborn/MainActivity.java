@@ -108,11 +108,12 @@ public class MainActivity extends AppCompatActivity {
         String userToken = "f213412ui1g2";
 
         String requestJSON = "{" +
-                "\"userId\":" +
-                userId +
-                ",\"request\":\"" +
+                "\"request\":\"" +
                 postedRequest +
-                "\", \"userToken\":\"" +
+                "\", \"identifiers\":{" +
+                "\"userID\":" +
+                userId +
+                "}, \"userToken\":\"" +
                 userToken +
                 "\"}";
 
@@ -195,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     eventNames.add(json.getString("event_name") + nameEnd);
                     DateTime jsonDate = new DateTime(json.getString(toGet));
+                    Log.d(TAG, "initRecyclerView: " + jsonDate);
                     // Adding a relative number to what should share index with recyclerview index
                     eventIndex.add(Days.daysBetween(dateTimeCalStart, jsonDate).getDays());
                     // Adding string to show what time of day it happens

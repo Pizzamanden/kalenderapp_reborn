@@ -134,9 +134,9 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
                 // Inflate layout, and insert text where needed
                 View v;
                 if(viewHolder.getItemViewType() == 2){
-                    v = inflater.inflate(R.layout.inflater_scheduleboxbefore, viewHolder.linearLayout_scheduleCont, false);
-                } else {
                     v = inflater.inflate(R.layout.inflater_scheduleboxafter, viewHolder.linearLayout_scheduleCont, false);
+                } else {
+                    v = inflater.inflate(R.layout.inflater_scheduleboxbefore, viewHolder.linearLayout_scheduleCont, false);
                 }
 
                 TextView planName = v.findViewById(R.id.textView_planName);
