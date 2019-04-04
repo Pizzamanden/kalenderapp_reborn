@@ -16,8 +16,10 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.example.kalenderapp_reborn.adapters.CalendarRecyclerAdapter;
+import com.example.kalenderapp_reborn.dataobjects.DataJsonSQLSelect;
 import com.example.kalenderapp_reborn.supportclasses.DrawerNavigationClass;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
+import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -27,6 +29,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TimeZone;
 
 import okhttp3.Call;
@@ -68,8 +71,36 @@ public class MainActivity extends AppCompatActivity {
 
         timezoneDiffMilli = TimeZone.getDefault().getID();
 
+        testtest123();
         initStringArrays();
         setupDrawerNav();
+    }
+
+    private void testtest123(){
+
+        Gson gson = new Gson();
+        DataJsonSQLSelect dataJsonSQLSelect = new DataJsonSQLSelect("NogetCool", "5hb25hjb2534hb5");
+        DataJsonSQLSelect.DataJsonIdentifiers dataJsonIdentifiers = dataJsonSQLSelect.new DataJsonIdentifiers(21);
+        dataJsonSQLSelect.setIdentifiers(dataJsonIdentifiers);
+
+        List<DataJsonSQLSelect> listboy = new ArrayList<>();
+        listboy.add(dataJsonSQLSelect);
+        listboy.add(dataJsonSQLSelect);
+        listboy.add(dataJsonSQLSelect);
+        listboy.add(dataJsonSQLSelect);
+        listboy.add(dataJsonSQLSelect);
+        listboy.add(dataJsonSQLSelect);
+
+        String json = gson.toJson(listboy);
+        Log.d(TAG, "testtest123: JSON: " + json);
+
+        /*DataJsonSQLSelect deSerialSQL = gson.fromJson(json, DataJsonSQLSelect.class);
+        DataJsonSQLSelect.DataJsonIdentifiers deSerialIdenti = deSerialSQL.getIdentifiers();
+
+        Log.d(TAG, "testtest123: " + deSerialSQL.getRequest());
+        Log.d(TAG, "testtest123: " + deSerialSQL.getUserToken());
+        Log.d(TAG, "testtest123: " + deSerialIdenti.getHomeAdress());
+        Log.d(TAG, "testtest123: " + deSerialIdenti.getUserId());*/
     }
 
     private void initStringArrays(){
@@ -196,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     eventNames.add(json.getString("event_name") + nameEnd);
                     DateTime jsonDate = new DateTime(json.getString(toGet));
-                    Log.d(TAG, "initRecyclerView: " + jsonDate);
+                    Log.d(TAG, "initRecyclerView: " + json.getString("event_name") + nameEnd + " ___ " + json.getInt("post_id"));
                     // Adding a relative number to what should share index with recyclerview index
                     eventIndex.add(Days.daysBetween(dateTimeCalStart, jsonDate).getDays());
                     // Adding string to show what time of day it happens

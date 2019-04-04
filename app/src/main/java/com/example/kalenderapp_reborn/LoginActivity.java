@@ -9,12 +9,14 @@ import android.widget.EditText;
 
 import com.example.kalenderapp_reborn.supportclasses.SessionManager;
 
-public class LoginActivity extends AppCompatActivity implements SessionManager.SessionManagerHttpResponse {
+import org.joda.time.DateTime;
+
+public class LoginActivity extends AppCompatActivity{
 
     private static final String TAG = "LoginActivity";
 
     private EditText editText_email, editText_password;
-    private SessionManager sessionManager = new SessionManager(this);
+    //private SessionManager sessionManager = new SessionManager(this);
 
 
     @Override
@@ -24,7 +26,10 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
 
         editText_email = findViewById(R.id.editText_email);
         editText_password = findViewById(R.id.editText_password);
-        sessionManager.setSessionManagerListener(this);
+        DateTime dateTime = new DateTime();
+        Log.d(TAG, "onCreate: " + dateTime);
+        Log.d(TAG, "onCreate: " + dateTime.toString());
+        //sessionManager.setSessionManagerListener(this);
     }
 
     public void gotoSignup(View view){
@@ -33,7 +38,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
     }
 
     public void doLogin(View view){
-        sessionManager.testMethod();
+
     }
 
 
@@ -41,11 +46,5 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         // This starts the main calendar activity
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
-    }
-
-    @Override
-    public void onHttpResponse(String jsonResponse) {
-        // When SessionManager send a request, a response returns here as jsonResponse
-        Log.d(TAG, "onHttpResponse: a response!");
     }
 }

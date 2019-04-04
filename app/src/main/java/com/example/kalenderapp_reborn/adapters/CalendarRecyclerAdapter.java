@@ -115,6 +115,7 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         boolean wasPlan = false;
         // TODO Clean this section of code
+        // TODO above, and remake everything, it is too much logic in this segment, needs to be made in activity lifecycle and put into arraylists instead!!!
         DateTime iDateTime = mDateTimeCalStart.plusDays(i);
         LayoutInflater inflater = LayoutInflater.from(mContext);
         viewHolder.linearLayout_scheduleCont.removeAllViews();
@@ -150,13 +151,7 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
         }
         if(!wasPlan){
             // Insert "No Found entries" View
-            View v;
-            v = inflater.inflate(R.layout.inflater_noeventsfoundbefore, viewHolder.linearLayout_scheduleCont, false);
-            /*if(viewHolder.getItemViewType() == 2){
-                v = inflater.inflate(R.layout.inflater_noeventsfoundbefore, viewHolder.linearLayout_scheduleCont, false);
-            } else {
-                v = inflater.inflate(R.layout.inflater_noeventsfoundafter, viewHolder.linearLayout_scheduleCont, false);
-            }*/
+            View v = inflater.inflate(R.layout.inflater_noeventsfoundbefore, viewHolder.linearLayout_scheduleCont, false);
             viewHolder.linearLayout_scheduleCont.addView(v);
         }
     }

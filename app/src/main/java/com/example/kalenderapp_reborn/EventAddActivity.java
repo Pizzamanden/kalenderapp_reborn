@@ -215,6 +215,8 @@ public class EventAddActivity extends AppCompatActivity {
                 mToken + "\"}" +
                 "}";
 
+        // TODO this segment is wrong, no part is correct with update statement, as an update right now will change EVERYTHING because no "_id" is specified.
+
         Log.d(TAG, "httpPOSTdata: " + postFormdataJSON);
         if(typeOfPost == 1){
             postMessage = "insert";

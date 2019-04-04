@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import org.joda.time.DateTime;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -20,6 +22,7 @@ public class SessionManager{
     private static final String tokenSharedPreferences = "TOKEN_SHARED_PREFS";
     private static final String tokenKey = "TOKEN_AS_STRING";
     private static final String tokenInvalidation = "TOKEN_INVALIDATION";
+    private static final String tokenLastValidated = "TOKEN_LAST_VALIDATED";
     // Shared prefs
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
@@ -36,6 +39,8 @@ public class SessionManager{
         mCallback.onHttpResponse("yaaadssddsdsdsd");
     }
 
+
+
     /**
      * Step one in validating a user
      * Should check prefs for a token
@@ -48,10 +53,35 @@ public class SessionManager{
         return sharedPref.getString(tokenKey, null);
     }
 
+
+
+    /**
+     * This method is for writing prefs
+     * either because a token was found non-valid
+     * or a login has never been done
+     *
+     * This method should only in relations with an http call
+     *
+     * @param jsonWebToken
+     * @return boolean as true if successful
+     */
+    private boolean writePrefs(String jsonWebToken){
+        DateTime dateTime = new DateTime();
+        editor.putString(tokenKey, jsonWebToken);
+        editor.putString(tokenLastValidated, dateTime.toString());
+        return editor.commit();
+    }
+
+    private boolean writePrefs(String jsonWebToken, boolean invalidate){
+        editor.putString(tokenKey, jsonWebToken);
+        editor.putBoolean(tokenInvalidation, invalidate);
+        return editor.commit();
+    }
+
     public void runTokenValidation(){
         if(this.localTokenValidation()){
             // Local validation success
-            // Now to put it onto the server
+            // Now send token to server to validate
             String phpRequest = "example";
             String jsonRequest = "{" +
                     "\"request\":\"" +
@@ -83,27 +113,6 @@ public class SessionManager{
             // we then need to run server validation on token-legitness
             return true;
         }
-    }
-
-    /**
-     * This method is for writing prefs
-     * either because a token was found non-valid
-     * or a login has never been done
-     *
-     * This method should only in relations with an http call
-     *
-     * @param jsonWebToken
-     * @return boolean as true if successful
-     */
-    private boolean writePrefs(String jsonWebToken){
-        editor.putString(tokenKey, jsonWebToken);
-        return editor.commit();
-    }
-
-    private boolean writePrefs(String jsonWebToken, boolean invalidate){
-        editor.putString(tokenKey, jsonWebToken);
-        editor.putBoolean(tokenInvalidation, invalidate);
-        return editor.commit();
     }
 
     private void httpCall(String requestName, String jsonToSend){
