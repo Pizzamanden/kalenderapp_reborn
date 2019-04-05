@@ -14,8 +14,7 @@ public class DataJsonCalendarEntries {
     private boolean eventAlarmStatus;
     private String eventAlarmTime;
 
-    DataJsonCalendarEntries(String eventID, String eventName, String eventStartTime, String eventEndTime, String eventTimeZone, int eventType, boolean eventAlarmStatus, String eventAlarmTime){
-        this.eventID = eventID;
+    public DataJsonCalendarEntries(String eventName, String eventStartTime, String eventEndTime, String eventTimeZone, int eventType, boolean eventAlarmStatus, String eventAlarmTime){
         this.eventName = eventName;
         this.eventStartTime = eventStartTime;
         this.eventEndTime = eventEndTime;
