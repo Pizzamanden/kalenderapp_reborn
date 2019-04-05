@@ -16,7 +16,8 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.example.kalenderapp_reborn.adapters.CalendarRecyclerAdapter;
-import com.example.kalenderapp_reborn.dataobjects.DataJsonSQLSelect;
+import com.example.kalenderapp_reborn.dataobjects.DataJsonCalendarEntries;
+import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
 import com.example.kalenderapp_reborn.supportclasses.DrawerNavigationClass;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
 import com.google.gson.Gson;
@@ -77,30 +78,54 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void testtest123(){
-
+        // A test method for Gson
         Gson gson = new Gson();
-        DataJsonSQLSelect dataJsonSQLSelect = new DataJsonSQLSelect("NogetCool", "5hb25hjb2534hb5");
-        DataJsonSQLSelect.DataJsonIdentifiers dataJsonIdentifiers = dataJsonSQLSelect.new DataJsonIdentifiers(21);
-        dataJsonSQLSelect.setIdentifiers(dataJsonIdentifiers);
+        String token = "34124123421fdsfasdfaf";
+        int userID = 21;
+        int eventID = 16;
+        DataJsonCalendarEntries dataJsonCalendarEntries = new DataJsonCalendarEntries(
+                "Hej Mor",
+                "2019",
+                "2019",
+                "Odense",
+                2,
+                true,
+                "2910");
 
-        List<DataJsonSQLSelect> listboy = new ArrayList<>();
-        listboy.add(dataJsonSQLSelect);
-        listboy.add(dataJsonSQLSelect);
-        listboy.add(dataJsonSQLSelect);
-        listboy.add(dataJsonSQLSelect);
-        listboy.add(dataJsonSQLSelect);
-        listboy.add(dataJsonSQLSelect);
 
-        String json = gson.toJson(listboy);
-        Log.d(TAG, "testtest123: JSON: " + json);
 
-        /*DataJsonSQLSelect deSerialSQL = gson.fromJson(json, DataJsonSQLSelect.class);
-        DataJsonSQLSelect.DataJsonIdentifiers deSerialIdenti = deSerialSQL.getIdentifiers();
 
-        Log.d(TAG, "testtest123: " + deSerialSQL.getRequest());
-        Log.d(TAG, "testtest123: " + deSerialSQL.getUserToken());
-        Log.d(TAG, "testtest123: " + deSerialIdenti.getHomeAdress());
-        Log.d(TAG, "testtest123: " + deSerialIdenti.getUserId());*/
+        SQLQueryJson sqlQueryJsonUpdate = new SQLQueryJson(token, dataJsonCalendarEntries, "update", userID, eventID);
+        SQLQueryJson sqlQueryJsonInsert = new SQLQueryJson(token, dataJsonCalendarEntries, "insert", userID);
+        SQLQueryJson sqlQueryJsonDelete = new SQLQueryJson(token, "delete", userID, eventID);
+        SQLQueryJson sqlQueryJsonSelect = new SQLQueryJson(token, "select", userID);
+
+        String jsonUpdate = gson.toJson(sqlQueryJsonUpdate);
+        String jsonInsert = gson.toJson(sqlQueryJsonInsert);
+        String jsonDelete = gson.toJson(sqlQueryJsonDelete);
+        String jsonSelect = gson.toJson(sqlQueryJsonSelect);
+
+        Log.d(TAG, "testtest123: Update: " + jsonUpdate);
+        Log.d(TAG, "testtest123: Insert: " + jsonInsert);
+        Log.d(TAG, "testtest123: Delete: " + jsonDelete);
+        Log.d(TAG, "testtest123: Select: " + jsonSelect);
+
+        String muhjson = "{\"token\":\"dadaddad5345345235\",\"queryResponse\":{\"userID\":2,\"calendarEntriesArrayList\":[{\"eventAlarmStatus\":true,\"eventAlarmTime\":\"2910\",\"eventEndTime\":\"2019\",\"eventName\":\"Hej Mor\",\"eventStartTime\":\"2019\",\"eventTimeZone\":\"Odense\",\"eventType\":2},{\"eventAlarmStatus\":true,\"eventAlarmTime\":\"2910\",\"eventEndTime\":\"2019\",\"eventName\":\"Hej Mor\",\"eventStartTime\":\"2019\",\"eventTimeZone\":\"Odense\",\"eventType\":2}]}}";
+
+        Log.d(TAG, "testtest123: " + muhjson);
+
+        SQLQueryJson fakeJson = gson.fromJson(muhjson, SQLQueryJson.class);
+        ArrayList<DataJsonCalendarEntries> queryResponseArrayList = fakeJson.getQueryResponseArrayList();
+        for (int i = 0; i < queryResponseArrayList.size(); i++){
+            Log.d(TAG, "testtest123: " + queryResponseArrayList.get(i).getEventName());
+            Log.d(TAG, "testtest123: " + queryResponseArrayList.get(i).getEventStartTime());
+            Log.d(TAG, "testtest123: " + queryResponseArrayList.get(i).getEventEndTime());
+            Log.d(TAG, "testtest123: " + queryResponseArrayList.get(i).getEventAlarmTime());
+            Log.d(TAG, "testtest123: " + queryResponseArrayList.get(i).getEventType());
+            Log.d(TAG, "testtest123: " + queryResponseArrayList.get(i).getEventTimeZone());
+            Log.d(TAG, "testtest123: " + queryResponseArrayList.get(i).getEventID());
+            Log.d(TAG, "testtest123: ");
+        }
     }
 
     private void initStringArrays(){
@@ -134,11 +159,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getEventJSON(){
-        String postedRequest = "getAllUserEvents";
-        int userId = 2;
-        String userToken = "f213412ui1g2";
 
-        String requestJSON = "{" +
+        // TODO code 1 Replace this
+        int userID = 2;
+        String token = "f213412ui1g2";
+
+        SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_All", userID);
+        String json = new Gson().toJson(sqlQueryJson);
+
+        Log.d(TAG, "getEventJSON: " + json);
+
+        // Legacy select json
+        /*String requestJSON = "{" +
                 "\"request\":\"" +
                 postedRequest +
                 "\", \"identifiers\":{" +
@@ -146,14 +178,14 @@ public class MainActivity extends AppCompatActivity {
                 userId +
                 "}, \"userToken\":\"" +
                 userToken +
-                "\"}";
+                "\"}";*/
 
 
         // Make Client
         OkHttpClient client = new OkHttpClient();
         // Use self-made class HttpRequestBuilder to make request
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder("select", requestJSON);
+                .postBuilder("query", json);
         // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override

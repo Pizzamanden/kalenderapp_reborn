@@ -24,7 +24,10 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.kalenderapp_reborn.dataobjects.DataJsonCalendarEntries;
+import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
+import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
 import org.json.JSONArray;
@@ -52,7 +55,8 @@ public class EventAddActivity extends AppCompatActivity {
     Spinner spinner_type;
     private int spinner_index = 0;
     private boolean switch_state = false;
-    private int typeOfPost;
+    private int entryID = 0;
+    private boolean isAnUpdate = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,13 +100,13 @@ public class EventAddActivity extends AppCompatActivity {
         }
         if(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0) != 0){
             setTitle(getResources().getString(R.string.title_activity_addevent2));
-            typeOfPost = 2;
-            setAddEntryView(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0));
+            int eventID = getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0);
+            isAnUpdate = true;
+            setAddEntryView(eventID);
         } else {
             setTitle(getResources().getString(R.string.title_activity_addevent1));
             Log.d(TAG, "onCreate: switch state set");
             switchStateSync(false);
-            typeOfPost = 1;
         }
     }
 
@@ -180,17 +184,42 @@ public class EventAddActivity extends AppCompatActivity {
     private void httpPOSTdata(){
         final Handler handler = new Handler();
         Log.d(TAG, "httpPOSTdata: fired");
-        String mToken = "1fb52hb2j3hk623kj2v";
-        // TODO get a real user ID
-        // As extension, create users and login section
+
+        // TODO code 1 Replace this
+        String token = "1fb52hb2j3hk623kj2v";
         int thisuserId = 2;
-        // TODO find correct zone with code
+
+        // As extension to above, create users and login section
+        // TODO find correct zone as String
         String timeZone = "Europe/Copenhagen";
 
-        String postMessage;
+
+        String eventName = editText_name.getText().toString();
+        String eventStartTime = editText_start_datefield.getText().toString() + " " + editText_start_timefield.getText().toString();
+        String eventEndTime = editText_end_datefield.getText().toString() + " " + editText_end_timefield.getText().toString();
+        String eventAlarmTime = editText_alarmdate.getText().toString() + " " + editText_alarmtime.getText().toString();
+
+        DataJsonCalendarEntries dataJsonCalendarEntries = new DataJsonCalendarEntries(
+                eventName,
+                eventStartTime,
+                eventEndTime,
+                timeZone,
+                spinner_index,
+                switch_state,
+                eventAlarmTime
+        );
+
+        SQLQueryJson sqlQueryJson;
+        if(isAnUpdate){
+            sqlQueryJson = new SQLQueryJson(token, dataJsonCalendarEntries, "insert", thisuserId);
+        } else {
+            sqlQueryJson = new SQLQueryJson(token, dataJsonCalendarEntries, "update", thisuserId, entryID);
+        }
+        String json = new Gson().toJson(sqlQueryJson);
 
 
-        String postFormdataJSON = "{" +
+        // Legacy json formatting
+        /*String postFormdataJSON = "{" +
                 "\"tableName\":" +
                 "\"example\"," +
                 "\"data\":" +
@@ -213,24 +242,15 @@ public class EventAddActivity extends AppCompatActivity {
                 editText_alarmdate.getText().toString() + " " + editText_alarmtime.getText().toString() +
                 "\",\"tokenId\":\"" +
                 mToken + "\"}" +
-                "}";
+                "}";*/
 
-        // TODO this segment is wrong, no part is correct with update statement, as an update right now will change EVERYTHING because no "_id" is specified.
-
-        Log.d(TAG, "httpPOSTdata: " + postFormdataJSON);
-        if(typeOfPost == 1){
-            postMessage = "insert";
-        } else if (typeOfPost == 2){
-            postMessage = "update";
-        } else {
-            postMessage = "insert";
-        }
+        Log.d(TAG, "httpPOSTdata: " + json);
 
         // Make Client
         OkHttpClient client = new OkHttpClient();
         // Use self-made class HttpRequestBuidler to make request
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder(postMessage, postFormdataJSON);
+                .postBuilder("query", json);
         // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override

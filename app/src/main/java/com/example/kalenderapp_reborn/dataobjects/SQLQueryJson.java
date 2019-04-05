@@ -36,6 +36,7 @@ public class SQLQueryJson {
 
     // Fields
     private String token;
+    private int userID;
     private QueryRequest queryRequest;
     private QueryResponse queryResponse;
 
@@ -50,7 +51,8 @@ public class SQLQueryJson {
      */
     public SQLQueryJson(String token, DataJsonCalendarEntries dataJsonCalendarEntries, String queryType, int userID){
         this.token = token;
-        this.queryRequest = new QueryRequest(dataJsonCalendarEntries, queryType, userID);
+        this.userID = userID;
+        this.queryRequest = new QueryRequest(dataJsonCalendarEntries, queryType);
     }
     /**
      * This is for:
@@ -64,7 +66,8 @@ public class SQLQueryJson {
      */
     public SQLQueryJson(String token, DataJsonCalendarEntries dataJsonCalendarEntries, String queryType, int userID, int entryID){
         this.token = token;
-        this.queryRequest = new QueryRequest(dataJsonCalendarEntries, queryType, userID, entryID);
+        this.userID = userID;
+        this.queryRequest = new QueryRequest(dataJsonCalendarEntries, queryType, entryID);
     }
     /**
      * This is for:
@@ -78,7 +81,8 @@ public class SQLQueryJson {
      */
     public SQLQueryJson(String token, String queryType, int userID, int entryID){
         this.token = token;
-        this.queryRequest = new QueryRequest(queryType, userID, entryID);
+        this.userID = userID;
+        this.queryRequest = new QueryRequest(queryType, entryID);
     }
     /**
      * This is for:
@@ -90,11 +94,12 @@ public class SQLQueryJson {
      */
     public SQLQueryJson(String token, String queryType, int userID){
         this.token = token;
-        this.queryRequest = new QueryRequest(queryType, userID);
+        this.userID = userID;
+        this.queryRequest = new QueryRequest(queryType);
     }
 
     // Getters
-    public int getQueryResponseUserID(){ return this.queryResponse.getUserID(); }
+    public int getUserID(){ return this.userID; }
     public ArrayList<DataJsonCalendarEntries> getQueryResponseArrayList(){ return this.queryResponse.getCalendarEntriesArrayList(); }
 
 
@@ -105,34 +110,29 @@ public class SQLQueryJson {
 
         // Fields
         private String queryType;
-        private int userID;
         private int entryID;
         private DataJsonCalendarEntries dataJsonCalendarEntries;
 
         // Constructs
         // This is for insertion queries
-        private QueryRequest(DataJsonCalendarEntries dataJsonCalendarEntries, String queryType, int userID){
+        private QueryRequest(DataJsonCalendarEntries dataJsonCalendarEntries, String queryType){
             this.dataJsonCalendarEntries = dataJsonCalendarEntries;
             this.queryType = queryType;
-            this.userID = userID;
         }
         // This is for an update query
-        private QueryRequest(DataJsonCalendarEntries dataJsonCalendarEntries, String queryType, int userID, int entryID){
+        private QueryRequest(DataJsonCalendarEntries dataJsonCalendarEntries, String queryType, int entryID){
             this.dataJsonCalendarEntries = dataJsonCalendarEntries;
             this.queryType = queryType;
-            this.userID = userID;
             this.entryID = entryID;
         }
         // This is for selecting one post, or a delete query
-        private QueryRequest(String queryType, int userID, int entryID){
+        private QueryRequest(String queryType, int entryID){
             this.queryType = queryType;
-            this.userID = userID;
             this.entryID = entryID;
         }
         // This is for selecting all posts
-        private QueryRequest(String queryType, int userID){
+        private QueryRequest(String queryType){
             this.queryType = queryType;
-            this.userID = userID;
         }
     }
     private class QueryResponse{
@@ -140,11 +140,9 @@ public class SQLQueryJson {
         // It also contains getters, for pulling the data out into my android code
 
         // Fields
-        private int userID;
         private ArrayList<DataJsonCalendarEntries> calendarEntriesArrayList = new ArrayList<>();
 
         // Getters
-        public int getUserID() { return this.userID; }
         public ArrayList<DataJsonCalendarEntries> getCalendarEntriesArrayList() { return this.calendarEntriesArrayList; }
     }
 }

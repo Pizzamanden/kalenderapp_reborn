@@ -12,7 +12,9 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.example.kalenderapp_reborn.adapters.ViewEventRecyclerAdapter;
+import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
+import com.google.gson.Gson;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -71,7 +73,15 @@ public class EventViewActivity extends AppCompatActivity {
         int userId = 2;
         String userToken = "f213412ui1g2";
 
-        String requestJSON = "{" +
+        // TODO code 1 Replace this
+        String token = "f213412ui1g2";
+        int userID = 2;
+
+        SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_AllBeforeToday", userID);
+        String json = new Gson().toJson(sqlQueryJson);
+
+        // Legacy Select statement
+        /*String requestJSON = "{" +
                 "\"request\":\"" +
                 postedRequest +
                 "\", \"identifiers\":{" +
@@ -79,15 +89,15 @@ public class EventViewActivity extends AppCompatActivity {
                     userId +
                 "}, \"userToken\":\"" +
                 userToken +
-                "\"}";
+                "\"}";*/
 
-        Log.d(TAG, "getDataJSON: " + requestJSON);
+        Log.d(TAG, "getDataJSON: " + json);
 
         // Make Client
         OkHttpClient client = new OkHttpClient();
         // Use self-made class HttpRequestBuidler to make request
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder("select", requestJSON);
+                .postBuilder("query", json);
         // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -166,7 +176,7 @@ public class EventViewActivity extends AppCompatActivity {
     }
 
 
-    public void makeDeleteHTTP(final int id){
+    public void initDeleteQuery(final int id){
             // UI changes and delays for showing butter smooth animations,
             final Handler handler = new Handler();
 
@@ -200,11 +210,16 @@ public class EventViewActivity extends AppCompatActivity {
     public void postDeleteRequest(int id){
         final Handler handler = new Handler();
         Log.d(TAG, "postDeleteRequest: " + id);
-        String postedRequest = "deleteevent";
-        String userToken = "f213412ui1g2";
-        int userId = 2;
 
-        String requestJSON = "{" +
+        // TODO code 1 Replace this
+        String token = "f213412ui1g2";
+        int userID = 2;
+
+        SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "delete", userID, id);
+        String json = new Gson().toJson(sqlQueryJson);
+
+        // Legacy Delete json
+        /*String requestJSON = "{" +
                 "\"userId\":" +
                 userId +
                 ",\"request\":\"" +
@@ -213,22 +228,17 @@ public class EventViewActivity extends AppCompatActivity {
                 id +
                 ", \"userToken\":\"" +
                 userToken +
-                "\"}";
-        Log.d(TAG, "postDeleteRequest: " + requestJSON);
+                "\"}";*/
+
+
+
+
+        // Make Client
         OkHttpClient client = new OkHttpClient();
-        Log.d(TAG, "postDeleteRequest: making client");
-        String url = "http://www.folderol.dk/";
-
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("retrieveJSON", requestJSON)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-        Log.d(TAG, "postDeleteRequest: making call");
+        // Use self-made class HttpRequestBuidler to make request
+        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
+                .postBuilder("query", json);
+        // Make call on client with request
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

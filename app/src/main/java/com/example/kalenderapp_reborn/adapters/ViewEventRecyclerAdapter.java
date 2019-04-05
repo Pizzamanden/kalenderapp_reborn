@@ -22,8 +22,6 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
-import static java.security.AccessController.getContext;
-
 public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecyclerAdapter.ViewHolder> {
 
     final static private String TAG = "ViewEventRecycler";
@@ -109,7 +107,7 @@ public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecy
                             // User Accepts
                             // Fire delete method from owner activity
                             if(mContext instanceof EventViewActivity){
-                                ((EventViewActivity) mContext).makeDeleteHTTP(eventId.get(getAdapterPosition()));
+                                ((EventViewActivity) mContext).initDeleteQuery(eventId.get(getAdapterPosition()));
                             }
                         }
                     });
