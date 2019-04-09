@@ -45,29 +45,29 @@ public class SQLQueryJson {
      * Insertions
      *
      * @param token The users token
-     * @param dataJsonCalendarEntries Object, styled as a row from CalendarEntries DB
+     * @param calendarEntriesTable Object, styled as a row from CalendarEntries DB
      * @param queryType What type of query to perform
      * @param userID The users ID
      */
-    public SQLQueryJson(String token, DataJsonCalendarEntries dataJsonCalendarEntries, String queryType, int userID){
+    public SQLQueryJson(String token, CalendarEntriesTable calendarEntriesTable, String queryType, int userID){
         this.token = token;
         this.userID = userID;
-        this.queryRequest = new QueryRequest(dataJsonCalendarEntries, queryType);
+        this.queryRequest = new QueryRequest(calendarEntriesTable, queryType);
     }
     /**
      * This is for:
      * Updates
      *
      * @param token The users token
-     * @param dataJsonCalendarEntries Object, styled as a row from CalendarEntries DB
+     * @param calendarEntriesTable Object, styled as a row from CalendarEntries DB
      * @param queryType What type of query to perform
      * @param userID The users ID
      * @param entryID The ID of the entry
      */
-    public SQLQueryJson(String token, DataJsonCalendarEntries dataJsonCalendarEntries, String queryType, int userID, int entryID){
+    public SQLQueryJson(String token, CalendarEntriesTable calendarEntriesTable, String queryType, int userID, int entryID){
         this.token = token;
         this.userID = userID;
-        this.queryRequest = new QueryRequest(dataJsonCalendarEntries, queryType, entryID);
+        this.queryRequest = new QueryRequest(calendarEntriesTable, queryType, entryID);
     }
     /**
      * This is for:
@@ -100,7 +100,7 @@ public class SQLQueryJson {
 
     // Getters
     public int getUserID(){ return this.userID; }
-    public ArrayList<DataJsonCalendarEntries> getQueryResponseArrayList(){ return this.queryResponse.getCalendarEntriesArrayList(); }
+        public ArrayList<CalendarEntriesTable> getQueryResponseArrayList(){ return this.queryResponse.getCalendarEntriesArrayList(); }
 
 
     // Inner-Classes
@@ -111,17 +111,17 @@ public class SQLQueryJson {
         // Fields
         private String queryType;
         private int entryID;
-        private DataJsonCalendarEntries dataJsonCalendarEntries;
+        private CalendarEntriesTable calendarEntriesTable;
 
         // Constructs
         // This is for insertion queries
-        private QueryRequest(DataJsonCalendarEntries dataJsonCalendarEntries, String queryType){
-            this.dataJsonCalendarEntries = dataJsonCalendarEntries;
+        private QueryRequest(CalendarEntriesTable calendarEntriesTable, String queryType){
+            this.calendarEntriesTable = calendarEntriesTable;
             this.queryType = queryType;
         }
         // This is for an update query
-        private QueryRequest(DataJsonCalendarEntries dataJsonCalendarEntries, String queryType, int entryID){
-            this.dataJsonCalendarEntries = dataJsonCalendarEntries;
+        private QueryRequest(CalendarEntriesTable calendarEntriesTable, String queryType, int entryID){
+            this.calendarEntriesTable = calendarEntriesTable;
             this.queryType = queryType;
             this.entryID = entryID;
         }
@@ -140,9 +140,11 @@ public class SQLQueryJson {
         // It also contains getters, for pulling the data out into my android code
 
         // Fields
-        private ArrayList<DataJsonCalendarEntries> calendarEntriesArrayList = new ArrayList<>();
+        private ArrayList<CalendarEntriesTable> calendarEntriesArrayList = new ArrayList<>();
+        private String responseMessage;
 
         // Getters
-        public ArrayList<DataJsonCalendarEntries> getCalendarEntriesArrayList() { return this.calendarEntriesArrayList; }
+        public ArrayList<CalendarEntriesTable> getCalendarEntriesArrayList() { return this.calendarEntriesArrayList; }
+        public String getResponseMessage() { return this.responseMessage; }
     }
 }

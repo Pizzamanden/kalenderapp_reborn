@@ -69,15 +69,11 @@ public class EventViewActivity extends AppCompatActivity {
 
     public void getDataJSON(){
 
-        String postedRequest = "getUserEventsPastToday";
-        int userId = 2;
-        String userToken = "f213412ui1g2";
-
         // TODO code 1 Replace this
         String token = "f213412ui1g2";
         int userID = 2;
 
-        SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_AllBeforeToday", userID);
+        SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_all_pre_today", userID);
         String json = new Gson().toJson(sqlQueryJson);
 
         // Legacy Select statement
@@ -138,6 +134,8 @@ public class EventViewActivity extends AppCompatActivity {
     // Accepts: a string, should be an encoded json string as array[object{}, object{}...]
     private void initRecyclerView(String jsonString){
         Log.d(TAG, "initRecyclerView: " + jsonString);
+
+        // TODO This is currently not the format the json is being reutrned as, needs a fix as soon as possible
 
         ArrayList<String> eventNames = new ArrayList<>();
         ArrayList<String> eventStartString = new ArrayList<>();
@@ -217,20 +215,6 @@ public class EventViewActivity extends AppCompatActivity {
 
         SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "delete", userID, id);
         String json = new Gson().toJson(sqlQueryJson);
-
-        // Legacy Delete json
-        /*String requestJSON = "{" +
-                "\"userId\":" +
-                userId +
-                ",\"request\":\"" +
-                postedRequest +
-                "\",\"arg\":" +
-                id +
-                ", \"userToken\":\"" +
-                userToken +
-                "\"}";*/
-
-
 
 
         // Make Client

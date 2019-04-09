@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,7 +23,7 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.kalenderapp_reborn.dataobjects.DataJsonCalendarEntries;
+import com.example.kalenderapp_reborn.dataobjects.CalendarEntriesTable;
 import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
 import com.google.gson.Gson;
@@ -35,15 +34,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class EventAddActivity extends AppCompatActivity {
@@ -199,7 +195,8 @@ public class EventAddActivity extends AppCompatActivity {
         String eventEndTime = editText_end_datefield.getText().toString() + " " + editText_end_timefield.getText().toString();
         String eventAlarmTime = editText_alarmdate.getText().toString() + " " + editText_alarmtime.getText().toString();
 
-        DataJsonCalendarEntries dataJsonCalendarEntries = new DataJsonCalendarEntries(
+        // Is a select or update, so it needs an instance of CalendarEntriesTable
+        CalendarEntriesTable calendarEntriesTable = new CalendarEntriesTable(
                 eventName,
                 eventStartTime,
                 eventEndTime,
@@ -211,9 +208,9 @@ public class EventAddActivity extends AppCompatActivity {
 
         SQLQueryJson sqlQueryJson;
         if(isAnUpdate){
-            sqlQueryJson = new SQLQueryJson(token, dataJsonCalendarEntries, "insert", thisuserId);
+            sqlQueryJson = new SQLQueryJson(token, calendarEntriesTable, "insert", thisuserId);
         } else {
-            sqlQueryJson = new SQLQueryJson(token, dataJsonCalendarEntries, "update", thisuserId, entryID);
+            sqlQueryJson = new SQLQueryJson(token, calendarEntriesTable, "update", thisuserId, entryID);
         }
         String json = new Gson().toJson(sqlQueryJson);
 
@@ -424,29 +421,21 @@ public class EventAddActivity extends AppCompatActivity {
     }
 
     private void setAddEntryView(int id){
-        String postedRequest = "getSingleEventToEdit";
-        String userToken = "f213412ui1g2";
-        int userId = 2;
 
-        String requestJSON = "{" +
-                "\"request\":\"" +
-                postedRequest +
-                "\", \"identifiers\":{" +
-                "\"userID\":" +
-                userId +
-                ", \"postID\":" +
-                id +
-                "}, \"userToken\":\"" +
-                userToken +
-                "\"}";
+        // TODO code 1 Replace this
+        String token = "f213412ui1g2";
+        int userID = 2;
 
-        Log.d(TAG, "setAddEntryView: " + requestJSON);
+        SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_single", userID, id);
+        String json = new Gson().toJson(sqlQueryJson);
+
+        Log.d(TAG, "setAddEntryView: " + json);
 
         // Make Client
         OkHttpClient client = new OkHttpClient();
         // Use self-made class HttpRequestBuilder to make request
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder("select", requestJSON);
+                .postBuilder("query", json);
         // Make call on client with request
         Log.d(TAG, "setAddEntryView: making call");
         client.newCall(request).enqueue(new Callback() {
@@ -480,6 +469,7 @@ public class EventAddActivity extends AppCompatActivity {
             JSONArray mJSONArray = new JSONArray(jsonString);
             for(int i = 0;i<mJSONArray.length(); i++){
                 // Get current json object
+                // TODO This is currently not the format the json is being reutrned as, needs a fix as soon as possible
                 JSONObject json = mJSONArray.getJSONObject(i);
 
 

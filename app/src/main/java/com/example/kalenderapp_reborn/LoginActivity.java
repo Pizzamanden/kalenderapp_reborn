@@ -11,12 +11,12 @@ import com.example.kalenderapp_reborn.supportclasses.SessionManager;
 
 import org.joda.time.DateTime;
 
-public class LoginActivity extends AppCompatActivity{
+public class LoginActivity extends AppCompatActivity implements SessionManager.SessionManagerHttpResponse{
 
     private static final String TAG = "LoginActivity";
 
     private EditText editText_email, editText_password;
-    //private SessionManager sessionManager = new SessionManager(this);
+    private SessionManager sessionManager = new SessionManager(this);
 
 
     @Override
@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity{
         DateTime dateTime = new DateTime();
         Log.d(TAG, "onCreate: " + dateTime);
         Log.d(TAG, "onCreate: " + dateTime.toString());
-        //sessionManager.setSessionManagerListener(this);
+        sessionManager.setSessionManagerListener(this);
     }
 
     public void gotoSignup(View view){
@@ -38,13 +38,17 @@ public class LoginActivity extends AppCompatActivity{
     }
 
     public void doLogin(View view){
-
+        // Start doing a login, with the information from the views.
     }
-
 
     private void startMainActivity(){
         // This starts the main calendar activity
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
+    }
+
+    @Override
+    public void onHttpResponse(String jsonResponse) {
+        // a response has returned, from when this activity asked for a token validation
     }
 }

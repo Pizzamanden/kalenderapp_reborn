@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.example.kalenderapp_reborn.dataobjects.TokenValidation;
+import com.google.gson.Gson;
+
 import org.joda.time.DateTime;
 
 import java.io.IOException;
@@ -22,6 +25,7 @@ public class SessionManager{
     private static final String tokenSharedPreferences = "TOKEN_SHARED_PREFS";
     private static final String tokenKey = "TOKEN_AS_STRING";
     private static final String tokenInvalidation = "TOKEN_INVALIDATION";
+    private static final String userID = "USER_ID";
     private static final String tokenLastValidated = "TOKEN_LAST_VALIDATED";
     // Shared prefs
     private SharedPreferences sharedPref;
@@ -33,10 +37,6 @@ public class SessionManager{
     public SessionManager(Activity activity){
         sharedPref = activity.getSharedPreferences(tokenSharedPreferences, Context.MODE_PRIVATE);
         editor = sharedPref.edit();
-    }
-
-    public void testMethod(){
-        mCallback.onHttpResponse("yaaadssddsdsdsd");
     }
 
 
@@ -52,6 +52,12 @@ public class SessionManager{
     public String getToken(){
         return sharedPref.getString(tokenKey, null);
     }
+    public int getUserID(){
+        return sharedPref.getInt(userID, -1);
+    }
+    public String getLastValidation(){
+        return sharedPref.getString(tokenLastValidated, null);
+    }
 
 
 
@@ -65,15 +71,10 @@ public class SessionManager{
      * @param jsonWebToken
      * @return boolean as true if successful
      */
-    private boolean writePrefs(String jsonWebToken){
+    private boolean writePrefs(String jsonWebToken, boolean invalidate){
         DateTime dateTime = new DateTime();
         editor.putString(tokenKey, jsonWebToken);
         editor.putString(tokenLastValidated, dateTime.toString());
-        return editor.commit();
-    }
-
-    private boolean writePrefs(String jsonWebToken, boolean invalidate){
-        editor.putString(tokenKey, jsonWebToken);
         editor.putBoolean(tokenInvalidation, invalidate);
         return editor.commit();
     }
@@ -82,16 +83,20 @@ public class SessionManager{
         if(this.localTokenValidation()){
             // Local validation success
             // Now send token to server to validate
-            String phpRequest = "example";
-            String jsonRequest = "{" +
-                    "\"request\":\"" +
-                    phpRequest +
-                    "\"";
 
+            TokenValidation tokenValidation = new TokenValidation(getLastValidation(), getToken(), getUserID());
+            String json = new Gson().toJson(tokenValidation);
+
+            // Make call
+            httpCall("verify_token", json);
         } else {
             // Local validation failed because:
             // No token
             // Token was marked as invalid
+
+            // This is not the place to make the validation, but to act on already done validation (see localTokenValidation)
+
+            mCallback.onHttpResponse("Breaking news: Local token marked as invalid", null);
 
             // A login should be forced on user
             // TODO implement this
@@ -122,21 +127,20 @@ public class SessionManager{
         Request request = new HttpRequestBuilder("http://www.folderol.dk/")
                 .postBuilder(requestName, jsonToSend);
         // Make call on client with request
-        Log.d(TAG, "setAddEntryView: making call");
+        Log.d(TAG, "httpCall: making call");
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d(TAG, "onFailure: Failure");
                 e.printStackTrace();
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "setAddEntryView: Response code " + response.code());
+                Log.d(TAG, "httpCall: Response code " + response.code());
                 if (response.code() == 200) {
                     final String myResponse = response.body().string();
                     Log.d(TAG, "onResponse: " + myResponse);
-                    Log.d(TAG, "setAddEntryView: 200");
+                    Log.d(TAG, "httpCall: 200");
 
                     // Send response to onRequestResponse to process response
                     onRequestResponse(myResponse);
@@ -149,13 +153,23 @@ public class SessionManager{
         // This method is a in-between when the request gets a response, and before anything else touches it, to see what server response was
         // If server response was negative, a false boolean should be set on tokenInvalidation
         // If server response was positive, the new returned token should be put in old tokens place, and tokenInvalidation should be set to true
-        // This way, if a token was false, and user dosent login after being put in login screen, it will be easy to read login status
+        // This way, if a token was non-valid, and user does not login after being put in login screen, it will be easy to read login status
 
-        mCallback.onHttpResponse(httpResponse);
+
+        // Find out how httpResponse is formatted
+        // httpResponse;
+        // Write prefs with according data
+        /*if(writePrefs()){
+
+        }*/
+        // Then via interface
+        String responseCode = "no bueno";
+
+        mCallback.onHttpResponse(responseCode, httpResponse);
     }
 
     public interface SessionManagerHttpResponse {
-        void onHttpResponse(String jsonResponse);
+        void onHttpResponse(String responseCode, String jsonResponse);
     }
 
     public void setSessionManagerListener(SessionManagerHttpResponse callback) {
