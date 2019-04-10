@@ -26,6 +26,7 @@ android:id="@+id/drawerLayout_nav">
 
             <ImageView
                 android:id="@+id/imageview_checkmark"
+                android:onClick="showNoticeDialog"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_gravity="right"

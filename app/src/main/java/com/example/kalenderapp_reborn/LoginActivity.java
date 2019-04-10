@@ -1,12 +1,18 @@
 package com.example.kalenderapp_reborn;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.kalenderapp_reborn.fragments.CounterDialog;
 import com.example.kalenderapp_reborn.supportclasses.SessionManager;
 
 import org.joda.time.DateTime;
@@ -48,7 +54,15 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
     }
 
     @Override
-    public void onHttpResponse(String jsonResponse) {
-        // a response has returned, from when this activity asked for a token validation
+    public void onHttpResponse(String responseCode, String jsonResponse) {
+
     }
+
+
+
+
+
+
+
+
 }

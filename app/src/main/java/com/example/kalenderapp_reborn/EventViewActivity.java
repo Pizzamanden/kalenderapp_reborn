@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.example.kalenderapp_reborn.adapters.ViewEventRecyclerAdapter;
+import com.example.kalenderapp_reborn.dataobjects.CalendarEntriesTable;
 import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
 import com.google.gson.Gson;
@@ -19,6 +20,7 @@ import com.google.gson.Gson;
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.Minutes;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -135,8 +137,6 @@ public class EventViewActivity extends AppCompatActivity {
     private void initRecyclerView(String jsonString){
         Log.d(TAG, "initRecyclerView: " + jsonString);
 
-        // TODO This is currently not the format the json is being reutrned as, needs a fix as soon as possible
-
         ArrayList<String> eventNames = new ArrayList<>();
         ArrayList<String> eventStartString = new ArrayList<>();
         ArrayList<String> eventEndString = new ArrayList<>();
@@ -144,27 +144,23 @@ public class EventViewActivity extends AppCompatActivity {
         ArrayList<String> eventAlarmTimeString = new ArrayList<>();
         ArrayList<Integer> eventIds = new ArrayList<>();
 
-        // Setup arraylists for recyclerview
-        try {
-            JSONArray mJSONArray = new JSONArray(jsonString);
-            for(int i = 0;i<mJSONArray.length(); i++){
-
-                // Add json fields to arrays for recyclerview
-                JSONObject json = mJSONArray.getJSONObject(i);
-                eventNames.add(json.getString("event_name"));
-                eventStartString.add(datetimeToString(json.getString("event_start")));
-                eventEndString.add(datetimeToString(json.getString("event_end")));
-                eventAlarmStatus.add(json.getBoolean("event_alarmenable"));
-                if(json.getBoolean("event_alarmenable")){
-                    eventAlarmTimeString.add(datetimeToAlarmString(json.getString("event_start"), json.getString("event_alarmtime")));
-                } else {
-                    eventAlarmTimeString.add("No");
-                }
-                eventIds.add(json.getInt("post_id"));
+        // Now fill arraylists with content
+        SQLQueryJson json = new Gson().fromJson(jsonString, SQLQueryJson.class);
+        ArrayList<CalendarEntriesTable> calendarEntryTables = json.getQueryResponseArrayList();
+        for(int i = 0; i < calendarEntryTables.size(); i++){
+            // Add json fields to arrays for recyclerview
+            eventNames.add(calendarEntryTables.get(i).getEventName());
+            eventStartString.add(datetimeToString(calendarEntryTables.get(i).getEventStartTime()));
+            eventEndString.add(datetimeToString(calendarEntryTables.get(i).getEventEndTime()));
+            eventAlarmStatus.add(calendarEntryTables.get(i).getEventAlarmStatus());
+            if(calendarEntryTables.get(i).getEventAlarmStatus()){
+                eventAlarmTimeString.add(datetimeToAlarmString(calendarEntryTables.get(i).getEventStartTime(), calendarEntryTables.get(i).getEventAlarmTime()));
+            } else {
+                eventAlarmTimeString.add("No");
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            eventIds.add(calendarEntryTables.get(i).getEventID());
         }
+
         RecyclerView recyclerView = findViewById(R.id.recyclerview_viewEvents);
         ViewEventRecyclerAdapter adapter = new ViewEventRecyclerAdapter(mContext, eventNames, eventStartString, eventEndString, eventIds, eventAlarmStatus, eventAlarmTimeString);
         recyclerView.setAdapter(adapter);
@@ -330,6 +326,8 @@ public class EventViewActivity extends AppCompatActivity {
         int daysTotal = (minBefore / 60) / 24;
         int daysRest = (minBefore / 60) % 24;
 
+
+        // TODO this doesnt work / produces wrong results, fix
         String returnString = "";
         if(daysTotal > 0){
             // Plural or not

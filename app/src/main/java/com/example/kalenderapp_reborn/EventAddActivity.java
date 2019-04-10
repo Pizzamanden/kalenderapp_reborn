@@ -57,12 +57,7 @@ public class EventAddActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: i");
         setContentView(R.layout.activity_event_add);
-
-
-
-        Log.d(TAG, "onCreate: o");
         
         editText_name = findViewById(R.id.editText_name);
         editText_start_datefield = findViewById(R.id.editText_start_datefield);
@@ -212,6 +207,7 @@ public class EventAddActivity extends AppCompatActivity {
         } else {
             sqlQueryJson = new SQLQueryJson(token, calendarEntriesTable, "update", thisuserId, entryID);
         }
+        // TODO Test this
         String json = new Gson().toJson(sqlQueryJson);
 
 

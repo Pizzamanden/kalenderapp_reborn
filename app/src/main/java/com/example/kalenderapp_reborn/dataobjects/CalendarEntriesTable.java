@@ -5,7 +5,7 @@ public class CalendarEntriesTable {
     // This class holds all data for/from the Calendar_entries table
     // Can be used for everything, as it is only for holding the data
 
-    private String eventID;
+    private int eventID;
     private String eventName;
     private String eventStartTime;
     private String eventEndTime;
@@ -24,7 +24,7 @@ public class CalendarEntriesTable {
         this.eventAlarmTime = eventAlarmTime;
     }
 
-    public String getEventID() {
+    public int getEventID() {
         return eventID;
     }
     public String getEventName() {
@@ -42,7 +42,7 @@ public class CalendarEntriesTable {
     public int getEventType() {
         return this.eventType;
     }
-    public boolean isEventAlarmStatus() {
+    public boolean getEventAlarmStatus() {
         return this.eventAlarmStatus;
     }
     public String getEventAlarmTime() {

@@ -3,6 +3,7 @@ package com.example.kalenderapp_reborn;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,12 +19,16 @@ import android.widget.RelativeLayout;
 import com.example.kalenderapp_reborn.adapters.CalendarRecyclerAdapter;
 import com.example.kalenderapp_reborn.dataobjects.CalendarEntriesTable;
 import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
+import com.example.kalenderapp_reborn.fragments.CounterDialog;
 import com.example.kalenderapp_reborn.supportclasses.DrawerNavigationClass;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -148,28 +153,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRecyclerView(String jsonString) {
 
-
-        SQLQueryJson json = new Gson().fromJson(jsonString, SQLQueryJson.class);
-        ArrayList<CalendarEntriesTable> calendarEntryTables = json.getQueryResponseArrayList();
-        for(int i = 0; i < calendarEntryTables.size(); i++){
-            Log.d(TAG, "initRecyclerView: Name: " + calendarEntryTables.get(i).getEventName());
-        }
-        // TODO This is currently not the format the json is being reutrned as, needs a fix as soon as possible
-
-
-        // A datetime of the current moment, timezone is within
+        // I'll need 2 datetimes, one for start point, another for end
+        // Days between these 2 dates is the max rows in my recycler view
+        // The start date can also be used with days between to find index num
+        // The datetimes should only be dates, but i want to NOT have to convert ever again, so its datetime
+        // The reason is i should only measure days between from 00:00, as seen with 22:01 and 22:00 (22:01 is LESS than a day, i.e 0 days from 22:00)
         final DateTime dateTimeToday = new DateTime();
-        // Dummy long, used in start-date and is the datetime of 2000-01-01T00:00:00
-        // Why as 00:00:00?
-        // Because i want to do math on the just the date
-        // Example: 2018-10-10T21:22:59 is MORE THAN ONE DAYS after 2018-10-09T21:23:59
-        // Also is wrong when calc'ing backwards
-        long calStartYear = dateTimeToday.minusYears(1).minusMinutes(dateTimeToday.getMinuteOfDay()).minusSeconds(dateTimeToday.getSecondOfMinute()).getMillis();
-        long calEndYear = dateTimeToday.plusYears(5).minusMinutes(dateTimeToday.getMinuteOfDay()).minusSeconds(dateTimeToday.getSecondOfMinute()).getMillis();
-        // This datetime is where the calendar is supposed to start
-        // Math done on this is always position as added days, or compared vs dateTimeToday
-        final DateTime dateTimeCalStart = new DateTime(calStartYear);
-        final DateTime dateTimeCalEnd = new DateTime(calEndYear);
+        final DateTime dateTimeCalStart = new DateTime(dateTimeToday.minusYears(1).minusMinutes(dateTimeToday.getMinuteOfDay()).minusSeconds(dateTimeToday.getSecondOfMinute()).getMillis());
+        final DateTime dateTimeCalEnd = new DateTime(dateTimeToday.plusYears(5).minusMinutes(dateTimeToday.getMinuteOfDay()).minusSeconds(dateTimeToday.getSecondOfMinute()).getMillis());
         // Check correctness in debug logcat
         Log.d(TAG, "initRecyclerView: " + dateTimeCalStart);
         Log.d(TAG, "initRecyclerView: " + dateTimeCalEnd);
@@ -177,53 +168,46 @@ public class MainActivity extends AppCompatActivity {
         int daysBetween = Days.daysBetween(dateTimeCalStart, dateTimeToday).getDays();
 
 
+        // Setup arraylists for recyclerview
         ArrayList<String> eventNames = new ArrayList<>();
         ArrayList<Integer> eventIndex = new ArrayList<>();
         ArrayList<String> eventTime = new ArrayList<>();
         ArrayList<Integer> eventType = new ArrayList<>();
         ArrayList<Integer> eventID = new ArrayList<>();
 
-        // Setup arraylists for recyclerview
-        /*try {
-            JSONArray mJSONArray = new JSONArray(jsonString);
-            for(int i = 0;i<mJSONArray.length(); i++){
-                // Add json fields to arrays for recyclerview
-                JSONObject json = mJSONArray.getJSONObject(i);
+        // Now fill arraylists with content
+        SQLQueryJson json = new Gson().fromJson(jsonString, SQLQueryJson.class);
+        ArrayList<CalendarEntriesTable> calendarEntryTables = json.getQueryResponseArrayList();
+        for(int i = 0; i < calendarEntryTables.size(); i++){
+            for(int typeInsert = 0; typeInsert < 2; typeInsert++){
 
-                // For loop in for loop, because theres 2 types in a single row
-                for(int typeInsert = 0; typeInsert < 2; typeInsert++){
-                    String toGet;
-                    String nameEnd;
-                    if(typeInsert < 1){
-                        toGet = "event_start";
-                        nameEnd = " Starts";
-                    } else {
-                        toGet = "event_end";
-                        nameEnd = " Ends";
-                    }
-                    eventNames.add(json.getString("event_name") + nameEnd);
-                    DateTime jsonDate = new DateTime(json.getString(toGet));
-                    Log.d(TAG, "initRecyclerView: " + json.getString("event_name") + nameEnd + " ___ " + json.getInt("post_id"));
-                    // Adding a relative number to what should share index with recyclerview index
-                    eventIndex.add(Days.daysBetween(dateTimeCalStart, jsonDate).getDays());
-                    // Adding string to show what time of day it happens
-                    // this is either the start or end of an event, chosen by what typeInsert is
-                    eventTime.add(timeToTwoNum(jsonDate.getHourOfDay()) + "." + timeToTwoNum(jsonDate.getMinuteOfHour()));
-                    // Adding typeInsert, a saved instance of whether it is the start or end
-                    eventType.add(typeInsert);
-                    // Adding ID (directly taken from SQL) to be able to reference this entry in the future
-                    eventID.add(json.getInt("post_id"));
+                // Is this a starting date, or an ending date?
+                DateTime jsonDate;
+                if(typeInsert == 0){
+                    eventNames.add(calendarEntryTables.get(i).getEventName() + " starts");
+                    jsonDate = new DateTime(calendarEntryTables.get(i).getEventStartTime());
+                } else {
+                    eventNames.add(calendarEntryTables.get(i).getEventName() + " ends");
+                    jsonDate = new DateTime(calendarEntryTables.get(i).getEventEndTime());
                 }
+                // Adding a relative number to what should share index with recyclerview index
+                eventIndex.add(Days.daysBetween(dateTimeCalStart, jsonDate).getDays());
+                // Adding string to show what time of day it happens
+                // this is either the start or end of an event, chosen by what typeInsert is
+                eventTime.add(timeToTwoNum(jsonDate.getHourOfDay()) + "." + timeToTwoNum(jsonDate.getMinuteOfHour()));
+                // Adding typeInsert, a saved instance of whether it is the start or end
+                eventType.add(typeInsert);
+                // Adding ID (directly taken from SQL) to be able to reference this entry in the future
+                eventID.add(calendarEntryTables.get(i).getEventID());
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
+        }
+
 
 
 
         Log.d(TAG, "initRecyclerView: " + timezoneDiffMilli);
 
-
+        // Now make adapter, and set it on my recycler view
         CalendarRecyclerAdapter adapter = new CalendarRecyclerAdapter(this, dateTimeCalStart, dateTimeCalEnd, dateTimeToday, eventNames, eventIndex, eventTime, eventType, eventID);
         recyclerView.setAdapter(adapter);
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
@@ -270,7 +254,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void showNoticeDialog(View view) {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = CounterDialog.newInstance(fillArrays(0, 100), fillArrays(0, 23), fillArrays(0, 59));
+        dialog.show(getSupportFragmentManager(), "CounterDialog");
+    }
 
+    private ArrayList<Integer> fillArrays(int startNum, int maxNum){
+        ArrayList<Integer> myNum = new ArrayList<>();
+        for(int i = startNum; i < maxNum; i++){
+            myNum.add(i);
+        }
+        return myNum;
+    }
 
 
 
