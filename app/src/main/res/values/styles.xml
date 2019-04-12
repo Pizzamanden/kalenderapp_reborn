@@ -98,7 +98,7 @@
     <style name="counterdialogbutton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@color/colorBackgroundSecondaryDark</item>
+        <item name="android:background">@color/colorBackgroundPrimaryDark</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
     </style>

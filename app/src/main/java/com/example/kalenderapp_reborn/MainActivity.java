@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String timezoneDiffMilli;
 
+    DialogFragment myVeryOwnDialog;
+
     private String[] monthNames;
 
     @Override
@@ -72,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         loadingPanel = findViewById(R.id.loadingPanel);
 
         timezoneDiffMilli = TimeZone.getDefault().getID();
+
+        myVeryOwnDialog = CounterDialog.newInstance(fillArrays(0, 100), fillArrays(0, 23), fillArrays(0, 59));
 
         initStringArrays();
         setupDrawerNav();
@@ -256,13 +260,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void showNoticeDialog(View view) {
         // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = CounterDialog.newInstance(fillArrays(0, 100), fillArrays(0, 23), fillArrays(0, 59));
-        dialog.show(getSupportFragmentManager(), "CounterDialog");
+        myVeryOwnDialog.show(getSupportFragmentManager(), "CounterDialog");
     }
 
     private ArrayList<Integer> fillArrays(int startNum, int maxNum){
         ArrayList<Integer> myNum = new ArrayList<>();
-        for(int i = startNum; i < maxNum; i++){
+        for(int i = maxNum; i >= startNum; i--){
             myNum.add(i);
         }
         return myNum;

@@ -8,7 +8,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/textView_daysheader"
@@ -23,6 +23,8 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constraintLayout_days"
             style="@style/counterdialoglist"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/textView_daysheader"
             app:layout_constraintStart_toStartOf="@+id/textView_daysheader"
             app:layout_constraintTop_toBottomOf="@+id/textView_daysheader">
@@ -30,24 +32,64 @@
             <ImageButton
                 android:id="@+id/button_day_inc"
                 style="@style/counterdialogbutton.up"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 app:layout_constraintBottom_toTopOf="@+id/recyclerView_days"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <View
+                android:id="@+id/view2"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@color/colorTextPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/recyclerView_days" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView_days"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:scrollbars="none"
                 app:layout_constraintBottom_toTopOf="@+id/button_day_dec"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_day_inc"/>
+                app:layout_constraintTop_toBottomOf="@+id/button_day_inc" >
+
+            </android.support.v7.widget.RecyclerView>
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="24dp"
+                android:background="@color/colorTextPrimary"
+                app:layout_constraintBottom_toTopOf="@+id/button_day_dec"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <ImageButton
                 android:id="@+id/button_day_dec"
                 style="@style/counterdialogbutton.down"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -86,7 +128,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/imageButton_hour_inc"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_hour_dec"/>
+                app:layout_constraintTop_toBottomOf="@+id/button_hour_dec" />
 
             <ImageButton
                 android:id="@+id/button_hour_dec"
@@ -131,7 +173,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/button_min_inc"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_min_dec"/>
+                app:layout_constraintTop_toBottomOf="@+id/button_min_dec" />
 
             <ImageButton
                 android:id="@+id/button_min_dec"

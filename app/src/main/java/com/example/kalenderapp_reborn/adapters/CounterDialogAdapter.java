@@ -46,7 +46,6 @@ public class CounterDialogAdapter extends RecyclerView.Adapter<CounterDialogAdap
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             numberView = itemView.findViewById(R.id.textView_number);
-
         }
     }
 }
