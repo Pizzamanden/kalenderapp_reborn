@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.kalenderapp_reborn.R;
@@ -18,9 +19,16 @@ import static android.support.constraint.Constraints.TAG;
 public class CounterDialogAdapter extends RecyclerView.Adapter<CounterDialogAdapter.ViewHolder> {
 
     private ArrayList<Integer> numberList;
+    private boolean repeatedList;
 
-    public CounterDialogAdapter(ArrayList<Integer> numberList){
+    public CounterDialogAdapter(ArrayList<Integer> numberList, boolean repeatedList){
         this.numberList = numberList;
+        this.repeatedList = repeatedList;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     @NonNull
@@ -29,7 +37,9 @@ public class CounterDialogAdapter extends RecyclerView.Adapter<CounterDialogAdap
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_counterdialog, viewGroup, false);
         // work here if you need to control height of your items
         // keep in mind that parent is RecyclerView in this case
-        int height = (viewGroup.getMeasuredHeight() + 3) / 3;
+        int viewGroupHeight = viewGroup.getMeasuredHeight();
+        int height = viewGroupHeight / 3 + 1;
+        viewGroup.setPadding(0, height, 0, height);
         Log.d(TAG, "onCreateViewHolder: " + viewGroup.getMeasuredHeight());
         Log.d(TAG, "onCreateViewHolder: " + height);
         view.setMinimumHeight(height);
@@ -43,7 +53,11 @@ public class CounterDialogAdapter extends RecyclerView.Adapter<CounterDialogAdap
 
     @Override
     public int getItemCount() {
-        return Integer.MAX_VALUE;
+        if(repeatedList) {
+            return Integer.MAX_VALUE;
+        } else {
+            return numberList.size();
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

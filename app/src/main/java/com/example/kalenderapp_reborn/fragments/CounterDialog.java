@@ -74,36 +74,35 @@ public class CounterDialog extends DialogFragment {
 
         // Recycler views
         RecyclerView recView_days = inflatedLayout.findViewById(R.id.recyclerView_days);
-        Log.d(TAG, "onCreate: " + recView_days.getHeight());
         //RecyclerView recView_hours = inflatedLayout.findViewById(R.id.recyclerView_hours);
         //RecyclerView recView_mins = inflatedLayout.findViewById(R.id.recyclerView_mins);
         myRecView = recView_days;
 
         // Layout Managers
-        LinearLayoutManager layoutManager_days = setupAdapterAndManager(recView_days, intList_days);
-        //LinearLayoutManager layoutManager_hours = setupAdapterAndManager(recView_hours, intList_hours);
-        //LinearLayoutManager layoutManager_mins = setupAdapterAndManager(recView_mins, intList_mins);
+        LinearLayoutManager layoutManager_days = setupAdapterAndManager(recView_days, intList_days, false);
+        //LinearLayoutManager layoutManager_hours = setupAdapterAndManager(recView_hours, intList_hours, true);
+        //LinearLayoutManager layoutManager_mins = setupAdapterAndManager(recView_mins, intList_mins, true);
 
         // Set listener for scrolling on recycler views
-        setupScrollAndClickListener(R.id.button_day_inc, R.id.button_day_dec, recView_days, layoutManager_days, intList_days);
+        setupScrollAndClickListener(R.id.button_day_inc, R.id.button_day_dec, recView_days, layoutManager_days, intList_days, false);
         //setupScrollAndClickListener(R.id.button_day_inc, R.id.button_day_dec, recView_hours, layoutManager_hours);
         //setupScrollAndClickListener(R.id.button_day_inc, R.id.button_day_dec, recView_mins, layoutManager_mins);
     }
 
-    private LinearLayoutManager setupAdapterAndManager(RecyclerView recyclerView, ArrayList<Integer> dataList){
-        CounterDialogAdapter adapter = new CounterDialogAdapter(dataList);
+    private LinearLayoutManager setupAdapterAndManager(RecyclerView recyclerView, ArrayList<Integer> dataList, boolean repeatList){
+        CounterDialogAdapter adapter = new CounterDialogAdapter(dataList, repeatList);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         return layoutManager;
     }
 
-    private void setupScrollAndClickListener(final int buttonIncId, final int buttonDecId, final RecyclerView recView, final LinearLayoutManager layoutManager, final ArrayList<Integer> dataSet){
+    private void setupScrollAndClickListener(final int buttonIncId, final int buttonDecId, final RecyclerView recView, final LinearLayoutManager layoutManager, final ArrayList<Integer> dataSet, boolean repeatList){
         // Buttons
         final ImageButton buttonInc = inflatedLayout.findViewById(buttonIncId);
         final ImageButton buttonDec = inflatedLayout.findViewById(buttonDecId);
         final TextView daysHeader = inflatedLayout.findViewById(R.id.textView_daysheader);
-        Log.d(TAG, "setupScrollAndClickListener: " + dataSet.size());
+        int recMeasured = (recView.getMeasuredHeight() / 3);
 
         // Button listeners
         counterButtonListener(buttonInc, -1, recView, layoutManager);
@@ -115,6 +114,8 @@ public class CounterDialog extends DialogFragment {
             int SCROLL_DIRECTION;
             int TARGET_VIEW;
             int dataPosition;
+            boolean wasTouched;
+            boolean wasSnapped = false;
             
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -122,7 +123,6 @@ public class CounterDialog extends DialogFragment {
                 super.onScrolled(recyclerView, dx, dy);
                 int firstVisible = layoutManager.findFirstCompletelyVisibleItemPosition();
                 int lastVisible = layoutManager.findLastCompletelyVisibleItemPosition();
-                Log.d(TAG, "onScrolled: " + dy);
                 if(dy < 0){
                     SCROLL_DIRECTION = 1;
                     TARGET_VIEW = firstVisible;
@@ -131,23 +131,52 @@ public class CounterDialog extends DialogFragment {
                     TARGET_VIEW = lastVisible;
                 }
                 dataPosition = TARGET_VIEW % dataSet.size();
-                daysHeader.setText("" + dataSet.get(TARGET_VIEW % dataSet.size()));
+                //daysHeader.setText("" + dataSet.get(TARGET_VIEW % dataSet.size()));
             }
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 // Checks when state changes, if its changed to idle (scrolling stopped)
-                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE){
-                    if(SCROLL_DIRECTION == 1){
+                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+                    wasTouched = true;
+                }
+                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    if (SCROLL_DIRECTION == 1) {
                         Log.d(TAG, "onScrollStateChanged: Scroll done, Up");
                     } else {
                         Log.d(TAG, "onScrollStateChanged: Scroll done, Down");
                     }
-                    snapRecyclerViewPosition(SCROLL_DIRECTION, TARGET_VIEW, recView, layoutManager);
+
+                    Log.d(TAG, "onScrollStateChanged: Before snap");
+                    if(!wasSnapped){
+                        Log.d(TAG, "onScrollStateChanged: In snap");
+                        snapRecyclerViewPosition(TARGET_VIEW, recView, layoutManager);
+                        wasSnapped = true;
+                    }
+                    Log.d(TAG, "onScrollStateChanged: after snap");
+                    /*if(snapRecyclerViewPosition(TARGET_VIEW, recView, layoutManager)){
+                        Log.d(TAG, "onScrollStateChanged: Scroll not done with snap");
+                    } else {
+                        Log.d(TAG, "onScrollStateChanged: Scroll maybe done with snap");
+                    }*/
+                    Log.d(TAG, "onScrollStateChanged: ");
                 }
             }
         });
-        layoutManager.scrollToPosition(Integer.MAX_VALUE / 2);
+        // Sets starting position to 0
+        // Might be an easier way to do this, but this works, and the datasets are only up to 100 long
+        if(repeatList) {
+            int realStartPosition = Integer.MAX_VALUE / 2;
+            for (int i = 0; i < dataSet.size(); i++) {
+                if (dataSet.get((realStartPosition - i) % dataSet.size()) == 0) {
+                    realStartPosition = (realStartPosition - i);
+                    break;
+                }
+            }
+            layoutManager.scrollToPosition(realStartPosition - 1);
+        } else {
+            layoutManager.scrollToPosition(dataSet.size() - 1);
+        }
     }
 
 
@@ -164,6 +193,7 @@ public class CounterDialog extends DialogFragment {
                 Log.d(TAG, "counterButtonListener: " + numberHeight);
                 Log.d(TAG, "counterButtonListener: " + recView.getMeasuredHeight());
                 recView.smoothScrollBy(0, numberHeight);
+
             }
         });
     }
@@ -172,16 +202,20 @@ public class CounterDialog extends DialogFragment {
         return dataSet.get(position % dataSet.size());
     }
 
-    private void snapRecyclerViewPosition(int direction, int positionToSnap, RecyclerView recyclerView, LinearLayoutManager layoutManager){
+    private boolean snapRecyclerViewPosition(int positionToSnap, RecyclerView recyclerView, LinearLayoutManager layoutManager){
         LinearLayout view = (LinearLayout) layoutManager.findViewByPosition(positionToSnap);
         // These are the numbers needed to find the difference between the middle point, and the topline minus 50% of the elements height
         int distanceToTop = view.getTop();
         int halfRecyclerHeight = recyclerView.getMeasuredHeight() / 2;
         int halfLinLayheight = view.getMeasuredHeight() / 2;
-        Log.d(TAG, "snapRecyclerViewPosition: " + (distanceToTop + halfLinLayheight));
-        Log.d(TAG, "snapRecyclerViewPosition: " + halfRecyclerHeight);
-        Log.d(TAG, "snapRecyclerViewPosition: " + ((distanceToTop + halfLinLayheight) - halfRecyclerHeight));
-        recyclerView.smoothScrollBy(0, ((distanceToTop + halfLinLayheight) - halfRecyclerHeight));
+        int distanceToScroll = ((distanceToTop + halfLinLayheight) - halfRecyclerHeight);
+        recyclerView.smoothScrollBy(0, distanceToScroll);
+        Log.d(TAG, "snapRecyclerViewPosition: " + distanceToScroll);
+        if(distanceToScroll != 0){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private int getInflatedLayoutHeight(RecyclerView recyclerView){

@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Scroll to current day
-        mLayoutManager.scrollToPosition(daysBetween);
+        mLayoutManager.scrollToPositionWithOffset(daysBetween, 0);
         Log.v(TAG, "initRecyclerView: Scrolled to today");
 
         // Declare ready to show content
