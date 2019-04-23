@@ -75,7 +75,13 @@ public class MainActivity extends AppCompatActivity {
 
         timezoneDiffMilli = TimeZone.getDefault().getID();
 
-        myVeryOwnDialog = CounterDialog.newInstance(fillArrays(0, 100), fillArrays(0, 23), fillArrays(0, 59));
+        ArrayList<Integer> days = fillArrays(0, 99);
+        ArrayList<Integer> hours = fillArrays(0, 23);
+        ArrayList<Integer> mins = fillArrays(0, 59);
+        Log.d(TAG, "onCreate: " + days.size());
+        Log.d(TAG, "onCreate: " + hours.size());
+        Log.d(TAG, "onCreate: " + mins.size());
+        myVeryOwnDialog = CounterDialog.newInstance(days, hours, mins);
 
         initStringArrays();
         setupDrawerNav();

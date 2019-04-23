@@ -38,7 +38,7 @@ public class CounterDialogAdapter extends RecyclerView.Adapter<CounterDialogAdap
         // work here if you need to control height of your items
         // keep in mind that parent is RecyclerView in this case
         int viewGroupHeight = viewGroup.getMeasuredHeight();
-        int height = viewGroupHeight / 3 + 1;
+        int height = viewGroupHeight / 3;
         viewGroup.setPadding(0, height, 0, height);
         Log.d(TAG, "onCreateViewHolder: " + viewGroup.getMeasuredHeight());
         Log.d(TAG, "onCreateViewHolder: " + height);
@@ -48,7 +48,8 @@ public class CounterDialogAdapter extends RecyclerView.Adapter<CounterDialogAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        viewHolder.numberView.setText(String.valueOf(numberList.get(i % numberList.size())));
+        int datasetNumber = numberList.get(i % numberList.size());
+        viewHolder.numberView.setText(String.valueOf(datasetNumber));
     }
 
     @Override

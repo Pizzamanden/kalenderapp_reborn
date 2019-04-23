@@ -32,7 +32,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView_daysheader">
 
             <ImageButton
-                android:id="@+id/button_day_inc"
+                android:id="@+id/imageButton_day_inc"
                 style="@style/counterdialogbutton.up"
                 android:layout_marginTop="8dp"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -48,12 +48,12 @@
                 android:paddingBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_day_inc">
+                app:layout_constraintTop_toBottomOf="@+id/imageButton_day_inc">
 
             </android.support.v7.widget.RecyclerView>
 
             <ImageButton
-                android:id="@+id/button_day_dec"
+                android:id="@+id/imageButton_day_dec"
                 style="@style/counterdialogbutton.down"
                 android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -66,6 +66,8 @@
         <TextView
             android:id="@+id/textView_hoursheader"
             style="@style/counterdialogheader"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:text="Hours"
             app:layout_constraintEnd_toStartOf="@+id/textView_minheader"
             app:layout_constraintStart_toEndOf="@+id/textView_daysheader"
@@ -73,7 +75,11 @@
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constraintLayout_hours"
-            style="@style/counterdialoglist"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/textView_hoursheader"
             app:layout_constraintStart_toStartOf="@+id/textView_hoursheader"
             app:layout_constraintTop_toBottomOf="@+id/textView_hoursheader">
@@ -81,24 +87,27 @@
             <ImageButton
                 android:id="@+id/imageButton_hour_inc"
                 style="@style/counterdialogbutton.up"
-                app:layout_constraintBottom_toTopOf="@+id/recyclerView_hours"
+                android:layout_marginTop="8dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread_inside" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView_hours"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:scrollbars="none"
+                style="@style/counterdialoglist"
+                android:clipToPadding="false"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 app:layout_constraintBottom_toTopOf="@+id/imageButton_hour_inc"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_hour_dec" />
+                app:layout_constraintTop_toBottomOf="@+id/imageButton_hour_dec" />
 
             <ImageButton
-                android:id="@+id/button_hour_dec"
+                android:id="@+id/imageButton_hour_dec"
                 style="@style/counterdialogbutton.down"
+                android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -118,32 +127,39 @@
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constraintLayout_mins"
-            style="@style/counterdialoglist"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/textView_minheader"
             app:layout_constraintStart_toStartOf="@+id/textView_minheader"
             app:layout_constraintTop_toBottomOf="@+id/textView_minheader">
 
             <ImageButton
-                android:id="@+id/button_min_inc"
+                android:id="@+id/imageButton_min_inc"
                 style="@style/counterdialogbutton.up"
-                app:layout_constraintBottom_toTopOf="@+id/recyclerView_mins"
+                android:layout_marginTop="8dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread_inside" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView_mins"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:scrollbars="none"
-                app:layout_constraintBottom_toTopOf="@+id/button_min_inc"
+                style="@style/counterdialoglist"
+                android:clipToPadding="false"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/imageButton_min_inc"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_min_dec" />
+                app:layout_constraintTop_toBottomOf="@+id/imageButton_min_dec" />
 
             <ImageButton
-                android:id="@+id/button_min_dec"
+                android:id="@+id/imageButton_min_dec"
                 style="@style/counterdialogbutton.down"
+                android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
