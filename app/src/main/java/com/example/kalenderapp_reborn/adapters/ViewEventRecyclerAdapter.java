@@ -101,7 +101,7 @@ public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecy
                 case R.id.imageView_delete:
                     Log.d(TAG, "onClick: Delete " + eventId.get(getAdapterPosition()));
                     final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setPositiveButton(R.string.viewevent_delete_positive, new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(R.string.dialog_default_yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Log.d(TAG, "onClick onClick: Accept");
                             // User Accepts
@@ -111,13 +111,13 @@ public class ViewEventRecyclerAdapter extends RecyclerView.Adapter<ViewEventRecy
                             }
                         }
                     });
-                    builder.setNegativeButton(R.string.viewevent_delete_negative, new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(R.string.dialog_default_no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Log.d(TAG, "onClick onClick: Cancel");
                             // User Cancels
                         }
                     });
-                    builder.setMessage(R.string.viewevent_delete_desc)
+                    builder.setMessage(R.string.viewevent_delete_message)
                             .setTitle(R.string.viewevent_delete_title);
                     final AlertDialog dialog = builder.create();
 

@@ -195,7 +195,7 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
             }
             final String intentDateFinal = intentDate;
             final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setPositiveButton(R.string.dialogAddEntryCalendar_RecViewAdap_agree, new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.dialog_default_yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Log.d(TAG, "onClick onClick: Accept");
                     // User Accepts
@@ -204,13 +204,13 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
                     mContext.startActivity(i);
                 }
             });
-            builder.setNegativeButton(R.string.dialogAddEntryCalendar_RecViewAdap_decline, new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(R.string.dialog_default_no, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Log.d(TAG, "onClick onClick: Cancel");
                     // User Cancels
                 }
             });
-            builder.setMessage(R.string.dialogAddEntryCalendar_RecViewAdap_message)
+            builder.setMessage(R.string.calendaradapter_newentry_message)
                     .setTitle(dialogTitle);
             final AlertDialog dialog = builder.create();
 

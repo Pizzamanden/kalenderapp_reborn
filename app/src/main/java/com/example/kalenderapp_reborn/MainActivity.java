@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 
 import com.example.kalenderapp_reborn.adapters.CalendarRecyclerAdapter;
 import com.example.kalenderapp_reborn.dataobjects.CalendarEntriesTable;
+import com.example.kalenderapp_reborn.dataobjects.CounterDialogNumbers;
 import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
 import com.example.kalenderapp_reborn.fragments.CounterDialog;
 import com.example.kalenderapp_reborn.supportclasses.DrawerNavigationClass;
@@ -40,7 +41,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CounterDialog.CounterDialogListener {
 
     // Tag D
     private static final String TAG = "MainActivity";
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String timezoneDiffMilli;
 
-    DialogFragment myVeryOwnDialog;
+    CounterDialog myVeryOwnDialog;
 
     private String[] monthNames;
 
@@ -81,7 +82,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: " + days.size());
         Log.d(TAG, "onCreate: " + hours.size());
         Log.d(TAG, "onCreate: " + mins.size());
+
         myVeryOwnDialog = CounterDialog.newInstance(days, hours, mins);
+        myVeryOwnDialog.setTitle(R.string.counterdialog_default_title, this);
+        myVeryOwnDialog.setPositive(R.string.dialog_default_done, this);
+        myVeryOwnDialog.setnegative(R.string.dialog_default_discard, this);
 
         initStringArrays();
         setupDrawerNav();
@@ -266,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void showNoticeDialog(View view) {
         // Create an instance of the dialog fragment and show it
+
         myVeryOwnDialog.show(getSupportFragmentManager(), "CounterDialog");
     }
 
@@ -308,4 +314,15 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "isReady: Loadstatus");
     }
 
+    @Override
+    public void onCounterDialogPos(DialogFragment dialog, CounterDialogNumbers counterDialogNumbers) {
+        Log.d(TAG, "onCounterDialogPos: " + counterDialogNumbers.getDays());
+        Log.d(TAG, "onCounterDialogPos: " + counterDialogNumbers.getHours());
+        Log.d(TAG, "onCounterDialogPos: " + counterDialogNumbers.getMins());
+    }
+
+    @Override
+    public void onCounterDialogNeg(DialogFragment dialog) {
+
+    }
 }

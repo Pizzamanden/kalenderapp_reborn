@@ -34,15 +34,24 @@ public class CounterDialogAdapter extends RecyclerView.Adapter<CounterDialogAdap
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_counterdialog, viewGroup, false);
+        View view;
+        //int layoutDebugger = i % 2;
+        int layoutDebugger = 0;
+        if(layoutDebugger == 0){
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_counterdialog, viewGroup, false);
+        } else {
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recyclerview_counterdialog_even, viewGroup, false);
+        }
         // work here if you need to control height of your items
         // keep in mind that parent is RecyclerView in this case
         int viewGroupHeight = viewGroup.getMeasuredHeight();
-        int height = viewGroupHeight / 3;
-        viewGroup.setPadding(0, height, 0, height);
+        int height = viewGroupHeight / 2;
+        int recViewPadd = height / 2;
+        viewGroup.setPadding(0, recViewPadd, 0, recViewPadd);
         Log.d(TAG, "onCreateViewHolder: " + viewGroup.getMeasuredHeight());
         Log.d(TAG, "onCreateViewHolder: " + height);
         view.setMinimumHeight(height);
+
         return new ViewHolder(view);
     }
 
@@ -66,13 +75,9 @@ public class CounterDialogAdapter extends RecyclerView.Adapter<CounterDialogAdap
         // Declare views
         TextView numberView;
 
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             numberView = itemView.findViewById(R.id.textView_number);
-
-            // Manage text size, padding, general height and more here, depending on recyclerview height
-            //numberView.setHeight((recyclerViewHeight + 1)/3);
         }
     }
 }
