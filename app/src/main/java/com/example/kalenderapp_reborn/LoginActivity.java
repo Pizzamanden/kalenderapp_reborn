@@ -22,7 +22,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
     private static final String TAG = "LoginActivity";
 
     private EditText editText_email, editText_password;
-    private SessionManager sessionManager = new SessionManager(this);
+    private SessionManager sessionManager;
 
 
     @Override
@@ -35,6 +35,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         DateTime dateTime = new DateTime();
         Log.d(TAG, "onCreate: " + dateTime);
         Log.d(TAG, "onCreate: " + dateTime.toString());
+        sessionManager = new SessionManager(this);
         sessionManager.setSessionManagerListener(this);
     }
 
@@ -45,6 +46,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
 
     public void doLogin(View view){
         // Start doing a login, with the information from the views.
+        sessionManager.runTokenValidation();
     }
 
     private void startMainActivity(){
@@ -54,7 +56,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
     }
 
     @Override
-    public void onHttpResponse(String responseCode, String jsonResponse) {
+    public void onTokenStatusResponse(int responseCode, String jsonResponse) {
 
     }
 
