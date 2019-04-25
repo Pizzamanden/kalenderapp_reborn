@@ -2,9 +2,13 @@ package com.example.kalenderapp_reborn.supportclasses;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.example.kalenderapp_reborn.EventViewActivity;
+import com.example.kalenderapp_reborn.LoginActivity;
+import com.example.kalenderapp_reborn.MainActivity;
 import com.example.kalenderapp_reborn.dataobjects.TokenValidation;
 import com.google.gson.Gson;
 
@@ -22,6 +26,13 @@ public class SessionManager{
 
     private static final String TAG = "SessionManager";
 
+    private static final String RETURN_MESSAGE_0 = "Success!";
+    private static final String RETURN_MESSAGE_1 = "An unexpected error occurred with the server. Please try again later.";
+    private static final String RETURN_MESSAGE_2 = "Session expired.";
+    private static final String RETURN_MESSAGE_3 = "Please log in.";
+    private static final String RETURN_MESSAGE_4 = "Session expired.";
+    private static final String RETURN_MESSAGE_5 = "Success!";
+
     private static final String TOKEN_SHARED_PREFERENCES = "TOKEN_SHARED_PREFS";
     private static final String TOKEN_KEY = "TOKEN_AS_STRING";
     private static final String TOKEN_INVALIDATION = "TOKEN_INVALIDATION";
@@ -33,9 +44,12 @@ public class SessionManager{
 
     private SessionManagerHttpResponse mCallback;
 
+    private Context mContext;
+
 
     public SessionManager(Context context){
-        sharedPref = context.getSharedPreferences(TOKEN_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        mContext = context;
+        sharedPref = mContext.getSharedPreferences(TOKEN_SHARED_PREFERENCES, Context.MODE_PRIVATE);
         editor = sharedPref.edit();
     }
 
@@ -44,7 +58,9 @@ public class SessionManager{
     Response codes to send other parts of code:
     0: success, token valid and sent to sharedprefs
     1: server issue, token fetch not available
-    2: failure, token marked as invalid
+    2: failure, token was marked as invalid
+    3: failure, no token found
+    4: failure, token was marked by server as invalid
 
 
      */
@@ -102,13 +118,14 @@ public class SessionManager{
      * @param userID The ID of the user. Since nothing in a web token is safe, just store this as plaintext. Should be redundant in the end
      * @return boolean as true if commit to editor was successful
      */
-    private boolean writeSuccessPrefs(String jsonWebToken, int userID){
+    public boolean writeSuccessPrefs(String jsonWebToken, int userID){
+        Log.d(TAG, "writeSuccessPrefs: fired");
         DateTime dateTime = new DateTime();
 
         // Justification of commit, and not apply:
         // VERY small prefs, only used with 5-6 lines max, and one per app installation
         // Commit gives me security, that 1 web call is all i need
-        // (Other than the token-based login i make
+        // (Other than the token-based login im making)
 
         if(!setToken(jsonWebToken)){
             // Error
@@ -136,9 +153,9 @@ public class SessionManager{
      *
      * @return boolean as true if commit to editor was successful
      */
-    private boolean writeFailurePrefs(){
+    public boolean writeFailurePrefs(){
         DateTime dateTime = new DateTime();
-        if(!setInvalidator(false)){
+        if(!setInvalidator(true)){
             // Error
             return false;
         } else if(!setLastValidation(dateTime.toString())){
@@ -151,7 +168,9 @@ public class SessionManager{
     }
 
     public void runTokenValidation(){
+        Log.d(TAG, "runTokenValidation: Fired");
         if(clientSideTokenValidation()){
+            Log.d(TAG, "runTokenValidation: success");
             // Local validation success
             // Now send token to server to validate
 
@@ -161,16 +180,18 @@ public class SessionManager{
             // Make call
             serverSideTokenValidation("verify_token", json);
         } else {
+            Log.d(TAG, "runTokenValidation: failure");
             // Local validation failed because:
             // No token
             // Token was marked as invalid
 
+            writeFailurePrefs();
+            gotoLoginActivity();
+
             // This is not the place to make the validation, but to act on already done validation (see clientSideTokenValidation)
 
-            mCallback.onTokenStatusResponse(2, "Breaking news: Local token marked as invalid");
-
             // A login should be forced on user
-            // TODO implement this
+            // TODO Send user to login screen here, as token has been marked as invalid or is missing
         }
     }
 
@@ -179,6 +200,7 @@ public class SessionManager{
      * @return Returns true upon verified no invalidator is active, and some token is stored on the device
      */
     private boolean clientSideTokenValidation(){
+        Log.d(TAG, "clientSideTokenValidation: Fired");
         // Token should be saved as string in Prefs
 
         // this should return true, to mark token as found and maybe valid
@@ -187,15 +209,22 @@ public class SessionManager{
         // Quick invalidate does nothing for security, it only makes me NOT make a server call (for validity) when client was kicked off, but didn't log in again after
         if(getToken() == null){
             // A token was not found, short circuit validation
+            Log.d(TAG, "clientSideTokenValidation: A token was not found");
+            // Send response through interface
+            mCallback.onTokenStatusResponse(3, RETURN_MESSAGE_3);
             return false;
         } else if(sharedPref.getBoolean(TOKEN_INVALIDATION,false)){
             // An invalidator was found, and it was set to true
             // Because default (not found) is false, and false means not-invalidated
             // To be true, it MUST be set, and MUST be true
+            Log.d(TAG, "clientSideTokenValidation: Token invalidator is active (true), needs new client side login");
+            mCallback.onTokenStatusResponse(2, RETURN_MESSAGE_2);
             return false;
         } else {
+            Log.d(TAG, "clientSideTokenValidation: success!");
             // Because a token was found, and it was not null, plus an invalidator was not found, or not set to true,
             // we then need to run server validation on token-legitness
+            // Send token to server for validation
             return true;
         }
     }
@@ -203,6 +232,7 @@ public class SessionManager{
 
 
     private void serverSideTokenValidation(String requestName, String jsonToSend){
+        Log.d(TAG, "serverSideTokenValidation: Fired");
         // Make Client
         OkHttpClient client = new OkHttpClient();
         // Use self-made class HttpRequestBuilder to make request
@@ -222,29 +252,60 @@ public class SessionManager{
                 if (response.code() == 200) {
                     final String myResponse = response.body().string();
                     Log.d(TAG, "onResponse: " + myResponse);
-                    Log.d(TAG, "serverSideTokenValidation: 200");
 
                     // Send response to onRequestResponse to process response
-                    onRequestResponse(myResponse);
+                    onRequestResponse(myResponse, response.code());
+                } else {
+                    onRequestResponse(null, response.code());
                 }
             }
         });
     }
 
-    private void onRequestResponse(String httpResponse){
+    private void onRequestResponse(String httpResponse, int httpCode){
+        Log.d(TAG, "onRequestResponse: Fired");
         // This method is a in-between when the request gets a response, and before anything else touches it, to see what server response was
         // If server response was negative, a false boolean should be set on TOKEN_INVALIDATION
         // If server response was positive, the new returned token should be put in old tokens place, and TOKEN_INVALIDATION should be set to true
         // This way, if a token was non-valid, and user does not login after being put in login screen, it will be easy to read login status
 
+        if(httpCode != 200 || httpResponse == null){
+            // Something went wrong, no response at all, or the code wasnt 200
+            Log.d(TAG, "onRequestResponse: Critical error: Http code not 200, instead " + httpCode);
+        } else {
+            // A usable response was returned
 
-        // Map response to TokenValidation with Gson
-        TokenValidation tokenValidation = new Gson().fromJson(httpResponse, TokenValidation.class);
-        Log.d(TAG, "onRequestResponse: " + tokenValidation.getJsonWebToken());
-        Log.d(TAG, "onRequestResponse: " + tokenValidation.getUserID());
-        Log.d(TAG, "onRequestResponse: " + tokenValidation.getValidationStatus());
+            // Map response to TokenValidation with Gson
+            TokenValidation tokenValidation = new Gson().fromJson(httpResponse, TokenValidation.class);
+            Log.d(TAG, "onRequestResponse: " + tokenValidation.getJsonWebToken());
+            Log.d(TAG, "onRequestResponse: " + tokenValidation.getUserID());
+            Log.d(TAG, "onRequestResponse: " + tokenValidation.getValidationStatus());
 
-        //mCallback.onTokenStatusResponse();
+            // Check for response code
+            if(tokenValidation.getValidationStatus() == 0){
+                // Success!
+                Log.d(TAG, "onRequestResponse: Success!");
+                writeSuccessPrefs(tokenValidation.getJsonWebToken(), tokenValidation.getUserID());
+                mCallback.onTokenStatusResponse(tokenValidation.getValidationStatus(), "Success!");
+            }
+        }
+    }
+
+    private void gotoLoginActivity(){
+        if(mContext instanceof LoginActivity){
+            // Checked in login activity, so just return start activity
+            // TODO ....... ? ... ?? ... ??!!?!
+        } else {
+            // Not login activity, start it then
+            Intent i = new Intent(mContext, LoginActivity.class);
+            mContext.startActivity(i);
+        }
+    }
+
+    public void invalidateToken(){
+        setInvalidator(true);
+        gotoLoginActivity();
+        Log.d(TAG, "invalidateToken: Logged out, invalidator set to " + sharedPref.getBoolean(TOKEN_INVALIDATION, false) + " (false for not active)");
     }
 
     public interface SessionManagerHttpResponse {

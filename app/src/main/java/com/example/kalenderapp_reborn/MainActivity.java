@@ -23,13 +23,11 @@ import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
 import com.example.kalenderapp_reborn.fragments.CounterDialog;
 import com.example.kalenderapp_reborn.supportclasses.DrawerNavigationClass;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
+import com.example.kalenderapp_reborn.supportclasses.SessionManager;
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements CounterDialog.Cou
     private ConstraintLayout contentRoot;
     private RelativeLayout loadingPanel;
 
+    private SessionManager sessionManager;
+
     private String timezoneDiffMilli;
 
     CounterDialog myVeryOwnDialog;
@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements CounterDialog.Cou
         mNavView = findViewById(R.id.drawer_nav_view);
         contentRoot = findViewById(R.id.content_root);
         loadingPanel = findViewById(R.id.loadingPanel);
+
+        sessionManager = new SessionManager(this);
 
         timezoneDiffMilli = TimeZone.getDefault().getID();
 
@@ -114,12 +116,12 @@ public class MainActivity extends AppCompatActivity implements CounterDialog.Cou
         mToggleButton.syncState();
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        DrawerNavigationClass addnavigation = new DrawerNavigationClass(MainActivity.this, this);
+        DrawerNavigationClass addnavigation = new DrawerNavigationClass(this, sessionManager);
         addnavigation.setupDrawerClickable(mNavView);
 
 
         // Mark activity as loading, hides all relevant views
-        isLoading();
+        onLoading();
         // Continue progress to load activity
         getEventJSON();
     }
@@ -258,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements CounterDialog.Cou
         Log.v(TAG, "initRecyclerView: Scrolled to today");
 
         // Declare ready to show content
-        isReady();
+        onReady();
     }
 
     public String timeToTwoNum(int timeToFormat){
@@ -296,22 +298,22 @@ public class MainActivity extends AppCompatActivity implements CounterDialog.Cou
     }
 
 
-    public void isLoading()
+    public void onLoading()
     {
         // Hides content, and shows placeholders/loading icons
         loadingPanel.setVisibility(View.VISIBLE);
         toolbar.setVisibility(View.GONE);
         contentRoot.setVisibility(View.GONE);
-        Log.d(TAG, "isLoading: Loadstatus");
+        Log.d(TAG, "onLoading: Loadstatus");
     }
 
-    public void isReady()
+    public void onReady()
     {
         // Shows content, and hides placeholders/loading icons
         loadingPanel.setVisibility(View.GONE);
         toolbar.setVisibility(View.VISIBLE);
         contentRoot.setVisibility(View.VISIBLE);
-        Log.d(TAG, "isReady: Loadstatus");
+        Log.d(TAG, "onReady: Loadstatus");
     }
 
     @Override

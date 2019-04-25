@@ -21,32 +21,33 @@ public class DrawerNavigationClass {
     private static final String TAG = "DrawerNavigationClass";
 
     private Context mContext;
-    private Activity mActivity;
+    private SessionManager sessionManager;
 
-    public DrawerNavigationClass(Context context, Activity activity){
+    public DrawerNavigationClass(Context context, SessionManager sessionManager){
         mContext = context;
-        mActivity = activity;
+        this.sessionManager = sessionManager;
     }
 
     public void setupDrawerClickable(NavigationView navigationView)
     {
         // Setup dialog for exit/cancel
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setPositiveButton(mContext.getString(R.string.DL_ok), new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(mContext.getString(R.string.dialog_default_yes), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Log.d(TAG, "onNavigationItemSelected onClick: Agree Exit");
+                Log.d(TAG, "onNavigationItemSelected onClick: Agree Logout");
                 // User wants to exit
-                shutdownApp();
+                // TODO implement SessionManager Logout Method
+                sessionManager.invalidateToken();
             }
         });
-        builder.setNegativeButton(mContext.getString(R.string.DL_cancel), new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(mContext.getString(R.string.dialog_default_cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Log.d(TAG, "onNavigationItemSelected onClick: Cancel Exit");
+                Log.d(TAG, "onNavigationItemSelected onClick: Cancel Logout");
                 // User cancels exit, do nothing
             }
         });
-        builder.setMessage(mContext.getString(R.string.DL_exit_MSG))
-                .setTitle(mContext.getString(R.string.DL_exit_TTL));
+        builder.setMessage(mContext.getString(R.string.drawermenu_logout_message))
+                .setTitle(mContext.getString(R.string.drawermenu_logout_title));
         final AlertDialog dialog = builder.create();
 
 
@@ -66,22 +67,12 @@ public class DrawerNavigationClass {
                     Intent i = new Intent(mContext, LoginActivity.class);
                     mContext.startActivity(i);
                     // TODO make setting activity
-                } else if (id == R.id.nav_exit) {
-                    Log.d(TAG, "onNavigationItemSelected: exit nav_event");
-
+                } else if (id == R.id.nav_logout) {
+                    Log.d(TAG, "onNavigationItemSelected: kill token and logout");
                     dialog.show();
                 }
                 return true;
             }
         });
-    }
-
-    private void shutdownApp(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            mActivity.finishAffinity();
-        } else {
-            mActivity.finish();
-        }
-
     }
 }

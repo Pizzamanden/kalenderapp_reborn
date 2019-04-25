@@ -18,7 +18,7 @@
         android:title="@string/dummy_for_test"></item>
 
     <item
-        android:id="@+id/nav_exit"
+        android:id="@+id/nav_logout"
         android:icon="@drawable/ic_exit_to_app_black_24dp"
         android:title="@string/drawermenu_exit">
     </item>
