@@ -15,6 +15,7 @@ import com.example.kalenderapp_reborn.adapters.ViewEventRecyclerAdapter;
 import com.example.kalenderapp_reborn.dataobjects.CalendarEntriesTable;
 import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
+import com.example.kalenderapp_reborn.supportclasses.SessionManager;
 import com.google.gson.Gson;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -37,14 +38,20 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class EventViewActivity extends AppCompatActivity {
+public class EventViewActivity extends AppCompatActivity implements SessionManager.SessionManagerHttpResponse, HttpRequestBuilder.HttpRequestResponse {
 
     private static final String TAG = "EventViewActivity";
+    private static final String HTTP_GET_ALL_EVENTS = "select_all_user_events_query";
+    private static final String HTTP_FIND_EVENT_TO_DELETE = "delete_single_row_query";
+
+
     private Context mContext;
     private String mJSONdata;
 
     private String[] stringArrayMonths;
     private String[] stringArrayWeekDays;
+
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,62 +71,36 @@ public class EventViewActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        sessionManager = new SessionManager(this).setSessionManagerListener(this);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sessionManager.runTokenValidation();
+    }
+
+    private void startInit(){
         getDataJSON();
     }
 
 
     public void getDataJSON(){
 
-        // TODO code 1 Replace this
-        String token = "f213412ui1g2";
-        int userID = 2;
+        // TODO make sure this works
+        String token = sessionManager.getToken();
+        int userID = sessionManager.getUserID();
 
         SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_all_pre_today", userID);
         String json = new Gson().toJson(sqlQueryJson);
 
-        // Legacy Select statement
-        /*String requestJSON = "{" +
-                "\"request\":\"" +
-                postedRequest +
-                "\", \"identifiers\":{" +
-                    "\"userID\":" +
-                    userId +
-                "}, \"userToken\":\"" +
-                userToken +
-                "\"}";*/
-
         Log.d(TAG, "getDataJSON: " + json);
 
-        // Make Client
-        OkHttpClient client = new OkHttpClient();
-        // Use self-made class HttpRequestBuidler to make request
-        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder("query", json);
-        // Make call on client with request
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d(TAG, "onFailure: Failure");
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "httpPOSTdata: Response code " + response.code());
-                if (response.code() == 200) {
-                    final String myResponse = response.body().string();
-                    Log.d(TAG, "onResponse: " + myResponse);
-                    Log.d(TAG, "httpPOSTdata: 200");
-                    EventViewActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initRecyclerView(myResponse);
-                        }
-                    });
-                }
-            }
-        });
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, "http://www.folderol.dk/")
+                .postBuilder("query", json, HTTP_GET_ALL_EVENTS)
+                .setHttpResponseListener(this);
+        requestBuilder.makeHttpRequest();
     }
 
 
@@ -205,76 +186,17 @@ public class EventViewActivity extends AppCompatActivity {
         final Handler handler = new Handler();
         Log.d(TAG, "postDeleteRequest: " + id);
 
-        // TODO code 1 Replace this
-        String token = "f213412ui1g2";
-        int userID = 2;
+        // TODO check this
+        String token = sessionManager.getToken();
+        int userID = sessionManager.getUserID();
 
         SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "delete", userID, id);
         String json = new Gson().toJson(sqlQueryJson);
 
-
-        // Make Client
-        OkHttpClient client = new OkHttpClient();
-        // Use self-made class HttpRequestBuidler to make request
-        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder("query", json);
-        // Make call on client with request
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d(TAG, "onFailure: Failure");
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "postDeleteRequest: Response code " + response.code());
-                if (response.code() == 200) {
-                    final String myResponse = response.body().string();
-                    Log.d(TAG, "onResponse: " + myResponse);
-                    Log.d(TAG, "postDeleteRequest: 200");
-                    EventViewActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                            //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
-                            findViewById(R.id.successPanel).setVisibility(View.VISIBLE);
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finish();
-                                    /*getDataJSON();
-                                    findViewById(R.id.successPanel).setVisibility(View.GONE);
-                                    findViewById(R.id.recyclerview_viewEvents).setVisibility(View.GONE);
-                                    findViewById(R.id.toolbar_1).setVisibility(View.GONE);
-                                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);*/
-                                }
-                            }, 3000);
-                        }
-                    });
-                } else {
-                    EventViewActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                            //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
-                            findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finish();
-                                    /*getDataJSON();
-                                    findViewById(R.id.failurePanel).setVisibility(View.GONE);
-                                    findViewById(R.id.toolbar_1).setVisibility(View.GONE);
-                                    findViewById(R.id.recyclerview_viewEvents).setVisibility(View.GONE);
-                                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);*/
-                                }
-                            }, 3000);
-                        }
-                    });
-                }
-            }
-        });
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, "http://www.folderol.dk/")
+                .postBuilder("query", json, HTTP_FIND_EVENT_TO_DELETE)
+                .setHttpResponseListener(this);
+        requestBuilder.makeHttpRequest();
     }
 
 
@@ -382,5 +304,31 @@ public class EventViewActivity extends AppCompatActivity {
         toolbar.setVisibility(View.VISIBLE);
         recV.setVisibility(View.VISIBLE);
         relL.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onTokenStatusResponse(int responseCode, String responseString) {
+        if(responseCode > 0){
+            Log.d(TAG, "onTokenStatusResponse: Auth failed");
+            sessionManager.invalidateToken();
+        } else {
+            Log.d(TAG, "onTokenStatusResponse: Auth Successful!");
+            startInit();
+        }
+    }
+
+    @Override
+    public void onHttpRequestResponse(int responseCode, String responseMessage, String requestName) {
+        final Handler handler = new Handler();
+        if(requestName.equals(HTTP_FIND_EVENT_TO_DELETE)){
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    finish();
+                }
+            }, 3000);
+        } else if (requestName.equals(HTTP_GET_ALL_EVENTS)){
+            initRecyclerView(responseMessage);
+        }
     }
 }

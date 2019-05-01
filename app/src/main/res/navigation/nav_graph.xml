@@ -7,7 +7,7 @@
 
     <activity
         android:id="@+id/mainActivity"
-        android:name="com.example.kalenderapp_reborn.MainActivity"
+        android:name="com.example.kalenderapp_reborn.CalendarListActivity"
         android:label="activity_main"
         tools:layout="@layout/activity_main" >
         <action

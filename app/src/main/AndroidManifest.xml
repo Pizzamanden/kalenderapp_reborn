@@ -12,13 +12,23 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/PWTheme.NoActionBar">
-        <activity android:name=".SignupActivity"></activity>
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".EventViewActivity" />
-        <activity android:name=".EventAddActivity" />
-        <activity android:name=".MainActivity">
+        android:supportsRtl="true">
+        <activity
+            android:name=".SignupActivity"
+            android:theme="@style/PWTheme.NoActionBar" />
+        <activity
+            android:name=".CalendarListActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/PWTheme.NoActionBar" />
+        <activity
+            android:name=".EventViewActivity"
+            android:theme="@style/PWTheme.NoActionBar" />
+        <activity
+            android:name=".EventAddActivity"
+            android:theme="@style/PWTheme.NoActionBar" />
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/PWTheme.NoActionBar.NoAnime">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

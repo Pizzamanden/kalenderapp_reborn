@@ -1,10 +1,8 @@
 package com.example.kalenderapp_reborn.supportclasses;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -36,7 +34,6 @@ public class DrawerNavigationClass {
             public void onClick(DialogInterface dialog, int id) {
                 Log.d(TAG, "onNavigationItemSelected onClick: Agree Logout");
                 // User wants to exit
-                // TODO implement SessionManager Logout Method
                 sessionManager.invalidateToken();
             }
         });

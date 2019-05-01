@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 import com.example.kalenderapp_reborn.dataobjects.CalendarEntriesTable;
 import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
+import com.example.kalenderapp_reborn.supportclasses.SessionManager;
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
@@ -34,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import okhttp3.Call;
@@ -42,17 +45,21 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class EventAddActivity extends AppCompatActivity {
+public class EventAddActivity extends AppCompatActivity implements SessionManager.SessionManagerHttpResponse, HttpRequestBuilder.HttpRequestResponse {
 
     private static final String TAG = "EventAddActivity";
+    private static final String HTTP_INSERT_OR_UPDATE = "insert_or_update_query";
+    private static final String HTTP_GET_SINGULAR = "select_single_row_query";
 
     EditText editText_name, editText_start_datefield, editText_start_timefield, editText_end_datefield, editText_end_timefield, editText_alarmdate, editText_alarmtime;
     Switch switchAlarmEnable;
     Spinner spinner_type;
     private int spinner_index = 0;
     private boolean switch_state = false;
-    private int entryID = 0;
+    private int entryID = -1;
     private boolean isAnUpdate = false;
+
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +77,9 @@ public class EventAddActivity extends AppCompatActivity {
         spinner_type = findViewById(R.id.spinner_eventtype);
         Toolbar toolbar = findViewById(R.id.toolbar_1);
 
+        sessionManager = new SessionManager(this).setSessionManagerListener(this);
+
+        // Set toolbar, and icon for toolbar
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -83,16 +93,22 @@ public class EventAddActivity extends AppCompatActivity {
         initDialogFields(editText_alarmdate, 1);
         initDialogFields(editText_alarmtime, 2);
 
+
+        // Init fields with more data and actions attached
         initSwitch();
         initSpinner();
 
+        // Get startup extras
+        // If startup was from CalendarListActivity, from the '+' buttons
         if(getIntent().getStringExtra("DATE_FROM_MAINACT") != null){
             editText_start_datefield.setText(getIntent().getStringExtra("DATE_FROM_MAINACT"));
         }
+        // Check if startup was from edit button from EventViewActivity
         if(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0) != 0){
             setTitle(getResources().getString(R.string.title_activity_addevent2));
             int eventID = getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0);
             isAnUpdate = true;
+            entryID = eventID;
             setAddEntryView(eventID);
         } else {
             setTitle(getResources().getString(R.string.title_activity_addevent1));
@@ -176,9 +192,9 @@ public class EventAddActivity extends AppCompatActivity {
         final Handler handler = new Handler();
         Log.d(TAG, "httpPOSTdata: fired");
 
-        // TODO code 1 Replace this
-        String token = "1fb52hb2j3hk623kj2v";
-        int thisuserId = 2;
+        // TODO make sure this works
+        String token = sessionManager.getToken();
+        int userID = sessionManager.getUserID();
 
         // As extension to above, create users and login section
         // TODO find correct zone as String
@@ -203,93 +219,18 @@ public class EventAddActivity extends AppCompatActivity {
 
         SQLQueryJson sqlQueryJson;
         if(isAnUpdate){
-            sqlQueryJson = new SQLQueryJson(token, calendarEntriesTable, "insert", thisuserId);
+            sqlQueryJson = new SQLQueryJson(token, calendarEntriesTable, "update", userID, entryID);
         } else {
-            sqlQueryJson = new SQLQueryJson(token, calendarEntriesTable, "update", thisuserId, entryID);
+            sqlQueryJson = new SQLQueryJson(token, calendarEntriesTable, "insert", userID);
         }
-        // TODO Test this
         String json = new Gson().toJson(sqlQueryJson);
-
-
-        // Legacy json formatting
-        /*String postFormdataJSON = "{" +
-                "\"tableName\":" +
-                "\"example\"," +
-                "\"data\":" +
-                "{" +
-                "\"userId\":" +
-                thisuserId +
-                ",\"eventName\":\"" +
-                editText_name.getText().toString() +
-                "\",\"eventStart\":\"" +
-                editText_start_datefield.getText().toString() + " " + editText_start_timefield.getText().toString() +
-                "\",\"eventEnd\":\"" +
-                editText_end_datefield.getText().toString() + " " + editText_end_timefield.getText().toString() +
-                "\",\"eventTimeZone\":\"" +
-                timeZone +
-                "\",\"eventType\":" +
-                spinner_index +
-                ",\"eventAlarmEnabled\":" +
-                switch_state +
-                ",\"eventAlarmTime\":\"" +
-                editText_alarmdate.getText().toString() + " " + editText_alarmtime.getText().toString() +
-                "\",\"tokenId\":\"" +
-                mToken + "\"}" +
-                "}";*/
 
         Log.d(TAG, "httpPOSTdata: " + json);
 
-        // Make Client
-        OkHttpClient client = new OkHttpClient();
-        // Use self-made class HttpRequestBuidler to make request
-        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder("query", json);
-        // Make call on client with request
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d(TAG, "onFailure: Failure");
-                e.printStackTrace();
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "httpPOSTdata: Response code " + response.code());
-                final String myResponse = response.body().string();
-                if (response.code() == 200) {
-                    Log.d(TAG, "onResponse: " + myResponse);
-                    Log.d(TAG, "httpPOSTdata: 200");
-                    EventAddActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                            //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
-                            findViewById(R.id.successPanel).setVisibility(View.VISIBLE);
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finish();
-                                }
-                            }, 3000);
-                        }
-                    });
-                } else {
-                    EventAddActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                            //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
-                            findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finish();
-                                }
-                            }, 3000);
-                        }
-                    });
-                }
-            }
-        });
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, "http://www.folderol.dk/")
+                .postBuilder("query", json, HTTP_INSERT_OR_UPDATE)
+                .setHttpResponseListener(this);
+        requestBuilder.makeHttpRequest();
     }
 
     private void setDate(final EditText v) {
@@ -417,82 +358,48 @@ public class EventAddActivity extends AppCompatActivity {
     }
 
     private void setAddEntryView(int id){
+        // Get saved data
+        String token = sessionManager.getToken();
+        int userID = sessionManager.getUserID();
 
-        // TODO code 1 Replace this
-        String token = "f213412ui1g2";
-        int userID = 2;
-
+        // Make query Json
         SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_single", userID, id);
         String json = new Gson().toJson(sqlQueryJson);
 
         Log.d(TAG, "setAddEntryView: " + json);
 
-        // Make Client
-        OkHttpClient client = new OkHttpClient();
-        // Use self-made class HttpRequestBuilder to make request
-        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder("query", json);
-        // Make call on client with request
-        Log.d(TAG, "setAddEntryView: making call");
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d(TAG, "onFailure: Failure");
-                e.printStackTrace();
-            }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "setAddEntryView: Response code " + response.code());
-                if (response.code() == 200) {
-                    final String myResponse = response.body().string();
-                    Log.d(TAG, "onResponse: " + myResponse);
-                    Log.d(TAG, "setAddEntryView: 200");
-                    EventAddActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            setupViewData(myResponse);
-                        }
-                    });
-                }
-            }
-        });
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, "http://www.folderol.dk/")
+                .postBuilder("query", json, HTTP_GET_SINGULAR)
+                .setHttpResponseListener(this);
+        requestBuilder.makeHttpRequest();
     }
 
     @SuppressLint("SetTextI18n")
     public void setupViewData(String jsonString){
-        try {
-            JSONArray mJSONArray = new JSONArray(jsonString);
-            for(int i = 0;i<mJSONArray.length(); i++){
-                // Get current json object
-                // TODO This is currently not the format the json is being reutrned as, needs a fix as soon as possible
-                JSONObject json = mJSONArray.getJSONObject(i);
-
-
-                // Setup DateTime objects with relevant dates & time (surprise)
-                DateTime startDT = new DateTime(json.getString("event_start"));
-                DateTime endDT = new DateTime(json.getString("event_end"));
-                DateTime alarmDT = new DateTime(json.getString("event_alarmTime"));
+        Log.d(TAG, "setupViewData: Fired");
+        SQLQueryJson json = new Gson().fromJson(jsonString, SQLQueryJson.class);
+        ArrayList<CalendarEntriesTable> calendarEntryTables = json.getQueryResponseArrayList();
+        for(int i = 0; i < calendarEntryTables.size(); i++){
+            DateTime startDT = new DateTime(calendarEntryTables.get(i).getEventStartTime());
+            DateTime endDT = new DateTime(calendarEntryTables.get(i).getEventEndTime());
+            DateTime alarmDT = new DateTime(calendarEntryTables.get(i).getEventAlarmTime());
 
 
 
-                // Add json fields to edit text views
-                // timeToTwoNum takes a number and if its under 10, it prepends a 0
-                editText_name.setText(json.getString("event_name"));
-                editText_start_datefield.setText(timeToTwoNum(startDT.getDayOfMonth()) + "-" + timeToTwoNum(startDT.getMonthOfYear()) + "-" + timeToTwoNum(startDT.getYear()));
-                editText_start_timefield.setText(timeToTwoNum(startDT.getHourOfDay()) + ":" + timeToTwoNum(startDT.getMinuteOfHour()));
-                editText_end_datefield.setText(timeToTwoNum(endDT.getDayOfMonth()) + "-" + timeToTwoNum(endDT.getMonthOfYear()) + "-" + timeToTwoNum(endDT.getYear()));
-                editText_end_timefield.setText(timeToTwoNum(endDT.getHourOfDay()) + ":" + timeToTwoNum(endDT.getMinuteOfHour()));
-                editText_alarmdate.setText(timeToTwoNum(alarmDT.getDayOfMonth()) + "-" + timeToTwoNum(alarmDT.getMonthOfYear()) + "-" + timeToTwoNum(alarmDT.getYear()));
-                editText_alarmtime.setText(timeToTwoNum(alarmDT.getHourOfDay()) + ":" + timeToTwoNum(alarmDT.getMinuteOfHour()));
-                // Set spinner type to reflect type from DB
-                spinnerStateSync(json.getInt("event_type"));
-                // Set switch state to reflect alarm status
-                switchStateSync(json.getBoolean("event_alarmenable"));
-
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            // Add json fields to edit text views
+            // timeToTwoNum takes a number and if its under 10, it prepends a 0
+            editText_name.setText(calendarEntryTables.get(i).getEventName());
+            editText_start_datefield.setText(timeToTwoNum(startDT.getDayOfMonth()) + "-" + timeToTwoNum(startDT.getMonthOfYear()) + "-" + timeToTwoNum(startDT.getYear()));
+            editText_start_timefield.setText(timeToTwoNum(startDT.getHourOfDay()) + ":" + timeToTwoNum(startDT.getMinuteOfHour()));
+            editText_end_datefield.setText(timeToTwoNum(endDT.getDayOfMonth()) + "-" + timeToTwoNum(endDT.getMonthOfYear()) + "-" + timeToTwoNum(endDT.getYear()));
+            editText_end_timefield.setText(timeToTwoNum(endDT.getHourOfDay()) + ":" + timeToTwoNum(endDT.getMinuteOfHour()));
+            editText_alarmdate.setText(timeToTwoNum(alarmDT.getDayOfMonth()) + "-" + timeToTwoNum(alarmDT.getMonthOfYear()) + "-" + timeToTwoNum(alarmDT.getYear()));
+            editText_alarmtime.setText(timeToTwoNum(alarmDT.getHourOfDay()) + ":" + timeToTwoNum(alarmDT.getMinuteOfHour()));
+            // Set spinner type to reflect type from DB
+            spinnerStateSync(calendarEntryTables.get(i).getEventType());
+            // Set switch state to reflect alarm status
+            switchStateSync(calendarEntryTables.get(i).getEventAlarmStatus());
         }
     }
 
@@ -518,6 +425,36 @@ public class EventAddActivity extends AppCompatActivity {
             return "0" + timeToFormat;
         } else {
             return "" + timeToFormat;
+        }
+    }
+
+    @Override
+    public void onTokenStatusResponse(int responseCode, String responseString) {
+        if(responseCode > 0){
+            Log.d(TAG, "onTokenStatusResponse: Auth failed");
+            sessionManager.invalidateToken();
+        } else {
+            Log.d(TAG, "onTokenStatusResponse: Auth Successful!");
+        }
+    }
+
+    @Override
+    public void onHttpRequestResponse(int responseCode, String responseMessage, String requestName) {
+        // TODO Perform check for return code
+        final Handler handler = new Handler();
+        if(requestName.equals(HTTP_INSERT_OR_UPDATE)){
+            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+            //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
+            findViewById(R.id.successPanel).setVisibility(View.VISIBLE);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent i = new Intent(EventAddActivity.this, CalendarListActivity.class);
+                    startActivity(i);
+                }
+            }, 3000);
+        } else if(requestName.equals(HTTP_GET_SINGULAR)){
+            setupViewData(responseMessage);
         }
     }
 }

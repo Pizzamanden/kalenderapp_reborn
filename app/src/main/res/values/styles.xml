@@ -12,6 +12,14 @@
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
 
+    <style name="PWTheme.NoAnime" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlActivated">#ff0</item>
+        <item name="colorControlNormal">#0f0</item>
+    </style>
+
     <style name="PWTheme.Light" parent="PWTheme">
         <item name="android:windowBackground">@color/colorBackgroundPrimary</item>
         <item name="android:textColor">@color/colorTextPrimary</item>
@@ -38,6 +46,16 @@
         <item name="android:textColor">@color/colorTextPrimaryDark</item>
         <item name="editTextColor">@color/colorTextPrimaryDark</item>
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
+    <style name="PWTheme.NoActionBar.NoAnime" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorBackgroundPrimaryDark</item>
+        <item name="android:textColor">@color/colorTextPrimaryDark</item>
+        <item name="editTextColor">@color/colorTextPrimaryDark</item>
         <item name="windowActionBar">false</item>
     </style>
 

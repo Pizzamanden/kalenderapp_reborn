@@ -136,10 +136,7 @@
                     android:layout_marginLeft="4dp"
                     android:layout_marginTop="16dp"
                     android:padding="0dp"
-                    android:text="REMEMBER_DEVICE"
-                    app:layout_constraintEnd_toEndOf="@+id/textView_labelEmail"
-                    app:layout_constraintStart_toStartOf="@+id/textView_labelEmail"
-                    app:layout_constraintTop_toBottomOf="@+id/editText_password" />
+                    android:text="REMEMBER_DEVICE" />
 
                 <Button
                     android:id="@+id/button_login"
@@ -151,10 +148,7 @@
                     android:onClick="doLogin"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
-                    android:text="Login"
-                    app:layout_constraintEnd_toEndOf="@+id/textView_labelEmail"
-                    app:layout_constraintStart_toStartOf="@+id/textView_labelEmail"
-                    app:layout_constraintTop_toBottomOf="@+id/checkBox" />
+                    android:text="Login" />
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"

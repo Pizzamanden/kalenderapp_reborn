@@ -39,10 +39,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity implements CounterDialog.CounterDialogListener {
+public class CalendarListActivity extends AppCompatActivity implements CounterDialog.CounterDialogListener, SessionManager.SessionManagerHttpResponse, HttpRequestBuilder.HttpRequestResponse {
 
-    // Tag D
-    private static final String TAG = "MainActivity";
+    // Tag
+    private static final String TAG = "CalendarListActivity";
+
+    // Statics
+    private static final String RECYCLER_LIST_KEY = "calendar_recycler_list";
 
     // Views
     private ActionBarDrawerToggle mToggleButton;
@@ -62,9 +65,9 @@ public class MainActivity extends AppCompatActivity implements CounterDialog.Cou
     private String[] monthNames;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: Fired");
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.recyclerview_calendar);
@@ -74,8 +77,23 @@ public class MainActivity extends AppCompatActivity implements CounterDialog.Cou
         contentRoot = findViewById(R.id.content_root);
         loadingPanel = findViewById(R.id.loadingPanel);
 
-        sessionManager = new SessionManager(this);
+        // Mark activity as loading, hides all relevant views
+        onLoading();
 
+        sessionManager = new SessionManager(this).setSessionManagerListener(this);
+
+        setupDrawerNav();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: Fired");
+        sessionManager.runTokenValidation();
+    }
+
+    private void startInit(){
+        Log.d(TAG, "startInit: Fired");
         timezoneDiffMilli = TimeZone.getDefault().getID();
 
         ArrayList<Integer> days = fillArrays(0, 99);
@@ -91,25 +109,20 @@ public class MainActivity extends AppCompatActivity implements CounterDialog.Cou
         myVeryOwnDialog.setnegative(R.string.dialog_default_discard, this);
 
         initStringArrays();
-        setupDrawerNav();
+        getEventJSON();
     }
-
-
 
     private void initStringArrays(){
         monthNames = getResources().getStringArray(R.array.months);
     }
 
     @Override
-    protected void onResume()
-    {
-        super.onResume();
-        Log.d(TAG, "onResume: Resumed");
+    protected void onStop() {
+        super.onStop();
         mDrawerLayout.closeDrawer(Gravity.START);
     }
 
-    public void setupDrawerNav()
-    {
+    public void setupDrawerNav() {
         setSupportActionBar(toolbar);
         mToggleButton = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawerToggleOpen, R.string.drawerToggleClose);
         mDrawerLayout.addDrawerListener(mToggleButton);
@@ -118,54 +131,25 @@ public class MainActivity extends AppCompatActivity implements CounterDialog.Cou
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         DrawerNavigationClass addnavigation = new DrawerNavigationClass(this, sessionManager);
         addnavigation.setupDrawerClickable(mNavView);
-
-
-        // Mark activity as loading, hides all relevant views
-        onLoading();
-        // Continue progress to load activity
-        getEventJSON();
     }
 
     private void getEventJSON(){
+        Log.d(TAG, "getEventJSON: Fired");
 
-        // TODO code 1 Replace this
-        int userID = 2;
-        String token = "f213412ui1g2";
+        // TODO check if works
+        int userID = sessionManager.getUserID();
+        String token = sessionManager.getToken();
 
         SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_all", userID);
         String json = new Gson().toJson(sqlQueryJson);
 
         Log.d(TAG, "getEventJSON: " + json);
 
-
-        // Make Client
-        OkHttpClient client = new OkHttpClient();
-        // Use self-made class HttpRequestBuilder to make request
-        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder("query", json);
-        // Make call on client with request
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d(TAG, "onFailure: Failure");
-                e.printStackTrace();
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "getEventJSON: Response code " + response.code());
-                if (response.code() == 200) {
-                    final String myResponse = response.body().string();
-                    Log.d(TAG, "onResponse: " + myResponse);
-                    MainActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Use data to init Recycler View
-                            initRecyclerView(myResponse);
-                        }
-                    });
-                }
-            }
-        });
+        HttpRequestBuilder requestBuilder =
+                new HttpRequestBuilder(this, "http://www.folderol.dk/")
+                        .postBuilder("query", json, RECYCLER_LIST_KEY)
+                        .setHttpResponseListener(this);
+        requestBuilder.makeHttpRequest();
     }
 
     private void initRecyclerView(String jsonString) {
@@ -326,5 +310,24 @@ public class MainActivity extends AppCompatActivity implements CounterDialog.Cou
     @Override
     public void onCounterDialogNeg(DialogFragment dialog) {
 
+    }
+
+    @Override
+    public void onTokenStatusResponse(final int responseCode, final String responseString) {
+        if(responseCode > 0){
+            Log.d(TAG, "onTokenStatusResponse: Auth failed");
+            sessionManager.invalidateToken();
+        } else {
+            Log.d(TAG, "onTokenStatusResponse: Auth Successful!");
+            startInit();
+        }
+    }
+
+    @Override
+    public void onHttpRequestResponse(int responseCode, String responseMessage, String requestName) {
+        Log.d(TAG, "onHttpRequestResponse: Fired");
+        if(requestName.equals(RECYCLER_LIST_KEY)){
+            initRecyclerView(responseMessage);
+        }
     }
 }

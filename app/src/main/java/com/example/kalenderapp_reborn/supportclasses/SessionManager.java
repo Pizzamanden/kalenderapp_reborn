@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.example.kalenderapp_reborn.EventViewActivity;
 import com.example.kalenderapp_reborn.LoginActivity;
-import com.example.kalenderapp_reborn.MainActivity;
 import com.example.kalenderapp_reborn.dataobjects.TokenValidation;
 import com.google.gson.Gson;
 
@@ -22,7 +20,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class SessionManager{
+public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
 
     private static final String TAG = "SessionManager";
 
@@ -32,6 +30,8 @@ public class SessionManager{
     private static final String RETURN_MESSAGE_3 = "Please log in.";
     private static final String RETURN_MESSAGE_4 = "Session expired.";
     private static final String RETURN_MESSAGE_5 = "Success!";
+
+    private static final String HTTP_TOKEN_CHECK = "httptokencheck";
 
     private static final String TOKEN_SHARED_PREFERENCES = "TOKEN_SHARED_PREFS";
     private static final String TOKEN_KEY = "TOKEN_AS_STRING";
@@ -89,11 +89,11 @@ public class SessionManager{
 
     // GETTERS
 
-    private String getToken(){
+    public String getToken(){
         return sharedPref.getString(TOKEN_KEY, null);
     }
 
-    private int getUserID(){
+    public int getUserID(){
         return sharedPref.getInt(USER_ID, -1);
     }
 
@@ -211,14 +211,14 @@ public class SessionManager{
             // A token was not found, short circuit validation
             Log.d(TAG, "clientSideTokenValidation: A token was not found");
             // Send response through interface
-            mCallback.onTokenStatusResponse(3, RETURN_MESSAGE_3);
+            runInterfaceOnUi(3, RETURN_MESSAGE_3);
             return false;
         } else if(sharedPref.getBoolean(TOKEN_INVALIDATION,false)){
             // An invalidator was found, and it was set to true
             // Because default (not found) is false, and false means not-invalidated
             // To be true, it MUST be set, and MUST be true
             Log.d(TAG, "clientSideTokenValidation: Token invalidator is active (true), needs new client side login");
-            mCallback.onTokenStatusResponse(2, RETURN_MESSAGE_2);
+            runInterfaceOnUi(2, RETURN_MESSAGE_2);
             return false;
         } else {
             Log.d(TAG, "clientSideTokenValidation: success!");
@@ -233,33 +233,11 @@ public class SessionManager{
 
     private void serverSideTokenValidation(String requestName, String jsonToSend){
         Log.d(TAG, "serverSideTokenValidation: Fired");
-        // Make Client
-        OkHttpClient client = new OkHttpClient();
-        // Use self-made class HttpRequestBuilder to make request
-        Request request = new HttpRequestBuilder("http://www.folderol.dk/")
-                .postBuilder(requestName, jsonToSend);
-        // Make call on client with request
-        Log.d(TAG, "serverSideTokenValidation: making call");
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d(TAG, "onFailure: Failure");
-                e.printStackTrace();
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "serverSideTokenValidation: Response code " + response.code());
-                if (response.code() == 200) {
-                    final String myResponse = response.body().string();
-                    Log.d(TAG, "onResponse: " + myResponse);
 
-                    // Send response to onRequestResponse to process response
-                    onRequestResponse(myResponse, response.code());
-                } else {
-                    onRequestResponse(null, response.code());
-                }
-            }
-        });
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(mContext, "http://www.folderol.dk/")
+                .postBuilder(requestName, jsonToSend, HTTP_TOKEN_CHECK)
+                .setHttpResponseListener(this);
+        requestBuilder.makeHttpRequest();
     }
 
     private void onRequestResponse(String httpResponse, int httpCode){
@@ -270,13 +248,13 @@ public class SessionManager{
         // This way, if a token was non-valid, and user does not login after being put in login screen, it will be easy to read login status
 
         if(httpCode != 200 || httpResponse == null){
-            // Something went wrong, no response at all, or the code wasnt 200
+            // Something went wrong, no response at all, or the code wasn't 200
             Log.d(TAG, "onRequestResponse: Critical error: Http code not 200, instead " + httpCode);
         } else {
             // A usable response was returned
 
             // Map response to TokenValidation with Gson
-            TokenValidation tokenValidation = new Gson().fromJson(httpResponse, TokenValidation.class);
+            final TokenValidation tokenValidation = new Gson().fromJson(httpResponse, TokenValidation.class);
             Log.d(TAG, "onRequestResponse: " + tokenValidation.getJsonWebToken());
             Log.d(TAG, "onRequestResponse: " + tokenValidation.getUserID());
             Log.d(TAG, "onRequestResponse: " + tokenValidation.getValidationStatus());
@@ -286,7 +264,7 @@ public class SessionManager{
                 // Success!
                 Log.d(TAG, "onRequestResponse: Success!");
                 writeSuccessPrefs(tokenValidation.getJsonWebToken(), tokenValidation.getUserID());
-                mCallback.onTokenStatusResponse(tokenValidation.getValidationStatus(), "Success!");
+                runInterfaceOnUi(tokenValidation.getValidationStatus(), tokenValidation.getValidationMessage());
             }
         }
     }
@@ -297,22 +275,42 @@ public class SessionManager{
             // TODO ....... ? ... ?? ... ??!!?!
         } else {
             // Not login activity, start it then
+            Activity activity = (Activity) mContext;
             Intent i = new Intent(mContext, LoginActivity.class);
             mContext.startActivity(i);
+            activity.finish();
         }
     }
 
     public void invalidateToken(){
         setInvalidator(true);
         gotoLoginActivity();
-        Log.d(TAG, "invalidateToken: Logged out, invalidator set to " + sharedPref.getBoolean(TOKEN_INVALIDATION, false) + " (false for not active)");
+        Log.d(TAG, "invalidateToken: Logged out, token_is_invalid set to " + sharedPref.getBoolean(TOKEN_INVALIDATION, false));
+    }
+
+    private void runInterfaceOnUi(final int responseCode, final String responseString){
+        Activity activity = (Activity) mContext;
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mCallback.onTokenStatusResponse(responseCode, responseString);
+            }
+        });
+    }
+
+    @Override
+    public void onHttpRequestResponse(int responseCode, String responseMessage, String requestName) {
+        if(requestName.equals(HTTP_TOKEN_CHECK)){
+            onRequestResponse(responseMessage, responseCode);
+        }
     }
 
     public interface SessionManagerHttpResponse {
-        void onTokenStatusResponse(int responseCode, String responseString);
+        void onTokenStatusResponse(final int responseCode, final String responseString);
     }
 
-    public void setSessionManagerListener(SessionManagerHttpResponse callback) {
+    public SessionManager setSessionManagerListener(SessionManagerHttpResponse callback) {
         this.mCallback = callback;
+        return this;
     }
 }

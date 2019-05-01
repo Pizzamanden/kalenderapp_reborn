@@ -6,6 +6,7 @@ public class TokenValidation {
     private String jsonWebToken;
     private int userID;
     private int validationStatus;
+    private String validationMessage;
     // Status:
     // 0: in progress
     // 1: success
@@ -21,4 +22,5 @@ public class TokenValidation {
     public String getJsonWebToken() { return this.jsonWebToken; }
     public int getUserID() { return this.userID; }
     public int getValidationStatus() { return this.validationStatus; }
+    public String getValidationMessage() { return this.validationMessage; }
 }

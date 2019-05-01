@@ -15,9 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.kalenderapp_reborn.CalendarListActivity;
 import com.example.kalenderapp_reborn.EventAddActivity;
-import com.example.kalenderapp_reborn.EventViewActivity;
-import com.example.kalenderapp_reborn.MainActivity;
 import com.example.kalenderapp_reborn.R;
 
 import org.joda.time.DateTime;
@@ -187,9 +186,9 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
             DateTime dialogDateTime = mDateTimeCalStart.plusDays(getAdapterPosition());
             String dialogTitle = dialogDateTime.getDayOfMonth() + ". " + stringArrayMonths[dialogDateTime.getMonthOfYear() - 1] + " - " + dialogDateTime.getYear();
             String intentDate;
-            if(mContext instanceof MainActivity){
+            if(mContext instanceof CalendarListActivity){
                 // This gets day of month and month of year as at least two numbers
-                intentDate = ((MainActivity) mContext).timeToTwoNum(dialogDateTime.getDayOfMonth()) + "-" + ((MainActivity) mContext).timeToTwoNum(dialogDateTime.getMonthOfYear()) + "-" + dialogDateTime.getYear();
+                intentDate = ((CalendarListActivity) mContext).timeToTwoNum(dialogDateTime.getDayOfMonth()) + "-" + ((CalendarListActivity) mContext).timeToTwoNum(dialogDateTime.getMonthOfYear()) + "-" + dialogDateTime.getYear();
             } else {
                 intentDate = dialogDateTime.getDayOfMonth() + "-" + dialogDateTime.getMonthOfYear() + "-" + dialogDateTime.getYear();
             }
