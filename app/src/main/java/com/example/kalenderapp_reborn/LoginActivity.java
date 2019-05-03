@@ -77,9 +77,8 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         LoginFormula loginFormula = new LoginFormula(editText_email.getText().toString(), editText_password.getText().toString());
         String json = new Gson().toJson(loginFormula);
 
-        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, "http://www.folderol.dk/")
-                .postBuilder("login_user", json, HTTP_PERFORM_USER_LOGIN)
-                .setHttpResponseListener(this);
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, this, "http://www.folderol.dk/")
+                .postBuilder("login_user", json, HTTP_PERFORM_USER_LOGIN);
         requestBuilder.makeHttpRequest();
     }
 
@@ -158,9 +157,9 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
 
 
     @Override
-    public void onHttpRequestResponse(int responseCode, String responseMessage, String requestName) {
+    public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
         if(requestName.equals(HTTP_PERFORM_USER_LOGIN)){
-            onLoginStatusResponse(responseMessage);
+            onLoginStatusResponse(responseJson);
         }
     }
 }

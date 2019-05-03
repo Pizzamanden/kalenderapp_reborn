@@ -192,7 +192,6 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
         final Handler handler = new Handler();
         Log.d(TAG, "httpPOSTdata: fired");
 
-        // TODO make sure this works
         String token = sessionManager.getToken();
         int userID = sessionManager.getUserID();
 
@@ -227,9 +226,8 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
 
         Log.d(TAG, "httpPOSTdata: " + json);
 
-        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, "http://www.folderol.dk/")
-                .postBuilder("query", json, HTTP_INSERT_OR_UPDATE)
-                .setHttpResponseListener(this);
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, this,"http://www.folderol.dk/")
+                .postBuilder("query", json, HTTP_INSERT_OR_UPDATE);
         requestBuilder.makeHttpRequest();
     }
 
@@ -369,9 +367,8 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
         Log.d(TAG, "setAddEntryView: " + json);
 
 
-        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, "http://www.folderol.dk/")
-                .postBuilder("query", json, HTTP_GET_SINGULAR)
-                .setHttpResponseListener(this);
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, this, "http://www.folderol.dk/")
+                .postBuilder("query", json, HTTP_GET_SINGULAR);
         requestBuilder.makeHttpRequest();
     }
 
@@ -439,10 +436,12 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
     }
 
     @Override
-    public void onHttpRequestResponse(int responseCode, String responseMessage, String requestName) {
+    public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
+        Log.d(TAG, "onHttpRequestResponse: Response");
         // TODO Perform check for return code
         final Handler handler = new Handler();
         if(requestName.equals(HTTP_INSERT_OR_UPDATE)){
+            Log.d(TAG, "onHttpRequestResponse: " + HTTP_INSERT_OR_UPDATE);
             findViewById(R.id.loadingPanel).setVisibility(View.GONE);
             //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
             findViewById(R.id.successPanel).setVisibility(View.VISIBLE);
@@ -454,7 +453,8 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
                 }
             }, 3000);
         } else if(requestName.equals(HTTP_GET_SINGULAR)){
-            setupViewData(responseMessage);
+            Log.d(TAG, "onHttpRequestResponse: " + HTTP_GET_SINGULAR);
+            setupViewData(responseJson);
         }
     }
 }

@@ -146,9 +146,8 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
         Log.d(TAG, "getEventJSON: " + json);
 
         HttpRequestBuilder requestBuilder =
-                new HttpRequestBuilder(this, "http://www.folderol.dk/")
-                        .postBuilder("query", json, RECYCLER_LIST_KEY)
-                        .setHttpResponseListener(this);
+                new HttpRequestBuilder(this, this,"http://www.folderol.dk/")
+                        .postBuilder("query", json, RECYCLER_LIST_KEY);
         requestBuilder.makeHttpRequest();
     }
 
@@ -324,10 +323,10 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
     }
 
     @Override
-    public void onHttpRequestResponse(int responseCode, String responseMessage, String requestName) {
+    public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
         Log.d(TAG, "onHttpRequestResponse: Fired");
         if(requestName.equals(RECYCLER_LIST_KEY)){
-            initRecyclerView(responseMessage);
+            initRecyclerView(responseJson);
         }
     }
 }

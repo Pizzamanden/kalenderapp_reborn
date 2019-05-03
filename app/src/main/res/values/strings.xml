@@ -120,6 +120,21 @@
     <string name="addevent_val_alarmDateNotSet">Please set a alarm date</string>
     <string name="addevent_val_alarmTimeNotSet">Please set a alarm time</string>
 
+    <!-- Signup validtaion -->
+    <string name="signup_val_email_empty">Please enter your email</string>
+    <string name="signup_val_email_tooshort">Email is too short</string>
+    <string name="signup_val_email_notvalid">Email is not a valid email</string>
+    <string name="signup_val_firstname_empty">Please enter your first name</string>
+    <!-- NOT USED -->
+    <string name="signup_val_phonenr_empty">Please enter your phone number</string>
+    <string name="signup_val_phonenr_tooshort">Your phone number is too short</string>
+    <string name="signup_val_phonenr_notvalid">Please enter a valid phone number</string>
+    <!-- ____________ -->
+    <string name="signup_val_password_empty">Please enter a password</string>
+    <string name="signup_val_password_tooshort">Password is too short</string>
+    <string name="signup_val_password_nomatch">Passwords dosen\'t match</string>
+    <string name="signup_val_passwordrepeat_empty">Please repeat your password</string>
+
 
 
     <string name="title_activity_login">Sign in</string>

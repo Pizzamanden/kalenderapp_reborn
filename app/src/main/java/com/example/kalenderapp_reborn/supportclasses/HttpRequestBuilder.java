@@ -59,7 +59,8 @@ public class HttpRequestBuilder {
 
     private HttpRequestResponse mCallback;
 
-    public HttpRequestBuilder(Context context, String siteURL){
+    public HttpRequestBuilder(Context context, HttpRequestResponse callback, String siteURL){
+        this.mCallback = callback;
         url = siteURL;
         mContext = context;
     }
@@ -201,11 +202,11 @@ public class HttpRequestBuilder {
 
 
     public interface HttpRequestResponse {
-        void onHttpRequestResponse(final int responseCode, final String responseMessage, final String requestName);
+        void onHttpRequestResponse(final int responseCode, final String responseJson, final String requestName);
     }
 
     public HttpRequestBuilder setHttpResponseListener(HttpRequestResponse callback) {
-        this.mCallback = callback;
+
         return this;
     }
 

@@ -23,6 +23,6 @@
 
     <dimen name="addEvent_block_labelFontSize">16sp</dimen>
 
-    <dimen name="signup_fields_topmargin">60dp</dimen>
+    <dimen name="signup_fields_topmargin">40dp</dimen>
 
 </resources>

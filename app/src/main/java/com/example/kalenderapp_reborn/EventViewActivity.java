@@ -97,9 +97,8 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
 
         Log.d(TAG, "getDataJSON: " + json);
 
-        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, "http://www.folderol.dk/")
-                .postBuilder("query", json, HTTP_GET_ALL_EVENTS)
-                .setHttpResponseListener(this);
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, this,"http://www.folderol.dk/")
+                .postBuilder("query", json, HTTP_GET_ALL_EVENTS);
         requestBuilder.makeHttpRequest();
     }
 
@@ -193,9 +192,8 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
         SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "delete", userID, id);
         String json = new Gson().toJson(sqlQueryJson);
 
-        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, "http://www.folderol.dk/")
-                .postBuilder("query", json, HTTP_FIND_EVENT_TO_DELETE)
-                .setHttpResponseListener(this);
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, this, "http://www.folderol.dk/")
+                .postBuilder("query", json, HTTP_FIND_EVENT_TO_DELETE);
         requestBuilder.makeHttpRequest();
     }
 
@@ -318,7 +316,7 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
     }
 
     @Override
-    public void onHttpRequestResponse(int responseCode, String responseMessage, String requestName) {
+    public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
         final Handler handler = new Handler();
         if(requestName.equals(HTTP_FIND_EVENT_TO_DELETE)){
             handler.postDelayed(new Runnable() {
@@ -328,7 +326,7 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
                 }
             }, 3000);
         } else if (requestName.equals(HTTP_GET_ALL_EVENTS)){
-            initRecyclerView(responseMessage);
+            initRecyclerView(responseJson);
         }
     }
 }

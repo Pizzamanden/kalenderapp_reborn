@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".SignupActivity">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -110,53 +112,13 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/layout_phonenr"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/signup_fields_topmargin"
-                app:layout_constraintLeft_toLeftOf="@id/textView_superHeader"
-                app:layout_constraintRight_toRightOf="@id/textView_superHeader"
-                app:layout_constraintTop_toBottomOf="@id/layout_firstname">
-
-                <ImageView
-                    android:id="@+id/imageView_phonenr"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/editText_phonenr"
-                    app:layout_constraintEnd_toStartOf="@+id/editText_phonenr"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/editText_phonenr"
-                    app:srcCompat="@drawable/ic_dialpad_gray_24dp" />
-
-                <EditText
-                    android:id="@+id/editText_phonenr"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:hint="And a phone number here"
-                    android:inputType="textWebEmailAddress"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imageView_phonenr"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
                 android:id="@+id/layout_password"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/signup_fields_topmargin"
                 app:layout_constraintLeft_toLeftOf="@id/textView_superHeader"
                 app:layout_constraintRight_toRightOf="@id/textView_superHeader"
-                app:layout_constraintTop_toBottomOf="@id/layout_phonenr">
+                app:layout_constraintTop_toBottomOf="@+id/layout_firstname">
 
                 <ImageView
                     android:id="@+id/imageView_password"
@@ -254,13 +216,13 @@
                     android:text="REMEMBER_DEVICE" />
 
                 <Button
-                    android:id="@+id/button_login"
+                    android:id="@+id/button_signup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="16dp"
                     android:background="@color/colorPrimaryDark"
-                    android:onClick="doLogin"
+                    android:onClick="doSignup"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
                     android:text="Signup"
@@ -295,8 +257,8 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
-                        android:onClick="gotoSignup"
-                        android:text="REGISTER_INSTEAD"
+                        android:onClick="gotoLogin"
+                        android:text="LOGIN_INSTEAD"
                         android:textColor="@color/design_default_color_primary"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

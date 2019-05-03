@@ -234,9 +234,8 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
     private void serverSideTokenValidation(String requestName, String jsonToSend){
         Log.d(TAG, "serverSideTokenValidation: Fired");
 
-        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(mContext, "http://www.folderol.dk/")
-                .postBuilder(requestName, jsonToSend, HTTP_TOKEN_CHECK)
-                .setHttpResponseListener(this);
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(mContext, this, "http://www.folderol.dk/")
+                .postBuilder(requestName, jsonToSend, HTTP_TOKEN_CHECK);
         requestBuilder.makeHttpRequest();
     }
 
@@ -299,9 +298,9 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
     }
 
     @Override
-    public void onHttpRequestResponse(int responseCode, String responseMessage, String requestName) {
+    public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
         if(requestName.equals(HTTP_TOKEN_CHECK)){
-            onRequestResponse(responseMessage, responseCode);
+            onRequestResponse(responseJson, responseCode);
         }
     }
 

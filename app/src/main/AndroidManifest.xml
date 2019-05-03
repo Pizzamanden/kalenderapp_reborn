@@ -28,7 +28,7 @@
             android:theme="@style/PWTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/PWTheme.NoActionBar.NoAnime">
+            android:theme="@style/PWTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
