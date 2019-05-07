@@ -85,6 +85,10 @@
     <string name="title_activity_settings">Settings</string>
 
 
+    <string name="account_login">Already registered? Login here!</string>
+    <string name="account_signup">Don\'t have an account? Signup here!</string>
+    <string name="account_forgotpassword">Can\'t login? Reset password!</string>
+
 
 
     <string name="addevent_titlelabel">Name</string>
@@ -133,7 +137,7 @@
     <string name="signup_val_password_empty">Please enter a password</string>
     <string name="signup_val_password_tooshort">Password is too short</string>
     <string name="signup_val_password_nomatch">Passwords dosen\'t match</string>
-    <string name="signup_val_passwordrepeat_empty">Please repeat your password</string>
+    <string name="signup_val_passwordrepeat_empty">Please confirm your password</string>
 
 
 

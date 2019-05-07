@@ -35,7 +35,7 @@ public class SignupQuery {
 
 
 
-    private class SignupResponse{
+    public class SignupResponse{
 
         private int responseCode;
         private String responseString;

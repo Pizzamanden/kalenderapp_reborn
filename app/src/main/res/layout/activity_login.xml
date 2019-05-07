@@ -65,34 +65,41 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
-                        android:id="@+id/imageView2"
+                        android:id="@+id/imageView_email"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/editText_email"
-                        app:layout_constraintEnd_toStartOf="@+id/editText_email"
+                        app:layout_constraintBottom_toBottomOf="@+id/editTextLayout_email"
+                        app:layout_constraintEnd_toStartOf="@+id/editTextLayout_email"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/editText_email"
+                        app:layout_constraintTop_toTopOf="@+id/editTextLayout_email"
                         app:srcCompat="@drawable/ic_mail_outline_gray_24dp" />
 
-                    <EditText
-                        android:id="@+id/editText_email"
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/editTextLayout_email"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_marginBottom="8dp"
-                        android:hint="Email goes here"
-                        android:inputType="textWebEmailAddress"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/imageView2"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toEndOf="@+id/imageView_email"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/editText_email"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Email"
+                            android:inputType="textEmailAddress" />
+
+                    </android.support.design.widget.TextInputLayout>
                 </android.support.constraint.ConstraintLayout>
 
                 <android.support.constraint.ConstraintLayout
@@ -100,34 +107,40 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
-                        android:id="@+id/imageView3"
+                        android:id="@+id/imageView_password"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/editText_password"
-                        app:layout_constraintEnd_toStartOf="@+id/editText_password"
+                        app:layout_constraintBottom_toBottomOf="@+id/editTextLayout_password"
+                        app:layout_constraintEnd_toStartOf="@+id/editTextLayout_password"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/editText_password"
+                        app:layout_constraintTop_toTopOf="@+id/editTextLayout_password"
                         app:srcCompat="@drawable/ic_lock_outline_gray_24dp" />
 
-                    <EditText
-                        android:id="@+id/editText_password"
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/editTextLayout_password"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_marginBottom="8dp"
-                        android:hint="And a password here"
-                        android:inputType="textWebPassword"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/imageView3"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toEndOf="@+id/imageView_password"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/editText_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Password"
+                            android:inputType="textPassword" />
+
+                    </android.support.design.widget.TextInputLayout>
                 </android.support.constraint.ConstraintLayout>
 
                 <CheckBox
@@ -142,14 +155,11 @@
 
                 <Button
                     android:id="@+id/button_login"
+                    style="@style/bigactionbutton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_marginTop="16dp"
-                    android:background="@color/colorPrimaryDark"
                     android:onClick="doLogin"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
                     android:text="Login" />
 
                 <android.support.constraint.ConstraintLayout
@@ -159,12 +169,15 @@
 
                     <TextView
                         android:id="@+id/textView_forgotPassword"
-                        android:layout_width="wrap_content"
+                        style="@style/clickabletext"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="16dp"
-                        android:text="RECOVER_ACCOUNT"
-                        android:textColor="@color/design_default_color_primary"
+                        android:gravity="center"
+                        android:paddingTop="16dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/account_forgotpassword"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/textView_newUser"
                         app:layout_constraintStart_toStartOf="@+id/textView_newUser"
@@ -172,16 +185,16 @@
 
                     <TextView
                         android:id="@+id/textView_newUser"
-                        android:layout_width="wrap_content"
+                        style="@style/clickabletext"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
+                        android:gravity="center"
+                        android:paddingTop="8dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="16dp"
                         android:onClick="gotoSignup"
-                        android:text="REGISTER_INSTEAD"
-                        android:textColor="@color/design_default_color_primary"
+                        android:text="@string/account_signup"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

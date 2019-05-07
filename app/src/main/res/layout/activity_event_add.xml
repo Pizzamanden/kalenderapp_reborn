@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:adjustViewBounds="true"
-            android:src="@drawable/ic_check_gray_24dp"
+            app:srcCompat="@drawable/ic_check_gray_24dp"
             />
     </android.support.v7.widget.Toolbar>
 
@@ -337,7 +337,7 @@
             android:id="@+id/imageView_succimg"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:src="@drawable/ic_check_gray_24dp"
+            app:srcCompat="@drawable/ic_check_gray_24dp"
             app:layout_constraintBottom_toTopOf="@+id/textView_succtext"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -371,7 +371,7 @@
             android:id="@+id/imageView_failimg"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:src="@drawable/ic_close_gray_24dp"
+            app:srcCompat="@drawable/ic_close_gray_24dp"
             app:layout_constraintBottom_toTopOf="@+id/textView_failtext"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

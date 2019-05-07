@@ -20,7 +20,8 @@
     <color name="colorBackgroundSecondaryDark">#333</color>
     <color name="colorTextPrimaryDark">#EEEEEE</color>
     <color name="colorTextSecondaryDark">#00574B</color>
-    <color name="colorTextWeakDark">#666</color>
+    <color name="colorTextWeakPrimaryDark">#666</color>
+    <color name="colorTextWeakSecondaryDark">#888</color>
     <color name="colorTextHighlightDark">#f00</color>
     <color name="colorImageButtonWhiteDark">#eee</color>
 

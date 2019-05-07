@@ -15,7 +15,7 @@
         android:lineSpacingExtra="0dp"
         android:text="@string/dummy_text"
         android:textSize="15sp"
-        android:textColor="@color/colorTextWeakDark"
+        android:textColor="@color/colorTextWeakPrimaryDark"
         app:fontFamily="@font/roboto_thin" />
 
 </LinearLayout>

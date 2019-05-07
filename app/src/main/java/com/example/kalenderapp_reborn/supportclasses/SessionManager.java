@@ -6,19 +6,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.example.kalenderapp_reborn.CalendarListActivity;
 import com.example.kalenderapp_reborn.LoginActivity;
 import com.example.kalenderapp_reborn.dataobjects.TokenValidation;
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
 
@@ -186,7 +179,7 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
             // Token was marked as invalid
 
             writeFailurePrefs();
-            gotoLoginActivity();
+            startLoginActivity();
 
             // This is not the place to make the validation, but to act on already done validation (see clientSideTokenValidation)
 
@@ -210,6 +203,7 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
         if(getToken() == null){
             // A token was not found, short circuit validation
             Log.d(TAG, "clientSideTokenValidation: A token was not found");
+            Log.d(TAG, "clientSideTokenValidation: No server connection made");
             // Send response through interface
             runInterfaceOnUi(3, RETURN_MESSAGE_3);
             return false;
@@ -218,6 +212,7 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
             // Because default (not found) is false, and false means not-invalidated
             // To be true, it MUST be set, and MUST be true
             Log.d(TAG, "clientSideTokenValidation: Token invalidator is active (true), needs new client side login");
+            Log.d(TAG, "clientSideTokenValidation: No server connection made");
             runInterfaceOnUi(2, RETURN_MESSAGE_2);
             return false;
         } else {
@@ -268,7 +263,7 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
         }
     }
 
-    private void gotoLoginActivity(){
+    public void startLoginActivity(){
         if(mContext instanceof LoginActivity){
             // Checked in login activity, so just return start activity
             // TODO ....... ? ... ?? ... ??!!?!
@@ -281,9 +276,18 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
         }
     }
 
+    public void startMainActivity(){
+        Activity activity = (Activity) mContext;
+        Intent i = new Intent(mContext, CalendarListActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        mContext.startActivity(i);
+        activity.finish();
+        activity.overridePendingTransition(0,0);
+    }
+
     public void invalidateToken(){
         setInvalidator(true);
-        gotoLoginActivity();
+        startLoginActivity();
         Log.d(TAG, "invalidateToken: Logged out, token_is_invalid set to " + sharedPref.getBoolean(TOKEN_INVALIDATION, false));
     }
 

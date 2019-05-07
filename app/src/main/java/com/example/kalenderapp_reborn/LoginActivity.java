@@ -2,6 +2,7 @@ package com.example.kalenderapp_reborn;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -32,7 +33,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
     private static final String TAG = "LoginActivity";
     private static final String HTTP_PERFORM_USER_LOGIN = "user_login_validation";
 
-    private EditText editText_email, editText_password;
+    private TextInputLayout editTextLayout_email, editTextLayout_password;
     private Toolbar toolbar;
     private ScrollView contentRoot;
     private RelativeLayout loadingPanel;
@@ -48,8 +49,9 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         Log.d(TAG, "onCreate: Lifecycle");
 
         // Views
-        editText_email = findViewById(R.id.editText_email);
-        editText_password = findViewById(R.id.editText_password);
+        editTextLayout_email = findViewById(R.id.editTextLayout_email);
+        editTextLayout_password = findViewById(R.id.editTextLayout_password);
+        editTextLayout_password.setPasswordVisibilityToggleEnabled(true);
         contentRoot = findViewById(R.id.content_root);
         loadingPanel = findViewById(R.id.loadingPanel);
         contentReady = onLoading();
@@ -73,8 +75,10 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         // Start doing a login, with the information from the views.
         // Set state as loading
         contentReady = onLoading();
+        String email = editTextLayout_email.getEditText().getText().toString();
+        String password = editTextLayout_password.getEditText().getText().toString();
 
-        LoginFormula loginFormula = new LoginFormula(editText_email.getText().toString(), editText_password.getText().toString());
+        LoginFormula loginFormula = new LoginFormula(email, password);
         String json = new Gson().toJson(loginFormula);
 
         HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, this, "http://www.folderol.dk/")
@@ -93,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
             // Success!
             Log.d(TAG, "onTokenStatusResponse: Login successful, starting activity now");
             sessionManager.writeSuccessPrefs(validatedToken.getJsonWebToken(), validatedToken.getUserID());
-            startMainActivity();
+            sessionManager.startMainActivity();
         } else if(validatedToken.getValidationStatus() > 0) {
             // User not found, password dosent match, etc.
             // TODO pop a toast or something here, some kind of "no bueno" needs to appear to the user
@@ -102,33 +106,24 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
     }
 
     @Override
-    public void onTokenStatusResponse(final int responseCode, final String responseText) {
+    public void onTokenStatusResponse(final int responseCode, final String responseString) {
         // TODO show user some kind of error (on error ofc)
         if(responseCode == 0){
             // Success!
-            Toast.makeText(LoginActivity.this, responseText,
+            Toast.makeText(LoginActivity.this, responseString,
                     Toast.LENGTH_LONG).show();
             Log.d(TAG, "onTokenStatusResponse: Token validated, starting activity now");
             Log.d(TAG, "onTokenStatusResponse: " + sessionManager.getUserID());
             Log.d(TAG, "onTokenStatusResponse: " + sessionManager.getToken());
-            startMainActivity();
+            sessionManager.startMainActivity();
         } else {
             // Some kind of failure
-            Toast.makeText(LoginActivity.this, responseText,
+            Toast.makeText(LoginActivity.this, responseString,
                     Toast.LENGTH_LONG).show();
-            Log.d(TAG, "onTokenStatusResponse: Error: " + responseText);
+            Log.d(TAG, "onTokenStatusResponse: Error: " + responseString);
             Log.d(TAG, "onTokenStatusResponse: Code: " + responseCode);
             contentReady = onReady();
         }
-    }
-
-    private void startMainActivity(){
-        // This starts the main calendar activity
-        Intent i = new Intent(this, CalendarListActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(i);
-        finish();
-        overridePendingTransition(0,0);
     }
 
 
