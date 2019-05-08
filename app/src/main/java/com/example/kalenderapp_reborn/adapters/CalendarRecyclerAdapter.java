@@ -113,8 +113,6 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         boolean wasPlan = false;
-        // TODO Clean this section of code
-        // TODO above, and remake everything, it is too much logic in this segment, needs to be made in activity lifecycle and put into arraylists instead!!!
         DateTime iDateTime = mDateTimeCalStart.plusDays(i);
         LayoutInflater inflater = LayoutInflater.from(mContext);
         viewHolder.linearLayout_scheduleCont.removeAllViews();
@@ -127,6 +125,7 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
         }
         viewHolder.textView_weekDay.setText(stringArrayWeekDays[iDateTime.getDayOfWeek()]);
 
+        // This loop the entire length of the arraylist each time the recycler view loads a new position
         for(int indexNr = 0; indexNr < mEventIndex.size(); indexNr++){
             if(mEventIndex.get(indexNr) == i){
                 // The date of this day is equal to a day in arraylist
@@ -182,7 +181,6 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
 
         @Override
         public void onClick(View v) {
-            // TODO implement intent for adding date to AddEvent
             DateTime dialogDateTime = mDateTimeCalStart.plusDays(getAdapterPosition());
             String dialogTitle = dialogDateTime.getDayOfMonth() + ". " + stringArrayMonths[dialogDateTime.getMonthOfYear() - 1] + " - " + dialogDateTime.getYear();
             String intentDate;

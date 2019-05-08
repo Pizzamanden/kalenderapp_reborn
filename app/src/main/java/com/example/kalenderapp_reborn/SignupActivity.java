@@ -42,6 +42,7 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // TODO signup dosent work 100%, can fail login, but still returns a token???
         setContentView(R.layout.activity_signup);
         editTextLayout_email = findViewById(R.id.editTextLayout_email);
         editTextLayout_firstname = findViewById(R.id.editTextLayout_firstname);

@@ -136,7 +136,6 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
     private void getEventJSON(){
         Log.d(TAG, "getEventJSON: Fired");
 
-        // TODO check if works
         int userID = sessionManager.getUserID();
         String token = sessionManager.getToken();
 

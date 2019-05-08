@@ -99,7 +99,7 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
     }
 
 
-    // TODO make user ID redundant, and only use value stored in web token, since i should be able to trust those
+    // TODO make user ID redundant, and only use value stored in web token, since i should be able to trust those, but cant trust stored value
     /**
      * This method is for writing prefs
      * either because a token was found non-valid
@@ -178,13 +178,14 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
             // No token
             // Token was marked as invalid
 
-            writeFailurePrefs();
-            startLoginActivity();
-
             // This is not the place to make the validation, but to act on already done validation (see clientSideTokenValidation)
-
-            // A login should be forced on user
-            // TODO Send user to login screen here, as token has been marked as invalid or is missing
+            if(writeFailurePrefs()){
+                // Writing prefs success, kick em to login
+            } else {
+                // Writing prefs failed, kick em to login anyway, but notify admin
+                // TODO notify admin with http
+            }
+            startLoginActivity();
         }
     }
 
@@ -264,15 +265,16 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
     }
 
     public void startLoginActivity(){
+        // TODO trace all uses of this, find out where it is called, and whether it can be used in login activity, and also not runInterfaceOnUi !!!
         if(mContext instanceof LoginActivity){
             // Checked in login activity, so just return start activity
-            // TODO ....... ? ... ?? ... ??!!?!
         } else {
             // Not login activity, start it then
             Activity activity = (Activity) mContext;
             Intent i = new Intent(mContext, LoginActivity.class);
             mContext.startActivity(i);
             activity.finish();
+            activity.overridePendingTransition(0,0);
         }
     }
 
@@ -287,8 +289,8 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
 
     public void invalidateToken(){
         setInvalidator(true);
-        startLoginActivity();
         Log.d(TAG, "invalidateToken: Logged out, token_is_invalid set to " + sharedPref.getBoolean(TOKEN_INVALIDATION, false));
+        startLoginActivity();
     }
 
     private void runInterfaceOnUi(final int responseCode, final String responseString){

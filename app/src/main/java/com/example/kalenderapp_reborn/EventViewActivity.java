@@ -56,6 +56,7 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // TODO revisit this whole activity, with the new dialog i made, and also the implementation of joda time
         setContentView(R.layout.activity_event_view);
         JodaTimeAndroid.init(this);
         setTitle(getResources().getString(R.string.title_activity_viewevent));
@@ -87,8 +88,7 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
 
 
     public void getDataJSON(){
-
-        // TODO make sure this works
+        Log.d(TAG, "getDataJSON: Fired");
         String token = sessionManager.getToken();
         int userID = sessionManager.getUserID();
 
@@ -185,7 +185,6 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
         final Handler handler = new Handler();
         Log.d(TAG, "postDeleteRequest: " + id);
 
-        // TODO check this
         String token = sessionManager.getToken();
         int userID = sessionManager.getUserID();
 
@@ -248,6 +247,7 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
 
 
         // TODO this doesnt work / produces wrong results, fix
+        // TODO above, and the other todo WAAAAY above
         String returnString = "";
         if(daysTotal > 0){
             // Plural or not
