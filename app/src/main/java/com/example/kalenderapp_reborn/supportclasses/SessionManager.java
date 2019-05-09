@@ -182,8 +182,7 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
             if(writeFailurePrefs()){
                 // Writing prefs success, kick em to login
             } else {
-                // Writing prefs failed, kick em to login anyway, but notify admin
-                // TODO notify admin with http
+                // Writing prefs failed, kick em to login anyway, but maybe notify some kind of server?
             }
             startLoginActivity();
         }
@@ -265,7 +264,9 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
     }
 
     public void startLoginActivity(){
-        // TODO trace all uses of this, find out where it is called, and whether it can be used in login activity, and also not runInterfaceOnUi !!!
+        // This is called when the token-validation fails somewhere
+        // When it fails in client-side, it will be called from runTokenValidation()
+        // When it fails in server-side, it will be called from invalidateToken()
         if(mContext instanceof LoginActivity){
             // Checked in login activity, so just return start activity
         } else {

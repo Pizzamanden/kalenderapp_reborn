@@ -53,6 +53,11 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
         contentRoot = findViewById(R.id.content_root);
         loadingPanel = findViewById(R.id.loadingPanel);
 
+
+        editTextLayout_firstname.getEditText().setText("Peter");
+        editTextLayout_password.getEditText().setText("password123");
+        editTextLayout_passwordRepeat.getEditText().setText("password123");
+
         checkBox_rememberMe = findViewById(R.id.checkBox_rememberMe);
         sessionManager = new SessionManager(this).setSessionManagerListener(this);
     }
@@ -150,7 +155,6 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
 
     public boolean onLoading() {
         // Hides content, and shows placeholders/loading icons
-        Handler handler = new Handler();
         loadingPanel.setVisibility(View.VISIBLE);
         if(toolbar != null){
             toolbar.setVisibility(View.GONE);

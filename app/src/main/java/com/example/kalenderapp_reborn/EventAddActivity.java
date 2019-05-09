@@ -439,22 +439,27 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
     public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
         Log.d(TAG, "onHttpRequestResponse: Response");
         // TODO Perform check for return code
-        final Handler handler = new Handler();
-        if(requestName.equals(HTTP_INSERT_OR_UPDATE)){
-            Log.d(TAG, "onHttpRequestResponse: " + HTTP_INSERT_OR_UPDATE);
-            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-            //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
-            findViewById(R.id.successPanel).setVisibility(View.VISIBLE);
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent i = new Intent(EventAddActivity.this, CalendarListActivity.class);
-                    startActivity(i);
-                }
-            }, 3000);
-        } else if(requestName.equals(HTTP_GET_SINGULAR)){
-            Log.d(TAG, "onHttpRequestResponse: " + HTTP_GET_SINGULAR);
-            setupViewData(responseJson);
+        if(responseCode == 200){
+            final Handler handler = new Handler();
+            if(requestName.equals(HTTP_INSERT_OR_UPDATE)){
+                Log.d(TAG, "onHttpRequestResponse: " + HTTP_INSERT_OR_UPDATE);
+                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
+                findViewById(R.id.successPanel).setVisibility(View.VISIBLE);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent i = new Intent(EventAddActivity.this, CalendarListActivity.class);
+                        startActivity(i);
+                    }
+                }, 3000);
+            } else if(requestName.equals(HTTP_GET_SINGULAR)){
+                Log.d(TAG, "onHttpRequestResponse: " + HTTP_GET_SINGULAR);
+                setupViewData(responseJson);
+            }
+        } else {
+            // Server error
+            // TODO implement error handling for server responses in HttpRequestBuilder
         }
     }
 }

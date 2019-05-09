@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         loadingPanel = findViewById(R.id.loadingPanel);
         contentReady = onLoading();
 
-
+        // TODO Client side pre-submit error handling, and also post-submit, but pre-servercall error handling
         sessionManager = new SessionManager(this).setSessionManagerListener(this);
         sessionManager.runTokenValidation();
     }
