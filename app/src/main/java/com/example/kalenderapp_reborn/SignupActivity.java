@@ -1,18 +1,26 @@
 package com.example.kalenderapp_reborn;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kalenderapp_reborn.dataobjects.SignupQuery;
@@ -29,12 +37,14 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
     private static final String TAG = "SignupActivity";
     private static final String SIGNUP_USER_REQUEST = "signup_user_request";
     // TODO test regex to full capacity
-    private static final String EMAIL_REGEX = "^[a-zA-Z0-9#_~!$&'()*+,;=:.\"(),:;<>@\\[\\]\\\\]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*$";
+    private static final String EMAIL_REGEX = "^[a-zA-Z0-9#_~!$&'()*+,;=:.\"<>@\\[\\]\\\\]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*$";
+
 
     private TextInputLayout editTextLayout_firstname, editTextLayout_email, editTextLayout_password, editTextLayout_passwordRepeat;
     private CheckBox checkBox_rememberMe;
     private Toolbar toolbar;
-    private ConstraintLayout contentRoot;
+    private ConstraintLayout contentRoot, constraintLayout_email, constraintLayout_firstname, constraintLayout_password, constraintLayout_passwordrepeat;
+    private LinearLayout linearLayout_errorCont, linearLayoutError_email, linearLayoutError_firstname, linearLayoutError_password, linearLayoutError_passwordrepeat;
     private RelativeLayout loadingPanel;
     private SessionManager sessionManager;
     private boolean contentReady;
@@ -50,9 +60,24 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
         editTextLayout_password.setPasswordVisibilityToggleEnabled(true);
         editTextLayout_passwordRepeat = findViewById(R.id.editTextLayout_passwordRepeat);
         editTextLayout_passwordRepeat.setPasswordVisibilityToggleEnabled(true);
+
+        constraintLayout_email = findViewById(R.id.layout_email);
+        constraintLayout_firstname = findViewById(R.id.layout_firstname);
+        constraintLayout_password = findViewById(R.id.layout_password);
+        constraintLayout_passwordrepeat = findViewById(R.id.layout_passwordRepeat);
+
+        linearLayout_errorCont = findViewById(R.id.linearLayout_errorCont);
+
+        linearLayoutError_email = findViewById(R.id.linearLayoutErrorCont_email);
+        linearLayoutError_firstname = findViewById(R.id.linearLayoutErrorCont_firstname);
+        linearLayoutError_password = findViewById(R.id.linearLayoutErrorCont_password);
+        linearLayoutError_passwordrepeat = findViewById(R.id.linearLayoutErrorCont_passwordRepeat);
+
         contentRoot = findViewById(R.id.content_root);
         loadingPanel = findViewById(R.id.loadingPanel);
 
+        TextView forgotPassword = findViewById(R.id.textView_forgotPassword);
+        forgotPassword.setText(forgotPassword.getText() + " (WIP)");
 
         editTextLayout_firstname.getEditText().setText("Peter");
         editTextLayout_password.getEditText().setText("password123");
@@ -81,15 +106,16 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
         // Client-side validate fields
         if(validateFields(email, firstname, password, passwordRepeat)){
             Log.d(TAG, "doSignup: Verified");
-            SignupQuery signupQuery = new SignupQuery(email, firstname, password);
+            Toast.makeText(this, "Valid Email", Toast.LENGTH_SHORT).show();
+            /*SignupQuery signupQuery = new SignupQuery(email, firstname, password);
             String json = new Gson().toJson(signupQuery);
 
             Log.d(TAG, "doSignup: " + json);
 
             HttpRequestBuilder requestBuilder =
                     new HttpRequestBuilder(this, this, "http://www.folderol.dk/")
-                            .postBuilder("signup_user", json, SIGNUP_USER_REQUEST);
-            requestBuilder.makeHttpRequest();
+                           .postBuilder("signup_user", json, SIGNUP_USER_REQUEST);
+            requestBuilder.makeHttpRequest();*/
         } else {
             Log.d(TAG, "doSignup: No valid :(");
             contentReady = onReady();
@@ -97,40 +123,92 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
     }
 
     private boolean validateFields(String email, String firstname, String password, String passwordRepeat){
-        int nameMinLength = 1;
-        int emailMinLength = 4;
         int passwordMinLength = 6;
-        Pattern pattern = Pattern.compile(EMAIL_REGEX);
-        Matcher matcher = pattern.matcher(email);
+        boolean errorOccurred = false;
 
-        if(email.length() < emailMinLength){
-            // Email too short???
-            return createErrToast(getResources().getString(R.string.signup_val_email_tooshort));
-        } else if(matcher.matches()){
-            // Email not valid as email, yell at user
-            return createErrToast(getResources().getString(R.string.signup_val_email_notvalid));
+        LinearLayout errorCont = linearLayout_errorCont;
+
+        // Reset inflated views
+        linearLayout_errorCont.removeAllViews();
+
+        linearLayoutError_email.removeAllViews();
+        linearLayoutError_firstname.removeAllViews();
+        linearLayoutError_password.removeAllViews();
+        linearLayoutError_passwordrepeat.removeAllViews();
+        // Reset background drawable
+        constraintLayout_email.setBackgroundResource(0);
+        constraintLayout_firstname.setBackgroundResource(0);
+        constraintLayout_password.setBackgroundResource(0);
+        constraintLayout_passwordrepeat.setBackgroundResource(0);
+
+        // TODO checks this and refactor + clean code (some is useless i.e linearLayoutError stuff)
+        if(email.length() <= 0){
+            // Email field is empty
+            if(!errorOccurred){
+                createErrorMessage(R.string.signup_val_error_occurred, null, errorCont, true);
+            }
+            createErrorMessage(R.string.signup_val_email_empty, constraintLayout_email, errorCont, false);
+            errorOccurred = true;
+        } else {
+            if (!Pattern.matches(EMAIL_REGEX, email)) {
+                // Email not valid as email, yell at user
+                if(!errorOccurred){
+                    createErrorMessage(R.string.signup_val_error_occurred, null, errorCont, true);
+                }
+                createErrorMessage(R.string.signup_val_email_notvalid, constraintLayout_email, errorCont, false);
+                errorOccurred = true;
+            }
         }
-        if(firstname.length() < nameMinLength){
+        if(firstname.length() <= 0){
             // Name is shorter than 1
-            return createErrToast(getResources().getString(R.string.signup_val_firstname_empty));
+            if(!errorOccurred){
+                createErrorMessage(R.string.signup_val_error_occurred, null, errorCont, true);
+            }
+            createErrorMessage(R.string.signup_val_firstname_empty, constraintLayout_firstname, errorCont, false);
+            errorOccurred = true;
         }
-        if(password.length() == 0){
+        if(password.length() <= 0){
             // No password entered
-            return createErrToast(getResources().getString(R.string.signup_val_password_empty));
-        } else if(password.length() < passwordMinLength) {
-            // Password too short
-            return createErrToast(getResources().getString(R.string.signup_val_password_tooshort));
-        } else if(!password.equals(passwordRepeat)) {
-            // Passwords dosen't match
-            return createErrToast(getResources().getString(R.string.signup_val_password_nomatch));
-
+            if(!errorOccurred){
+                createErrorMessage(R.string.signup_val_error_occurred, null, errorCont, true);
+            }
+            createErrorMessage(R.string.signup_val_password_empty, constraintLayout_password, errorCont, false);
+            errorOccurred = true;
+        } else {
+            // It was more than 0 chars
+            if(password.length() < passwordMinLength) {
+                // Password too short
+                if(!errorOccurred){
+                    createErrorMessage(R.string.signup_val_error_occurred, null, errorCont, true);
+                }
+                createErrorMessage(R.string.signup_val_password_tooshort, constraintLayout_password, errorCont, false);
+                errorOccurred = true;
+            } else {
+                // It was more than minimum length
+                if(!password.equals(passwordRepeat)) {
+                    // Passwords dosen't match
+                    if(!errorOccurred){
+                        createErrorMessage(R.string.signup_val_error_occurred, null, errorCont, true);
+                    }
+                    createErrorMessage(R.string.signup_val_password_nomatch, constraintLayout_passwordrepeat, errorCont, false);
+                    errorOccurred = true;
+                }
+            }
         }
-        return true;
+        return !errorOccurred;
     }
 
-    private boolean createErrToast(String toastText){
-        Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
-        return false;
+    private void createErrorMessage(int errorMessage, ConstraintLayout parentLayout, LinearLayout errorCont, boolean isHeader){
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View v = inflater.inflate(R.layout.inflator_errortextview, errorCont, false);
+        TextView errorTextView = v.findViewById(R.id.textView_errorMessage);
+        if(isHeader){
+            errorTextView.setTextSize(18);
+        } else {
+            parentLayout.setBackgroundResource(R.drawable.rounded_corner_red_nofill);
+        }
+        errorTextView.setText(errorMessage);
+        errorCont.addView(v);
     }
 
     private void onSignupResponse(String jsonResponse){
@@ -179,11 +257,16 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
     public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
         Log.d(TAG, "onHttpRequestResponse: Fired");
         Log.d(TAG, "onHttpRequestResponse: " + responseCode);
-        if(requestName.equals(SIGNUP_USER_REQUEST)){
-            Log.d(TAG, "onHttpRequestResponse: " + responseJson);
-            // TODO act on user signed in (ALREADY WORKS)
-            // TODO decipher what already works ^
-            onSignupResponse(responseJson);
+        switch (requestName){
+            case SIGNUP_USER_REQUEST:
+                Log.d(TAG, "onHttpRequestResponse: " + responseJson);
+                // TODO act on user signed in (ALREADY WORKS)
+                // TODO decipher what already works ^
+                onSignupResponse(responseJson);
+                break;
+            default:
+                // bad request/response
+                Log.d(TAG, "onHttpRequestResponse: REQUEST FAILED");
         }
     }
 

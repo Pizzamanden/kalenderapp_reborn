@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kalenderapp_reborn.dataobjects.LoginFormula;
@@ -55,6 +56,9 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         contentRoot = findViewById(R.id.content_root);
         loadingPanel = findViewById(R.id.loadingPanel);
         contentReady = onLoading();
+
+        TextView forgotPassword = findViewById(R.id.textView_forgotPassword);
+        forgotPassword.setText(forgotPassword.getText() + " (WIP)");
 
         // TODO Client side pre-submit error handling, and also post-submit, but pre-servercall error handling
         sessionManager = new SessionManager(this).setSessionManagerListener(this);

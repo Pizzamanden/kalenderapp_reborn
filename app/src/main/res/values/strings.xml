@@ -125,9 +125,10 @@
     <string name="addevent_val_alarmTimeNotSet">Please set a alarm time</string>
 
     <!-- Signup validtaion -->
+    <string name="signup_val_error_occurred">Error: </string>
     <string name="signup_val_email_empty">Please enter your email</string>
     <string name="signup_val_email_tooshort">Email is too short</string>
-    <string name="signup_val_email_notvalid">Email is not a valid email</string>
+    <string name="signup_val_email_notvalid">Email is not valid</string>
     <string name="signup_val_firstname_empty">Please enter your first name</string>
     <!-- NOT USED -->
     <string name="signup_val_phonenr_empty">Please enter your phone number</string>

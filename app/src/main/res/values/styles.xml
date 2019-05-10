@@ -134,5 +134,8 @@
         <item name="android:textColor">@color/colorTextWeakSecondaryDark</item>
     </style>
 
+    <style name="errorview">
+    </style>
+
 
 </resources>

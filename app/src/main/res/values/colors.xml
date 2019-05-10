@@ -27,6 +27,6 @@
 
     <!-- Universal -->
     <color name="successGreen">#2AB131</color>
-    <color name="failureRed">#EB0A0A</color>
+    <color name="failureRed">#af2d0f</color>
 
 </resources>
