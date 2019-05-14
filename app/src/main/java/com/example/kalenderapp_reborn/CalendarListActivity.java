@@ -202,8 +202,6 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
         }
 
 
-
-
         Log.d(TAG, "initRecyclerView: " + timezoneDiffMilli);
 
         // Now make adapter, and set it on my recycler view

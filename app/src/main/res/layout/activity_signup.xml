@@ -329,10 +329,6 @@
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp">
 
-                    <item name="android:background">@drawable/rounded_corner_red_fill</item>
-                    <item name="android:textColor">@color/colorTextPrimaryDark</item>
-                    <item name="android:textSize">14sp</item>
-
 
                 </LinearLayout>
 
