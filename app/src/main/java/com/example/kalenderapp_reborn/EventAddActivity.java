@@ -192,9 +192,6 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
         final Handler handler = new Handler();
         Log.d(TAG, "httpPOSTdata: fired");
 
-        String token = sessionManager.getToken();
-        int userID = sessionManager.getUserID();
-
         // As extension to above, create users and login section
         // TODO find correct zone as String
         String timeZone = "Europe/Copenhagen";
@@ -218,9 +215,9 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
 
         SQLQueryJson sqlQueryJson;
         if(isAnUpdate){
-            sqlQueryJson = new SQLQueryJson(token, calendarEntriesTable, "update", userID, entryID);
+            sqlQueryJson = new SQLQueryJson(sessionManager, calendarEntriesTable, "update", entryID);
         } else {
-            sqlQueryJson = new SQLQueryJson(token, calendarEntriesTable, "insert", userID);
+            sqlQueryJson = new SQLQueryJson(sessionManager, calendarEntriesTable, "insert");
         }
         String json = new Gson().toJson(sqlQueryJson);
 
@@ -357,11 +354,9 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
 
     private void setAddEntryView(int id){
         // Get saved data
-        String token = sessionManager.getToken();
-        int userID = sessionManager.getUserID();
 
         // Make query Json
-        SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_single", userID, id);
+        SQLQueryJson sqlQueryJson = new SQLQueryJson(sessionManager, "select_single", id);
         String json = new Gson().toJson(sqlQueryJson);
 
         Log.d(TAG, "setAddEntryView: " + json);

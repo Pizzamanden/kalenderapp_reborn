@@ -125,6 +125,22 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
         }
         viewHolder.textView_weekDay.setText(stringArrayWeekDays[iDateTime.getDayOfWeek()]);
 
+
+
+        if(iDateTime.getDayOfMonth() == 1){
+            viewHolder.textView_monthheader.setVisibility(View.VISIBLE);
+            String toSet = stringArrayMonths[(iDateTime.getMonthOfYear() - 1)];
+            if(iDateTime.getYear() != mDateTimeToday.getYear()){
+                toSet += " - " + iDateTime.getYear();
+            }
+            viewHolder.textView_monthheader.setText(toSet);
+
+        } else {
+            viewHolder.textView_monthheader.setVisibility(View.GONE);
+        }
+
+
+
         // This loop the entire length of the arraylist each time the recycler view loads a new position
         for(int indexNr = 0; indexNr < mEventIndex.size(); indexNr++){
             if(mEventIndex.get(indexNr) == i){
@@ -164,7 +180,7 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
         // Declare views
         ConstraintLayout parent_layout;
         LinearLayout linearLayout_scheduleCont;
-        TextView textView_date, textView_weekDay;
+        TextView textView_date, textView_weekDay, textView_monthheader;
         ImageView addImage;
 
         public ViewHolder(@NonNull View itemView) {
@@ -175,6 +191,7 @@ public class CalendarRecyclerAdapter extends RecyclerView.Adapter<CalendarRecycl
             linearLayout_scheduleCont = itemView.findViewById(R.id.linearLayout_scheduleCont);
             textView_date = itemView.findViewById(R.id.textView_date);
             textView_weekDay = itemView.findViewById(R.id.textView_weekday);
+            textView_monthheader = itemView.findViewById(R.id.textView_monthheader);
             addImage = itemView.findViewById(R.id.imageView_addbutt);
             addImage.setOnClickListener(this);
         }

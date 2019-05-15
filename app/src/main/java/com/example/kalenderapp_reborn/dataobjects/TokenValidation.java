@@ -4,7 +4,6 @@ public class TokenValidation {
 
     private String lastValidated;
     private String jsonWebToken;
-    private int userID;
     private int validationStatus;
     private String validationMessage;
     // Status:
@@ -12,15 +11,13 @@ public class TokenValidation {
     // 1: success
     // 2: failure
 
-    public TokenValidation(String lastValidated, String jsonWebToken, int userID){
+    public TokenValidation(String lastValidated, String jsonWebToken){
         this.lastValidated = lastValidated;
         this.jsonWebToken = jsonWebToken;
-        this.userID = userID;
         this.validationStatus = 0;
     }
 
     public String getJsonWebToken() { return this.jsonWebToken; }
-    public int getUserID() { return this.userID; }
     public int getValidationStatus() { return this.validationStatus; }
     public String getValidationMessage() { return this.validationMessage; }
 }

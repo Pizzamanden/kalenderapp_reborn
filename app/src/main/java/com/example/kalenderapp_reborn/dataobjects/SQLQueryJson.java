@@ -1,5 +1,7 @@
 package com.example.kalenderapp_reborn.dataobjects;
 
+import com.example.kalenderapp_reborn.supportclasses.SessionManager;
+
 import java.util.ArrayList;
 
 
@@ -35,8 +37,7 @@ import java.util.ArrayList;
 public class SQLQueryJson {
 
     // Fields
-    private String token;
-    private int userID;
+    private TokenValidation tokenValidation;
     private QueryRequest queryRequest;
     private QueryResponse queryResponse;
 
@@ -44,29 +45,25 @@ public class SQLQueryJson {
      * This is for:
      * Insertions
      *
-     * @param token The users token
+     * @param manager The users token
      * @param calendarEntriesTable Object, styled as a row from CalendarEntries DB
      * @param queryType What type of query to perform
-     * @param userID The users ID
      */
-    public SQLQueryJson(String token, CalendarEntriesTable calendarEntriesTable, String queryType, int userID){
-        this.token = token;
-        this.userID = userID;
+    public SQLQueryJson(SessionManager manager, CalendarEntriesTable calendarEntriesTable, String queryType){
+        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken(), manager.getUserID());
         this.queryRequest = new QueryRequest(calendarEntriesTable, queryType);
     }
     /**
      * This is for:
      * Updates
      *
-     * @param token The users token
+     * @param manager The users token
      * @param calendarEntriesTable Object, styled as a row from CalendarEntries DB
      * @param queryType What type of query to perform
-     * @param userID The users ID
      * @param entryID The ID of the entry
      */
-    public SQLQueryJson(String token, CalendarEntriesTable calendarEntriesTable, String queryType, int userID, int entryID){
-        this.token = token;
-        this.userID = userID;
+    public SQLQueryJson(SessionManager manager, CalendarEntriesTable calendarEntriesTable, String queryType, int entryID){
+        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken(), manager.getUserID());
         this.queryRequest = new QueryRequest(calendarEntriesTable, queryType, entryID);
     }
     /**
@@ -74,33 +71,30 @@ public class SQLQueryJson {
      * Selections, singular
      * Deletions
      *
-     * @param token The users token
+     * @param manager The users token
      * @param queryType What type of query to perform
-     * @param userID The users ID
      * @param entryID The ID of the entry
      */
-    public SQLQueryJson(String token, String queryType, int userID, int entryID){
-        this.token = token;
-        this.userID = userID;
+    public SQLQueryJson(SessionManager manager, String queryType, int entryID){
+        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken(), manager.getUserID());
         this.queryRequest = new QueryRequest(queryType, entryID);
     }
     /**
      * This is for:
      * Selections, everything
      *
-     * @param token The users token
+     * @param manager The users token
      * @param queryType What type of query to perform
-     * @param userID The users ID
      */
-    public SQLQueryJson(String token, String queryType, int userID){
-        this.token = token;
-        this.userID = userID;
+    public SQLQueryJson(SessionManager manager, String queryType){
+        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken(), manager.getUserID());
         this.queryRequest = new QueryRequest(queryType);
     }
 
     // Getters
-    public int getUserID(){ return this.userID; }
-        public ArrayList<CalendarEntriesTable> getQueryResponseArrayList(){ return this.queryResponse.getCalendarEntriesArrayList(); }
+    public ArrayList<CalendarEntriesTable> getQueryResponseArrayList(){ return this.queryResponse.getCalendarEntriesArrayList(); }
+    public TokenValidation getTokenValidation(){ return this.tokenValidation; }
+
 
 
     // Inner-Classes
@@ -135,8 +129,11 @@ public class SQLQueryJson {
             this.queryType = queryType;
         }
     }
+
+
+
     private class QueryResponse{
-        // This class is for mapping, so i can map a json to this .java file
+        // This class is for mapping, so i can map a json to this class
         // It also contains getters, for pulling the data out into my android code
 
         // Fields
@@ -144,6 +141,7 @@ public class SQLQueryJson {
         private String responseMessage;
 
         // Getters
+
         public ArrayList<CalendarEntriesTable> getCalendarEntriesArrayList() { return this.calendarEntriesArrayList; }
         public String getResponseMessage() { return this.responseMessage; }
     }

@@ -5,81 +5,111 @@
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="2dp"
-    android:background="@color/colorBackgroundPrimaryDark">
+    android:layout_marginBottom="2dp">
 
 
-    <TextView
-        android:id="@+id/textView_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:includeFontPadding="false"
-        android:lineSpacingExtra="0dp"
-        android:text="@string/dummy_date"
-        android:textColor="#eee"
-        android:textSize="30sp"
-        app:fontFamily="@font/roboto_thin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout_scheduleCont" />
-
-    <TextView
-        android:id="@+id/textView_weekday"
-        android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginBottom="2dp"
-        android:includeFontPadding="false"
-        android:lineSpacingExtra="0dp"
-        android:minWidth="50dp"
-        android:text="@string/dummy_weekday"
-        android:gravity="bottom"
-        android:textSize="22sp"
-        app:fontFamily="@font/roboto_thin"
-        app:layout_constraintBottom_toBottomOf="@+id/textView_date"
-        app:layout_constraintStart_toEndOf="@+id/textView_date"
-        app:layout_constraintTop_toTopOf="@+id/textView_date" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout_scheduleCont"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="24dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView_weekday"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textView_planFallBack"
-            android:layout_width="match_parent"
+            android:id="@+id/textView_monthheader"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Juni"
+            android:textSize="24sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBackgroundPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+        <TextView
+            android:id="@+id/textView_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:includeFontPadding="false"
             android:lineSpacingExtra="0dp"
-            android:text="@string/dummy_text"
-            android:textSize="15sp"
-            android:visibility="visible"
-            app:fontFamily="@font/roboto_thin" />
+            android:text="@string/dummy_date"
+            android:textColor="#eee"
+            android:textSize="30sp"
+            app:fontFamily="@font/roboto_thin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/linearLayout_scheduleCont" />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/imageView_addbutt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_add_circle_outline_gray_36dp" />
 
-    <ImageView
-        android:id="@+id/imageView_addbutt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:visibility="gone"
-        android:src="@drawable/ic_add_circle_outline_gray_36dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/textView_weekday"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="2dp"
+            android:gravity="bottom"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="0dp"
+            android:minWidth="50dp"
+            android:text="@string/dummy_weekday"
+            android:textSize="22sp"
+            app:fontFamily="@font/roboto_thin"
+            app:layout_constraintBottom_toBottomOf="@+id/textView_date"
+            app:layout_constraintStart_toEndOf="@+id/textView_date"
+            app:layout_constraintTop_toTopOf="@+id/textView_date" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout_scheduleCont"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="24dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView_weekday"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/textView_planFallBack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="0dp"
+                android:text="@string/dummy_text"
+                android:textSize="15sp"
+                android:visibility="visible"
+                app:fontFamily="@font/roboto_thin" />
+
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -20,6 +20,7 @@ import com.example.kalenderapp_reborn.adapters.CalendarRecyclerAdapter;
 import com.example.kalenderapp_reborn.dataobjects.CalendarEntriesTable;
 import com.example.kalenderapp_reborn.dataobjects.CounterDialogNumbers;
 import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
+import com.example.kalenderapp_reborn.dataobjects.TokenValidation;
 import com.example.kalenderapp_reborn.fragments.CounterDialog;
 import com.example.kalenderapp_reborn.supportclasses.DrawerNavigationClass;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
@@ -136,10 +137,7 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
     private void getEventJSON(){
         Log.d(TAG, "getEventJSON: Fired");
 
-        int userID = sessionManager.getUserID();
-        String token = sessionManager.getToken();
-
-        SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_all", userID);
+        SQLQueryJson sqlQueryJson = new SQLQueryJson(sessionManager, "select_all");
         String json = new Gson().toJson(sqlQueryJson);
 
         Log.d(TAG, "getEventJSON: " + json);
@@ -148,6 +146,14 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
                 new HttpRequestBuilder(this, this,"http://www.folderol.dk/")
                         .postBuilder("query", json, RECYCLER_LIST_KEY);
         requestBuilder.makeHttpRequest();
+    }
+
+    private void handleHttpResponse(String jsonString){
+        SQLQueryJson json = new Gson().fromJson(jsonString, SQLQueryJson.class);
+        TokenValidation tokenValidation = json.getTokenValidation();
+        if(tokenValidation.getValidationStatus() != 0){
+
+        }
     }
 
     private void initRecyclerView(String jsonString) {
@@ -221,9 +227,9 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
                 int lastVisible = mLayoutManager.findLastVisibleItemPosition();
                 // Then i get the appropriate month name as string
                 String actionbarTitle = monthNames[dateTimeCalStart.plusDays(firstVisible).getMonthOfYear() - 1];
-                if(dateTimeCalStart.plusDays(firstVisible).getMonthOfYear() != dateTimeCalStart.plusDays(lastVisible).getMonthOfYear()){
+                /*if(dateTimeCalStart.plusDays(firstVisible).getMonthOfYear() != dateTimeCalStart.plusDays(lastVisible).getMonthOfYear()){
                     actionbarTitle += " - " + monthNames[dateTimeCalStart.plusDays(lastVisible).getMonthOfYear() - 1];
-                }
+                }*/
                 // I'll also put a year after my month name, but only if it isn't the current year
                 if(dateTimeToday.getYear() != dateTimeCalStart.plusDays(firstVisible).getYear()){
                     actionbarTitle += " - " + dateTimeCalStart.plusDays(firstVisible).getYear();
@@ -323,7 +329,7 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
     public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
         Log.d(TAG, "onHttpRequestResponse: Fired");
         if(requestName.equals(RECYCLER_LIST_KEY)){
-            initRecyclerView(responseJson);
+            handleHttpResponse(responseJson);
         }
     }
 }

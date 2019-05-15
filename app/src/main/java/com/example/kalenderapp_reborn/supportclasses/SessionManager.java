@@ -65,11 +65,6 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
         return editor.commit();
     }
 
-    private boolean setUserID(int userID){
-        editor.putInt(USER_ID, userID);
-        return editor.commit();
-    }
-
     private boolean setLastValidation(String lastValidationAsString){
         editor.putString(TOKEN_LAST_VALIDATED, lastValidationAsString);
         return editor.commit();
@@ -86,11 +81,7 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
         return sharedPref.getString(TOKEN_KEY, null);
     }
 
-    public int getUserID(){
-        return sharedPref.getInt(USER_ID, -1);
-    }
-
-    private String getLastValidation(){
+    public String getLastValidation(){
         return sharedPref.getString(TOKEN_LAST_VALIDATED, null);
     }
 
@@ -108,10 +99,9 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
      * This method should only in relations with an SUCCESSFUL server side validation
      *
      * @param jsonWebToken Web token as "plaintext" string
-     * @param userID The ID of the user. Since nothing in a web token is safe, just store this as plaintext. Should be redundant in the end
      * @return boolean as true if commit to editor was successful
      */
-    public boolean writeSuccessPrefs(String jsonWebToken, int userID){
+    public boolean writeSuccessPrefs(String jsonWebToken){
         Log.d(TAG, "writeSuccessPrefs: fired");
         DateTime dateTime = new DateTime();
 
@@ -128,9 +118,6 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
             return false;
         } else if(!setLastValidation(dateTime.toString())){
             // Another error
-            return false;
-        } else if(!setUserID(userID)){
-            // This should be fin... no wait, error again -_-
             return false;
         } else {
             // Success!
@@ -167,7 +154,7 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
             // Local validation success
             // Now send token to server to validate
 
-            TokenValidation tokenValidation = new TokenValidation(getLastValidation(), getToken(), getUserID());
+            TokenValidation tokenValidation = new TokenValidation(getLastValidation(), getToken());
             String json = new Gson().toJson(tokenValidation);
 
             // Make call
@@ -250,14 +237,13 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
             // Map response to TokenValidation with Gson
             final TokenValidation tokenValidation = new Gson().fromJson(httpResponse, TokenValidation.class);
             Log.d(TAG, "onRequestResponse: " + tokenValidation.getJsonWebToken());
-            Log.d(TAG, "onRequestResponse: " + tokenValidation.getUserID());
             Log.d(TAG, "onRequestResponse: " + tokenValidation.getValidationStatus());
 
             // Check for response code
             if(tokenValidation.getValidationStatus() == 0){
                 // Success!
                 Log.d(TAG, "onRequestResponse: Success!");
-                writeSuccessPrefs(tokenValidation.getJsonWebToken(), tokenValidation.getUserID());
+                writeSuccessPrefs(tokenValidation.getJsonWebToken());
                 runInterfaceOnUi(tokenValidation.getValidationStatus(), tokenValidation.getValidationMessage());
             }
         }

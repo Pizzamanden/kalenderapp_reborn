@@ -89,10 +89,8 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
 
     public void getDataJSON(){
         Log.d(TAG, "getDataJSON: Fired");
-        String token = sessionManager.getToken();
-        int userID = sessionManager.getUserID();
 
-        SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "select_all_pre_today", userID);
+        SQLQueryJson sqlQueryJson = new SQLQueryJson(sessionManager, "select_all_pre_today");
         String json = new Gson().toJson(sqlQueryJson);
 
         Log.d(TAG, "getDataJSON: " + json);
@@ -185,10 +183,7 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
         final Handler handler = new Handler();
         Log.d(TAG, "postDeleteRequest: " + id);
 
-        String token = sessionManager.getToken();
-        int userID = sessionManager.getUserID();
-
-        SQLQueryJson sqlQueryJson = new SQLQueryJson(token, "delete", userID, id);
+        SQLQueryJson sqlQueryJson = new SQLQueryJson(sessionManager, "delete", id);
         String json = new Gson().toJson(sqlQueryJson);
 
         HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, this, "http://www.folderol.dk/")
@@ -248,6 +243,7 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
 
         // TODO this doesnt work / produces wrong results, fix
         // TODO above, and the other todo WAAAAY above
+        // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         String returnString = "";
         if(daysTotal > 0){
             // Plural or not

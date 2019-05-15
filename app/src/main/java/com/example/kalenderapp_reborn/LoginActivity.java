@@ -6,28 +6,18 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.kalenderapp_reborn.dataobjects.LoginFormula;
+import com.example.kalenderapp_reborn.dataobjects.LoginQuery;
 import com.example.kalenderapp_reborn.dataobjects.TokenValidation;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
 import com.example.kalenderapp_reborn.supportclasses.SessionManager;
 import com.google.gson.Gson;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity implements SessionManager.SessionManagerHttpResponse, HttpRequestBuilder.HttpRequestResponse{
 
@@ -82,7 +72,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         String email = editTextLayout_email.getEditText().getText().toString();
         String password = editTextLayout_password.getEditText().getText().toString();
 
-        LoginFormula loginFormula = new LoginFormula(email, password);
+        LoginQuery loginFormula = new LoginQuery(email, password);
         String json = new Gson().toJson(loginFormula);
 
         HttpRequestBuilder requestBuilder = new HttpRequestBuilder(this, this, "http://www.folderol.dk/")
@@ -91,7 +81,8 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
     }
 
     private void onLoginStatusResponse(final String jsonResponse){
-        TokenValidation validatedToken = new Gson().fromJson(jsonResponse, TokenValidation.class);
+        LoginQuery loginQuery = new Gson().fromJson(jsonResponse, LoginQuery.class);
+        TokenValidation validatedToken = loginQuery.getTokenValidation();
 
         // Show toast with information about problems
         Toast.makeText(LoginActivity.this, validatedToken.getValidationMessage(),
@@ -100,7 +91,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         if(validatedToken.getValidationStatus() == 0){
             // Success!
             Log.d(TAG, "onTokenStatusResponse: Login successful, starting activity now");
-            sessionManager.writeSuccessPrefs(validatedToken.getJsonWebToken(), validatedToken.getUserID());
+            sessionManager.writeSuccessPrefs(validatedToken.getJsonWebToken());
             sessionManager.startMainActivity();
         } else if(validatedToken.getValidationStatus() > 0) {
             // User not found, password dosent match, etc.
@@ -117,7 +108,6 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
             Toast.makeText(LoginActivity.this, responseString,
                     Toast.LENGTH_LONG).show();
             Log.d(TAG, "onTokenStatusResponse: Token validated, starting activity now");
-            Log.d(TAG, "onTokenStatusResponse: " + sessionManager.getUserID());
             Log.d(TAG, "onTokenStatusResponse: " + sessionManager.getToken());
             sessionManager.startMainActivity();
         } else {
