@@ -14,14 +14,12 @@ import java.util.ArrayList;
 
     What i want to send to the server:
     -The users token
-    -The users ID
     -A query type
     -Maybe a table row (insert)
     -Maybe an ID' for a table row (select and/or delete)
     -Maybe both of the above (update)
 
     What i want back:
-    -The users ID
     -A Response code and/or a message
     -Maybe a row
     -Maybe more than one row
@@ -50,7 +48,7 @@ public class SQLQueryJson {
      * @param queryType What type of query to perform
      */
     public SQLQueryJson(SessionManager manager, CalendarEntriesTable calendarEntriesTable, String queryType){
-        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken(), manager.getUserID());
+        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken());
         this.queryRequest = new QueryRequest(calendarEntriesTable, queryType);
     }
     /**
@@ -63,7 +61,7 @@ public class SQLQueryJson {
      * @param entryID The ID of the entry
      */
     public SQLQueryJson(SessionManager manager, CalendarEntriesTable calendarEntriesTable, String queryType, int entryID){
-        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken(), manager.getUserID());
+        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken());
         this.queryRequest = new QueryRequest(calendarEntriesTable, queryType, entryID);
     }
     /**
@@ -76,7 +74,7 @@ public class SQLQueryJson {
      * @param entryID The ID of the entry
      */
     public SQLQueryJson(SessionManager manager, String queryType, int entryID){
-        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken(), manager.getUserID());
+        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken());
         this.queryRequest = new QueryRequest(queryType, entryID);
     }
     /**
@@ -87,7 +85,7 @@ public class SQLQueryJson {
      * @param queryType What type of query to perform
      */
     public SQLQueryJson(SessionManager manager, String queryType){
-        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken(), manager.getUserID());
+        this.tokenValidation = new TokenValidation(manager.getLastValidation(), manager.getToken());
         this.queryRequest = new QueryRequest(queryType);
     }
 

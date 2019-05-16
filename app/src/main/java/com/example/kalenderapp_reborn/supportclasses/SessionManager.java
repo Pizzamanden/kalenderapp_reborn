@@ -17,6 +17,8 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
 
     private static final String TAG = "SessionManager";
 
+    public static final String SERVER_SIDE_TOKEN_VALIDATION = "server_side_token_validation";
+
     private static final String RETURN_MESSAGE_0 = "Success!";
     private static final String RETURN_MESSAGE_1 = "An unexpected error occurred with the server. Please try again later.";
     private static final String RETURN_MESSAGE_2 = "Session expired.";
@@ -72,6 +74,7 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
 
     private boolean setInvalidator(boolean invalidatorValue){
         editor.putBoolean(TOKEN_INVALIDATION, invalidatorValue);
+        Log.d(TAG, "setInvalidator: Set as " + invalidatorValue);
         return editor.commit();
     }
 
@@ -89,8 +92,6 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
         return sharedPref.getBoolean(TOKEN_INVALIDATION, false);
     }
 
-
-    // TODO make user ID redundant, and only use value stored in web token, since i should be able to trust those, but cant trust stored value
     /**
      * This method is for writing prefs
      * either because a token was found non-valid
@@ -194,7 +195,7 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
             // Send response through interface
             runInterfaceOnUi(3, RETURN_MESSAGE_3);
             return false;
-        } else if(sharedPref.getBoolean(TOKEN_INVALIDATION,false)){
+        } else if(getInvalidator()){
             // An invalidator was found, and it was set to true
             // Because default (not found) is false, and false means not-invalidated
             // To be true, it MUST be set, and MUST be true
@@ -221,6 +222,13 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
         requestBuilder.makeHttpRequest();
     }
 
+    @Override
+    public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
+        if(requestName.equals(HTTP_TOKEN_CHECK)){
+            onRequestResponse(responseJson, responseCode);
+        }
+    }
+
     private void onRequestResponse(String httpResponse, int httpCode){
         Log.d(TAG, "onRequestResponse: Fired");
         // This method is a in-between when the request gets a response, and before anything else touches it, to see what server response was
@@ -240,11 +248,13 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
             Log.d(TAG, "onRequestResponse: " + tokenValidation.getValidationStatus());
 
             // Check for response code
-            if(tokenValidation.getValidationStatus() == 0){
+            if(tokenValidation.getValidationStatus() == 1){
                 // Success!
-                Log.d(TAG, "onRequestResponse: Success!");
+                Log.d(TAG, "onRequestResponse: Token validated server side successfully!");
                 writeSuccessPrefs(tokenValidation.getJsonWebToken());
                 runInterfaceOnUi(tokenValidation.getValidationStatus(), tokenValidation.getValidationMessage());
+            } else {
+                // Code was not 1, either it was not checked, or it failed
             }
         }
     }
@@ -288,13 +298,6 @@ public class SessionManager implements HttpRequestBuilder.HttpRequestResponse{
                 mCallback.onTokenStatusResponse(responseCode, responseString);
             }
         });
-    }
-
-    @Override
-    public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
-        if(requestName.equals(HTTP_TOKEN_CHECK)){
-            onRequestResponse(responseJson, responseCode);
-        }
     }
 
     public interface SessionManagerHttpResponse {

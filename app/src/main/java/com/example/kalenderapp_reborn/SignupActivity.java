@@ -46,8 +46,9 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO signup dosent work 100%, can fail login, but still returns a token???
         setContentView(R.layout.activity_signup);
+        Log.d(TAG, "onCreate: Lifecycle");
+        // TODO signup dosent work 100%, can fail login, but still returns a token???
         editTextLayout_email = findViewById(R.id.editTextLayout_email);
         editTextLayout_firstname = findViewById(R.id.editTextLayout_firstname);
         editTextLayout_password = findViewById(R.id.editTextLayout_password);
@@ -87,6 +88,12 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
 
         checkBox_rememberMe = findViewById(R.id.checkBox_rememberMe);
         sessionManager = new SessionManager(this).setSessionManagerListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: Lifecycle");
     }
 
     public void setFieldChangeListener(final TextInputLayout textInputLayout, final String type){
@@ -290,7 +297,7 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
         Log.d(TAG, "onSignupResponse: " + responseString);
         if(responseCode == 0){
             TokenValidation tokenValidation = response.getTokenValidation();
-            if(sessionManager.writeSuccessPrefs(tokenValidation.getJsonWebToken(), tokenValidation.getUserID())){
+            if(sessionManager.writeSuccessPrefs(tokenValidation.getJsonWebToken())){
                 sessionManager.runTokenValidation();
             }
         } else {
@@ -344,7 +351,6 @@ public class SignupActivity extends AppCompatActivity implements HttpRequestBuil
         if (responseCode == 0) {
             // Success!
             Log.d(TAG, "onTokenStatusResponse: Token validated, starting activity now");
-            Log.d(TAG, "onTokenStatusResponse: " + sessionManager.getUserID());
             Log.d(TAG, "onTokenStatusResponse: " + sessionManager.getToken());
             sessionManager.startMainActivity();
         } else {

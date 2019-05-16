@@ -60,6 +60,12 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         super.onStop();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: Lifecycle");
+    }
+
     public void gotoSignup(View view){
         Intent i = new Intent(this, SignupActivity.class);
         startActivity(i);
@@ -88,12 +94,12 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
         Toast.makeText(LoginActivity.this, validatedToken.getValidationMessage(),
                 Toast.LENGTH_LONG).show();
 
-        if(validatedToken.getValidationStatus() == 0){
+        if(validatedToken.getValidationStatus() == 1){
             // Success!
             Log.d(TAG, "onTokenStatusResponse: Login successful, starting activity now");
             sessionManager.writeSuccessPrefs(validatedToken.getJsonWebToken());
             sessionManager.startMainActivity();
-        } else if(validatedToken.getValidationStatus() > 0) {
+        } else if(validatedToken.getValidationStatus() == 2) {
             // User not found, password dosent match, etc.
             // TODO pop a toast or something here, some kind of "no bueno" needs to appear to the user
             contentReady = onReady();
@@ -103,7 +109,7 @@ public class LoginActivity extends AppCompatActivity implements SessionManager.S
     @Override
     public void onTokenStatusResponse(final int responseCode, final String responseString) {
         // TODO show user some kind of error (on error ofc)
-        if(responseCode == 0){
+        if(responseCode == 1){
             // Success!
             Toast.makeText(LoginActivity.this, responseString,
                     Toast.LENGTH_LONG).show();

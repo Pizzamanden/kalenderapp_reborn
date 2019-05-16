@@ -6,6 +6,7 @@ public class TokenValidation {
     private String jsonWebToken;
     private int validationStatus;
     private String validationMessage;
+
     // Status:
     // 0: in progress
     // 1: success

@@ -40,7 +40,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class CalendarListActivity extends AppCompatActivity implements CounterDialog.CounterDialogListener, SessionManager.SessionManagerHttpResponse, HttpRequestBuilder.HttpRequestResponse {
+public class CalendarListActivity extends AppCompatActivity implements SessionManager.SessionManagerHttpResponse, HttpRequestBuilder.HttpRequestResponse {
 
     // Tag
     private static final String TAG = "CalendarListActivity";
@@ -61,7 +61,7 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
 
     private String timezoneDiffMilli;
 
-    CounterDialog myVeryOwnDialog;
+
 
     private String[] monthNames;
 
@@ -97,17 +97,7 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
         Log.d(TAG, "startInit: Fired");
         timezoneDiffMilli = TimeZone.getDefault().getID();
 
-        ArrayList<Integer> days = fillArrays(0, 99);
-        ArrayList<Integer> hours = fillArrays(0, 23);
-        ArrayList<Integer> mins = fillArrays(0, 59);
-        Log.d(TAG, "onCreate: " + days.size());
-        Log.d(TAG, "onCreate: " + hours.size());
-        Log.d(TAG, "onCreate: " + mins.size());
 
-        myVeryOwnDialog = CounterDialog.newInstance(days, hours, mins);
-        myVeryOwnDialog.setTitle(R.string.counterdialog_default_title, this);
-        myVeryOwnDialog.setPositive(R.string.dialog_default_done, this);
-        myVeryOwnDialog.setnegative(R.string.dialog_default_discard, this);
 
         initStringArrays();
         getEventJSON();
@@ -146,14 +136,6 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
                 new HttpRequestBuilder(this, this,"http://www.folderol.dk/")
                         .postBuilder("query", json, RECYCLER_LIST_KEY);
         requestBuilder.makeHttpRequest();
-    }
-
-    private void handleHttpResponse(String jsonString){
-        SQLQueryJson json = new Gson().fromJson(jsonString, SQLQueryJson.class);
-        TokenValidation tokenValidation = json.getTokenValidation();
-        if(tokenValidation.getValidationStatus() != 0){
-
-        }
     }
 
     private void initRecyclerView(String jsonString) {
@@ -257,19 +239,7 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
         }
     }
 
-    public void showNoticeDialog(View view) {
-        // Create an instance of the dialog fragment and show it
 
-        myVeryOwnDialog.show(getSupportFragmentManager(), "CounterDialog");
-    }
-
-    private ArrayList<Integer> fillArrays(int startNum, int maxNum){
-        ArrayList<Integer> myNum = new ArrayList<>();
-        for(int i = maxNum; i >= startNum; i--){
-            myNum.add(i);
-        }
-        return myNum;
-    }
 
 
 
@@ -303,20 +273,8 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
     }
 
     @Override
-    public void onCounterDialogPos(DialogFragment dialog, CounterDialogNumbers counterDialogNumbers) {
-        Log.d(TAG, "onCounterDialogPos: " + counterDialogNumbers.getDays());
-        Log.d(TAG, "onCounterDialogPos: " + counterDialogNumbers.getHours());
-        Log.d(TAG, "onCounterDialogPos: " + counterDialogNumbers.getMins());
-    }
-
-    @Override
-    public void onCounterDialogNeg(DialogFragment dialog) {
-
-    }
-
-    @Override
     public void onTokenStatusResponse(final int responseCode, final String responseString) {
-        if(responseCode > 0){
+        if(responseCode != 1){
             Log.d(TAG, "onTokenStatusResponse: Auth failed");
             sessionManager.invalidateToken();
         } else {
@@ -329,7 +287,7 @@ public class CalendarListActivity extends AppCompatActivity implements CounterDi
     public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
         Log.d(TAG, "onHttpRequestResponse: Fired");
         if(requestName.equals(RECYCLER_LIST_KEY)){
-            handleHttpResponse(responseJson);
+            initRecyclerView(responseJson);
         }
     }
 }

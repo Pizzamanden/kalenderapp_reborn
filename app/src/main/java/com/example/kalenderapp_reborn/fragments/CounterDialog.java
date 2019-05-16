@@ -28,6 +28,9 @@ import static android.support.constraint.Constraints.TAG;
 
 public class CounterDialog extends DialogFragment {
 
+    public static final String POSITIVE = "dialog_response_positive";
+    public static final String NEGATIVE = "dialog_response_negative";
+
     private static final String ARG_DAYSLIST = "INT_LIST_DAYS";
     private static final String ARG_HOUSRLIST = "INT_LIST_HOURS";
     private static final String ARG_MINSLIST = "INT_LIST_MINS";
@@ -290,8 +293,7 @@ public class CounterDialog extends DialogFragment {
     }
 
     public interface CounterDialogListener {
-        void onCounterDialogPos(DialogFragment dialog, CounterDialogNumbers counterDialogNumbers);
-        void onCounterDialogNeg(DialogFragment dialog);
+        void counterDialogResponse(DialogFragment dialog, CounterDialogNumbers counterDialogNumbers, String responseType);
     }
 
     // Use this instance of the interface to deliver action events
@@ -341,14 +343,15 @@ public class CounterDialog extends DialogFragment {
                         // sign in the user ...
                         Log.d(TAG, "onClick: POS");
                         CounterDialogNumbers counterDialogNumbers = new CounterDialogNumbers(currentDay, currentHour, currentMin);
-                        listener.onCounterDialogPos(CounterDialog.this, counterDialogNumbers);
+                        listener.counterDialogResponse(CounterDialog.this, counterDialogNumbers, CounterDialog.POSITIVE);
                     }
                 })
                 .setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         CounterDialog.this.getDialog().cancel();
                         Log.d(TAG, "onClick: NEG");
-                        listener.onCounterDialogNeg(CounterDialog.this);
+                        CounterDialogNumbers counterDialogNumbers = new CounterDialogNumbers(-1, -1, -1);
+                        listener.counterDialogResponse(CounterDialog.this, counterDialogNumbers, CounterDialog.POSITIVE);
                     }
                 });
         builder.setTitle(titleText);

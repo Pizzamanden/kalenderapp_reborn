@@ -2,7 +2,6 @@ package com.example.kalenderapp_reborn.dataobjects;
 
 public class SignupQuery {
 
-
     private SignupRequest signupRequest;
     private SignupResponse signupResponse;
 
@@ -28,6 +27,7 @@ public class SignupQuery {
             this.email = email;
             this.firstname = firstname;
             this.password = password;
+
         }
 
     }

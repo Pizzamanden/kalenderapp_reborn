@@ -67,13 +67,13 @@
                     android:minWidth="75dp"
                     android:text="@string/addevent_titlelabel"
                     android:textSize="@dimen/addEvent_block_labelFontSize"
-                    app:layout_constraintBottom_toBottomOf="@+id/editText_name"
+                    app:layout_constraintBottom_toBottomOf="@+id/textInputLayout_name"
                     app:layout_constraintEnd_toStartOf="@+id/barrier_end"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/editText_name" />
+                    app:layout_constraintTop_toTopOf="@+id/textInputLayout_name" />
 
-                <EditText
-                    android:id="@+id/editText_name"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/textInputLayout_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
@@ -85,14 +85,21 @@
                     android:hint="@string/addevent_titleplaceholder"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/barrier_end"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/textInputEditText_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </android.support.design.widget.TextInputLayout>
 
                 <View
                     android:id="@+id/divider_1"
                     style="@style/Divider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/editText_name"/>
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayout_name"/>
 
                 <TextView
                     android:id="@+id/textView_startlabel"
@@ -105,13 +112,13 @@
                     android:gravity="center_vertical|right"
                     android:text="@string/addevent_startlabel_date"
                     android:textSize="@dimen/addEvent_block_labelFontSize"
-                    app:layout_constraintBottom_toBottomOf="@+id/editText_start_datefield"
+                    app:layout_constraintBottom_toBottomOf="@+id/textInputLayout_start_date"
                     app:layout_constraintEnd_toStartOf="@+id/barrier_end"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/editText_start_datefield" />
+                    app:layout_constraintTop_toTopOf="@+id/textInputLayout_start_date" />
 
-                <EditText
-                    android:id="@+id/editText_start_datefield"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/textInputLayout_start_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
@@ -122,12 +129,19 @@
                     android:hint="@string/addevent_startplaceholder_date"
                     android:inputType="date"
                     android:textColor="@color/colorTextPrimaryDark"
-                    app:layout_constraintEnd_toStartOf="@+id/editText_start_timefield"
+                    app:layout_constraintEnd_toStartOf="@+id/textInputLayout_start_time"
                     app:layout_constraintStart_toEndOf="@+id/barrier_end"
-                    app:layout_constraintTop_toBottomOf="@+id/divider_1" />
+                    app:layout_constraintTop_toBottomOf="@+id/divider_1">
 
-                <EditText
-                    android:id="@+id/editText_start_timefield"
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/textInputEditText_start_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/textInputLayout_start_time"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
@@ -135,17 +149,24 @@
                     android:hint="@string/addevent_startplaceholder_time"
                     android:inputType="time"
                     android:textColor="@color/colorTextPrimaryDark"
-                    app:layout_constraintBottom_toBottomOf="@+id/editText_start_datefield"
+                    app:layout_constraintBottom_toBottomOf="@+id/textInputLayout_start_date"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/editText_start_datefield"
-                    app:layout_constraintTop_toTopOf="@+id/editText_start_datefield" />
+                    app:layout_constraintStart_toEndOf="@+id/textInputLayout_start_date"
+                    app:layout_constraintTop_toTopOf="@+id/textInputLayout_start_date">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/textInputEditText_start_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </android.support.design.widget.TextInputLayout>
 
                 <View
                     android:id="@+id/divider_2"
                     style="@style/Divider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/editText_start_datefield"/>
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayout_start_date"/>
 
                 <TextView
                     android:id="@+id/textView_endlabel"
@@ -158,13 +179,13 @@
                     android:gravity="center_vertical|right"
                     android:text="@string/addevent_endlabel_date"
                     android:textSize="@dimen/addEvent_block_labelFontSize"
-                    app:layout_constraintBottom_toBottomOf="@+id/editText_end_datefield"
+                    app:layout_constraintBottom_toBottomOf="@+id/textInputLayout_end_date"
                     app:layout_constraintEnd_toStartOf="@+id/barrier_end"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/editText_end_datefield" />
+                    app:layout_constraintTop_toTopOf="@+id/textInputLayout_end_date" />
 
-                <EditText
-                    android:id="@+id/editText_end_datefield"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/textInputLayout_end_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
@@ -175,12 +196,19 @@
                     android:hint="@string/addevent_endplaceholder_date"
                     android:inputType="date"
                     android:textColor="@color/colorTextPrimaryDark"
-                    app:layout_constraintEnd_toStartOf="@+id/editText_end_timefield"
+                    app:layout_constraintEnd_toStartOf="@+id/textInputLayout_end_time"
                     app:layout_constraintStart_toEndOf="@+id/barrier_end"
-                    app:layout_constraintTop_toBottomOf="@+id/divider_2" />
+                    app:layout_constraintTop_toBottomOf="@+id/divider_2">
 
-                <EditText
-                    android:id="@+id/editText_end_timefield"
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/textInputEditText_end_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/textInputLayout_end_time"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
@@ -188,17 +216,24 @@
                     android:hint="@string/addevent_endplaceholder_time"
                     android:inputType="time"
                     android:textColor="@color/colorTextPrimaryDark"
-                    app:layout_constraintBottom_toBottomOf="@+id/editText_end_datefield"
+                    app:layout_constraintBottom_toBottomOf="@+id/textInputLayout_end_date"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/editText_end_datefield"
-                    app:layout_constraintTop_toTopOf="@+id/editText_end_datefield" />
+                    app:layout_constraintStart_toEndOf="@+id/textInputLayout_end_date"
+                    app:layout_constraintTop_toTopOf="@+id/textInputLayout_end_date">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/textInputEditText_end_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </android.support.design.widget.TextInputLayout>
 
                 <View
                     android:id="@+id/divider_3"
                     style="@style/Divider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/editText_end_datefield"/>
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayout_end_date"/>
 
                 <TextView
                     android:id="@+id/textView_type"
@@ -273,40 +308,31 @@
                     app:layout_constraintStart_toEndOf="@+id/barrier_end"
                     app:layout_constraintTop_toBottomOf="@+id/divider_4" />
 
-                <EditText
-                    android:id="@+id/editText_alarmdate"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/textInputLayout_alarm_datetime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginLeft="@dimen/addEvent_block_horiInnerMargin"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="@dimen/addEvent_block_horiInnerMargin"
-                    android:layout_marginRight="@dimen/addEvent_block_horiInnerMargin"
+                    android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
+                    android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
                     android:layout_marginBottom="@dimen/addEvent_block_botMargin"
                     android:ems="10"
                     android:hint="@string/addevent_alarmdateplaceholder"
                     android:inputType="date"
                     android:textColor="@color/colorTextPrimaryDark"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/editText_alarmtime"
-                    app:layout_constraintStart_toEndOf="@id/barrier_end"
-                    app:layout_constraintTop_toBottomOf="@id/switch_alarmenable" />
-
-                <EditText
-                    android:id="@+id/editText_alarmtime"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginRight="@dimen/addEvent_block_horiOuterMargin"
-                    android:layout_marginEnd="@dimen/addEvent_block_horiOuterMargin"
-
-                    android:ems="10"
-                    android:hint="@string/addevent_alarmtimeplaceholder"
-                    android:inputType="time"
-                    android:textColor="@color/colorTextPrimaryDark"
-                    app:layout_constraintBottom_toBottomOf="@id/editText_alarmdate"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/editText_alarmdate"
-                    app:layout_constraintStart_toEndOf="@id/editText_alarmdate"/>
+                    app:layout_constraintStart_toEndOf="@id/barrier_end"
+                    app:layout_constraintTop_toBottomOf="@id/switch_alarmenable">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/textInputEditText_alarm_datetime"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </android.support.design.widget.TextInputLayout>
 
             </android.support.constraint.ConstraintLayout>
     </ScrollView>

@@ -38,7 +38,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class EventViewActivity extends AppCompatActivity implements SessionManager.SessionManagerHttpResponse, HttpRequestBuilder.HttpRequestResponse {
+public class EventViewActivity extends AppCompatActivity implements HttpRequestBuilder.HttpRequestResponse {
 
     private static final String TAG = "EventViewActivity";
     private static final String HTTP_GET_ALL_EVENTS = "select_all_user_events_query";
@@ -72,14 +72,13 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        sessionManager = new SessionManager(this).setSessionManagerListener(this);
-
+        sessionManager = new SessionManager(this);
+        startInit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        sessionManager.runTokenValidation();
     }
 
     private void startInit(){
@@ -151,6 +150,8 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
     public void initDeleteQuery(final int id){
             // UI changes and delays for showing butter smooth animations,
             final Handler handler = new Handler();
+            // a delay in millis, for the postDelayed's
+            int delay = 400;
 
             // Hide current views with small delay
             handler.postDelayed(new Runnable() {
@@ -159,7 +160,7 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
                     findViewById(R.id.recyclerview_viewEvents).setVisibility(View.GONE);
                     findViewById(R.id.toolbar_1).setVisibility(View.GONE);
                 }
-            }, 400);
+            }, delay);
 
             // Show loading animation, medium delay in total for facade of doing stuff with data
             handler.postDelayed(new Runnable() {
@@ -167,7 +168,7 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
                 public void run() {
                     findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                 }
-            }, 1800);
+            }, delay*3);
 
             // After large delay, actual information starts to get processed
             handler.postDelayed(new Runnable() {
@@ -175,12 +176,11 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
                 public void run() {
                     postDeleteRequest(id);
                 }
-            }, 2600);
+            }, delay*5);
     }
 
 
     public void postDeleteRequest(int id){
-        final Handler handler = new Handler();
         Log.d(TAG, "postDeleteRequest: " + id);
 
         SQLQueryJson sqlQueryJson = new SQLQueryJson(sessionManager, "delete", id);
@@ -194,9 +194,9 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
 
     // Method job: Create a stitched date-string to put into views, using only an epoch-time(int/long)
     // Accepts: Takes an int that should function as an unix epoch time unit, either milliseconds or just seconds
-    public String datetimeToString(String epochTime){
-        // TODO fix this, it is no longer epoch nums, but a joda-time string
-        DateTime mDate = new DateTime(epochTime);
+    public String datetimeToString(String jodatimeString){
+        Log.d(TAG, "datetimeToString: " + jodatimeString);
+        DateTime mDate = new DateTime(jodatimeString);
 
         // Start building string
         String dateString;
@@ -232,7 +232,7 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
     public String datetimeToAlarmString(String startTime, String alarmTime){
 
         DateTime startDT = new DateTime(startTime);
-        DateTime alarmDT = new DateTime(startTime);
+        DateTime alarmDT = new DateTime(alarmTime);
 
         int minBefore = Minutes.minutesBetween(alarmDT, startDT).getMinutes();
         int hoursTotal = minBefore / 60;
@@ -240,47 +240,43 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
         int daysTotal = (minBefore / 60) / 24;
         int daysRest = (minBefore / 60) % 24;
 
-
-        // TODO this doesnt work / produces wrong results, fix
-        // TODO above, and the other todo WAAAAY above
-        // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        String returnString = "";
+        String days = "";
+        String hours = "";
+        String minutes = "";
         if(daysTotal > 0){
             // Plural or not
             if(daysTotal > 1){
-                returnString += daysTotal + " Days";
+                days += daysTotal + " Days";
+
             } else {
-                returnString += daysTotal + " Day";
+                days += daysTotal + " Day";
+            }
+            if(daysRest > 0){
+                days += ", ";
             }
         }
         if(daysRest > 0){
-            // Previous resource
-            if(daysTotal > 0){
-                returnString += ", ";
-            }
             // Plural or not
             if(daysRest > 1){
-                returnString += daysRest + " Hours";
+                hours += daysRest + " Hours";
             } else {
-                returnString += daysRest + " Hour";
+                hours += daysRest + " Hour";
+            }
+            if(hoursRest > 0){
+                hours += ", ";
             }
         }
         if(hoursRest > 0){
-            // Previous resource
-            if(daysTotal > 0 || daysRest > 0){
-                returnString += ", ";
-            }
             // Plural or not
             if(hoursRest > 1){
-                returnString += hoursRest + " Minutes";
+                minutes += hoursRest + " Minutes";
             } else {
-                returnString += hoursRest + " Minute";
+                minutes += hoursRest + " Minute";
             }
         }
-        returnString += " before";
+        String returnString = days + hours + minutes + " before";
         return returnString;
     }
-
 
     public String timeToTwoNum(int timeToFormat){
         if(timeToFormat < 10){
@@ -290,7 +286,6 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
         }
     }
 
-
     public void isReady(){
         RecyclerView recV = findViewById(R.id.recyclerview_viewEvents);
         RelativeLayout relL = findViewById(R.id.loadingPanel);
@@ -298,17 +293,6 @@ public class EventViewActivity extends AppCompatActivity implements SessionManag
         toolbar.setVisibility(View.VISIBLE);
         recV.setVisibility(View.VISIBLE);
         relL.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onTokenStatusResponse(int responseCode, String responseString) {
-        if(responseCode > 0){
-            Log.d(TAG, "onTokenStatusResponse: Auth failed");
-            sessionManager.invalidateToken();
-        } else {
-            Log.d(TAG, "onTokenStatusResponse: Auth Successful!");
-            startInit();
-        }
     }
 
     @Override

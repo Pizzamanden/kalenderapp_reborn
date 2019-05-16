@@ -9,6 +9,9 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -25,39 +28,42 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.kalenderapp_reborn.dataobjects.CalendarEntriesTable;
+import com.example.kalenderapp_reborn.dataobjects.CounterDialogNumbers;
 import com.example.kalenderapp_reborn.dataobjects.SQLQueryJson;
+import com.example.kalenderapp_reborn.fragments.CounterDialog;
 import com.example.kalenderapp_reborn.supportclasses.HttpRequestBuilder;
 import com.example.kalenderapp_reborn.supportclasses.SessionManager;
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.joda.time.Minutes;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-public class EventAddActivity extends AppCompatActivity implements SessionManager.SessionManagerHttpResponse, HttpRequestBuilder.HttpRequestResponse {
+public class EventAddActivity extends AppCompatActivity implements SessionManager.SessionManagerHttpResponse, HttpRequestBuilder.HttpRequestResponse, CounterDialog.CounterDialogListener {
 
     private static final String TAG = "EventAddActivity";
     private static final String HTTP_INSERT_OR_UPDATE = "insert_or_update_query";
     private static final String HTTP_GET_SINGULAR = "select_single_row_query";
 
-    EditText editText_name, editText_start_datefield, editText_start_timefield, editText_end_datefield, editText_end_timefield, editText_alarmdate, editText_alarmtime;
+    TextInputLayout textInputLayout_name, textInputLayout_start_date, textInputLayout_start_time, textInputLayout_end_date, textInputLayout_end_time, textInputLayout_alarm_datetime;
+    EditText textInputEditText_name, textInputEditText_start_date, textInputEditText_start_time, textInputEditText_end_date, textInputEditText_end_time, textInputEditText_alarm_datetime;
     Switch switchAlarmEnable;
     Spinner spinner_type;
     private int spinner_index = 0;
     private boolean switch_state = false;
     private int entryID = -1;
     private boolean isAnUpdate = false;
+    private String storedStartDate;
+    private String storedStartTime;
+    private String storedEndDate;
+    private String storedEndTime;
+
+    String alarmDateTime;
+
+    private CounterDialogNumbers counterDialogNumbers;
+    private CounterDialog myVeryOwnDialog;
 
     private SessionManager sessionManager;
 
@@ -65,14 +71,21 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_add);
-        
-        editText_name = findViewById(R.id.editText_name);
-        editText_start_datefield = findViewById(R.id.editText_start_datefield);
-        editText_start_timefield = findViewById(R.id.editText_start_timefield);
-        editText_end_datefield = findViewById(R.id.editText_end_datefield);
-        editText_end_timefield = findViewById(R.id.editText_end_timefield);
-        editText_alarmdate = findViewById(R.id.editText_alarmdate);
-        editText_alarmtime = findViewById(R.id.editText_alarmtime);
+
+        textInputLayout_name = findViewById(R.id.textInputLayout_name);
+        textInputLayout_start_date = findViewById(R.id.textInputLayout_start_date);
+        textInputLayout_start_time = findViewById(R.id.textInputLayout_start_time);
+        textInputLayout_end_date = findViewById(R.id.textInputLayout_end_date);
+        textInputLayout_end_time = findViewById(R.id.textInputLayout_end_time);
+        textInputLayout_alarm_datetime = findViewById(R.id.textInputLayout_alarm_datetime);
+
+        textInputEditText_name = textInputLayout_name.getEditText();
+        textInputEditText_start_date = textInputLayout_start_date.getEditText();
+        textInputEditText_start_time = textInputLayout_start_time.getEditText();
+        textInputEditText_end_date = textInputLayout_end_date.getEditText();
+        textInputEditText_end_time = textInputLayout_end_time.getEditText();
+        textInputEditText_alarm_datetime = textInputLayout_alarm_datetime.getEditText();
+
         switchAlarmEnable = findViewById(R.id.switch_alarmenable);
         spinner_type = findViewById(R.id.spinner_eventtype);
         Toolbar toolbar = findViewById(R.id.toolbar_1);
@@ -85,13 +98,14 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.drawable.ic_close_gray_24dp);
 
+        initCounterDialog();
+
         // Setup dialogs, edittext, date or time (1 or 2)
-        initDialogFields(editText_start_datefield, 1);
-        initDialogFields(editText_start_timefield, 2);
-        initDialogFields(editText_end_datefield, 1);
-        initDialogFields(editText_end_timefield, 2);
-        initDialogFields(editText_alarmdate, 1);
-        initDialogFields(editText_alarmtime, 2);
+        initDialogFields(textInputEditText_start_date, 1, 1);
+        initDialogFields(textInputEditText_start_time, 2, 1);
+        initDialogFields(textInputEditText_end_date, 1, 2);
+        initDialogFields(textInputEditText_end_time, 2, 2);
+        initDialogFields(textInputEditText_alarm_datetime, 3, 3);
 
 
         // Init fields with more data and actions attached
@@ -101,7 +115,7 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
         // Get startup extras
         // If startup was from CalendarListActivity, from the '+' buttons
         if(getIntent().getStringExtra("DATE_FROM_MAINACT") != null){
-            editText_start_datefield.setText(getIntent().getStringExtra("DATE_FROM_MAINACT"));
+            textInputEditText_start_date.setText(getIntent().getStringExtra("DATE_FROM_MAINACT"));
         }
         // Check if startup was from edit button from EventViewActivity
         if(getIntent().getIntExtra("EDIT_CALENDAR_ENTRY", 0) != 0){
@@ -117,20 +131,44 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
         }
     }
 
-    private void initDialogFields(final EditText v, final int type){
+    private void initDialogFields(final EditText v, final int timeType, final int fieldType){
         v.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 Log.d(TAG, "onFocusChange: got focus");
                 if (hasFocus) {
-                    if(type == 2){
-                        setTime(v);
-                    } else {
-                        setDate(v);
+                    if(timeType == 2){
+                        setTime(v, fieldType);
+                    } else if(timeType == 1) {
+                        setDate(v, fieldType);
+                    } else if(timeType == 3){
+                        myVeryOwnDialog.show(getSupportFragmentManager(), "CounterDialog");
                     }
                 }
             }
         });
+    }
+
+    private void initCounterDialog(){
+        ArrayList<Integer> days = fillArrays(0, 99);
+        ArrayList<Integer> hours = fillArrays(0, 23);
+        ArrayList<Integer> mins = fillArrays(0, 59);
+        Log.d(TAG, "onCreate: " + days.size());
+        Log.d(TAG, "onCreate: " + hours.size());
+        Log.d(TAG, "onCreate: " + mins.size());
+
+        myVeryOwnDialog = CounterDialog.newInstance(days, hours, mins);
+        myVeryOwnDialog.setTitle(R.string.counterdialog_default_title, this);
+        myVeryOwnDialog.setPositive(R.string.dialog_default_done, this);
+        myVeryOwnDialog.setnegative(R.string.dialog_default_discard, this);
+    }
+
+    private ArrayList<Integer> fillArrays(int startNum, int maxNum){
+        ArrayList<Integer> myNum = new ArrayList<>();
+        for(int i = maxNum; i >= startNum; i--){
+            myNum.add(i);
+        }
+        return myNum;
     }
 
     private void initSpinner(){
@@ -179,12 +217,9 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
         if(switchAlarmEnable.isChecked() != switchState){
             switchAlarmEnable.setChecked(switchState);
         }
-        editText_alarmdate.setFocusable(switchState);
-        editText_alarmtime.setFocusable(switchState);
-        editText_alarmdate.setFocusableInTouchMode(switchState);
-        editText_alarmtime.setFocusableInTouchMode(switchState);
-        editText_alarmdate.setEnabled(switchState);
-        editText_alarmtime.setEnabled(switchState);
+        textInputEditText_alarm_datetime.setFocusable(switchState);
+        textInputEditText_alarm_datetime.setFocusableInTouchMode(switchState);
+        textInputEditText_alarm_datetime.setEnabled(switchState);
 
     }
 
@@ -196,28 +231,42 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
         // TODO find correct zone as String
         String timeZone = "Europe/Copenhagen";
 
+        String eventName = textInputEditText_name.getText().toString();
+        String eventStartDate = textInputEditText_start_date.getText().toString();
+        String eventStartTime = textInputEditText_start_time.getText().toString();
+        String eventEndDate = textInputEditText_end_date.getText().toString();
+        String eventEndTime = textInputEditText_end_time.getText().toString();
+        String eventAlarmDateTime = textInputEditText_alarm_datetime.getText().toString();
 
-        String eventName = editText_name.getText().toString();
-        String eventStartTime = editText_start_datefield.getText().toString() + " " + editText_start_timefield.getText().toString();
-        String eventEndTime = editText_end_datefield.getText().toString() + " " + editText_end_timefield.getText().toString();
-        String eventAlarmTime = editText_alarmdate.getText().toString() + " " + editText_alarmtime.getText().toString();
+        Log.d(TAG, "setupViewData: " + storedStartDate);
+        Log.d(TAG, "setupViewData: " + storedStartTime);
+        Log.d(TAG, "setupViewData: " + storedEndDate);
+        Log.d(TAG, "setupViewData: " + storedEndTime);
 
+        DateTime dateTime = new DateTime(storedStartDate + "T" + storedStartTime + ":00");
+        Log.d(TAG, "httpPOSTdata: " + dateTime);
+
+        // TODO actually make an input that can be inserted into DB from eventAlarmTime
+        String eventAlarmDateTimeForServer = dateTime.minusDays(counterDialogNumbers.getDays()).minusHours(counterDialogNumbers.getHours()).minusMinutes(counterDialogNumbers.getMins()).toString();
+        Log.d(TAG, "httpPOSTdata: " + eventAlarmDateTimeForServer);
         // Is a select or update, so it needs an instance of CalendarEntriesTable
         CalendarEntriesTable calendarEntriesTable = new CalendarEntriesTable(
                 eventName,
-                eventStartTime,
-                eventEndTime,
+                eventStartDate + " " + eventStartTime,
+                eventEndDate + " " + eventEndTime,
                 timeZone,
                 spinner_index,
                 switch_state,
-                eventAlarmTime
+                eventAlarmDateTimeForServer
         );
 
         SQLQueryJson sqlQueryJson;
         if(isAnUpdate){
             sqlQueryJson = new SQLQueryJson(sessionManager, calendarEntriesTable, "update", entryID);
+            Log.d(TAG, "httpPOSTdata: Sent an update query");
         } else {
             sqlQueryJson = new SQLQueryJson(sessionManager, calendarEntriesTable, "insert");
+            Log.d(TAG, "httpPOSTdata: Sent an insert query");
         }
         String json = new Gson().toJson(sqlQueryJson);
 
@@ -228,8 +277,7 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
         requestBuilder.makeHttpRequest();
     }
 
-    private void setDate(final EditText v) {
-
+    private void setDate(final EditText v, final int type) {
         final Calendar c = Calendar.getInstance();
         final int year, month, day;
         year = c.get(Calendar.YEAR);
@@ -242,19 +290,12 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
                     @Override
                     public void onDateSet(DatePicker view, int year,
                                           int monthOfYear, int dayOfMonth) {
-
                         String savedDate = timeToTwoNum(dayOfMonth) + "-" + timeToTwoNum((monthOfYear + 1)) + "-" + timeToTwoNum(year);
-                        /*if(dayOfMonth < 10){
-                            savedDate = "0" + dayOfMonth + "-";
+                        if(type == 1){
+                            storedStartDate = timeToTwoNum(year) + "-" + timeToTwoNum((monthOfYear + 1)) + "-" + timeToTwoNum(dayOfMonth);
                         } else {
-                            savedDate = dayOfMonth + "-";
+                            storedEndDate = timeToTwoNum(year) + "-" + timeToTwoNum((monthOfYear + 1)) + "-" + timeToTwoNum(dayOfMonth);
                         }
-                        if((monthOfYear + 1) < 10){
-                            savedDate += "0" + (monthOfYear + 1);
-                        } else {
-                            savedDate += (monthOfYear + 1);
-                        }
-                        savedDate += "-" + year;*/
                         v.setText(savedDate);
 
                     }
@@ -263,7 +304,7 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
         v.clearFocus();
     }
 
-    private void setTime(final EditText v){
+    private void setTime(final EditText v, final int type){
         final Calendar c = Calendar.getInstance();
         final int hour, minute;
         hour = c.get(Calendar.HOUR);
@@ -276,6 +317,11 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
                     public void onTimeSet(TimePicker view, int hourOfDay,
                                           int minute) {
                         String savedDate = timeToTwoNum(hourOfDay) + ":" + timeToTwoNum(minute);
+                        if(type == 1){
+                            storedStartTime = timeToTwoNum(hourOfDay) + ":" + timeToTwoNum(minute);
+                        } else {
+                            storedEndTime = timeToTwoNum(hourOfDay) + ":" + timeToTwoNum(minute);
+                        }
                         v.setText(savedDate);
                     }
                 }, hour, minute, true);
@@ -318,31 +364,28 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
     }
 
     private boolean inputValidation(){
-        if(editText_name.getText().length() <= 0){
+        if(textInputEditText_name.getText().length() <= 0){
             return createErrToast(getResources().getString(R.string.addevent_val_nameTooShort));
         }
-        if(editText_start_datefield.getText().length() != 10){
+        if(textInputEditText_start_date.getText().length() != 10){
             return createErrToast(getResources().getString(R.string.addevent_val_startDateNotSet));
         }
-        if(editText_start_timefield.getText().length() != 5){
+        if(textInputEditText_start_time.getText().length() != 5){
             return createErrToast(getResources().getString(R.string.addevent_val_startTimeNotSet));
         }
-        if(editText_end_datefield.getText().length() != 10){
+        if(textInputEditText_end_date.getText().length() != 10){
             return createErrToast(getResources().getString(R.string.addevent_val_endDateNotSet));
         }
-        if(editText_end_timefield.getText().length() != 5){
+        if(textInputEditText_end_time.getText().length() != 5){
             return createErrToast(getResources().getString(R.string.addevent_val_endTimeNotSet));
         }
         if(spinner_index == 0){
             return createErrToast(getResources().getString(R.string.addevent_val_spinErrToast));
         }
         if(switch_state) {
-            if (editText_alarmdate.getText().length() != 10) {
+            /*if (textInputEditText_alarm_datetime.getText().length() != 10) {
                 return createErrToast(getResources().getString(R.string.addevent_val_alarmDateNotSet));
-            }
-            if (editText_alarmtime.getText().length() != 5) {
-                return createErrToast(getResources().getString(R.string.addevent_val_alarmTimeNotSet));
-            }
+            }*/
         }
         return true;
     }
@@ -376,23 +419,52 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
             DateTime startDT = new DateTime(calendarEntryTables.get(i).getEventStartTime());
             DateTime endDT = new DateTime(calendarEntryTables.get(i).getEventEndTime());
             DateTime alarmDT = new DateTime(calendarEntryTables.get(i).getEventAlarmTime());
+            storedStartDate = timeToTwoNum(startDT.getYear()) + "-" + timeToTwoNum(startDT.getMonthOfYear()) + "-" + timeToTwoNum(startDT.getDayOfMonth());
+            storedStartTime = timeToTwoNum(startDT.getHourOfDay()) + ":" + timeToTwoNum(startDT.getMinuteOfHour());
+            storedEndDate = timeToTwoNum(endDT.getYear()) + "-" + timeToTwoNum(endDT.getMonthOfYear()) + "-" + timeToTwoNum(endDT.getDayOfMonth());
+            storedEndTime = timeToTwoNum(endDT.getHourOfDay()) + ":" + timeToTwoNum(endDT.getMinuteOfHour());
 
-
+            Log.d(TAG, "setupViewData: " + storedStartDate);
+            Log.d(TAG, "setupViewData: " + storedStartTime);
+            Log.d(TAG, "setupViewData: " + storedEndDate);
+            Log.d(TAG, "setupViewData: " + storedEndTime);
 
             // Add json fields to edit text views
             // timeToTwoNum takes a number and if its under 10, it prepends a 0
-            editText_name.setText(calendarEntryTables.get(i).getEventName());
-            editText_start_datefield.setText(timeToTwoNum(startDT.getDayOfMonth()) + "-" + timeToTwoNum(startDT.getMonthOfYear()) + "-" + timeToTwoNum(startDT.getYear()));
-            editText_start_timefield.setText(timeToTwoNum(startDT.getHourOfDay()) + ":" + timeToTwoNum(startDT.getMinuteOfHour()));
-            editText_end_datefield.setText(timeToTwoNum(endDT.getDayOfMonth()) + "-" + timeToTwoNum(endDT.getMonthOfYear()) + "-" + timeToTwoNum(endDT.getYear()));
-            editText_end_timefield.setText(timeToTwoNum(endDT.getHourOfDay()) + ":" + timeToTwoNum(endDT.getMinuteOfHour()));
-            editText_alarmdate.setText(timeToTwoNum(alarmDT.getDayOfMonth()) + "-" + timeToTwoNum(alarmDT.getMonthOfYear()) + "-" + timeToTwoNum(alarmDT.getYear()));
-            editText_alarmtime.setText(timeToTwoNum(alarmDT.getHourOfDay()) + ":" + timeToTwoNum(alarmDT.getMinuteOfHour()));
+            textInputEditText_name.setText(calendarEntryTables.get(i).getEventName());
+            textInputEditText_start_date.setText(timeToTwoNum(startDT.getDayOfMonth()) + "-" + timeToTwoNum(startDT.getMonthOfYear()) + "-" + timeToTwoNum(startDT.getYear()));
+            textInputEditText_start_time.setText(timeToTwoNum(startDT.getHourOfDay()) + ":" + timeToTwoNum(startDT.getMinuteOfHour()));
+            textInputEditText_end_date.setText(timeToTwoNum(endDT.getDayOfMonth()) + "-" + timeToTwoNum(endDT.getMonthOfYear()) + "-" + timeToTwoNum(endDT.getYear()));
+            textInputEditText_end_time.setText(timeToTwoNum(endDT.getHourOfDay()) + ":" + timeToTwoNum(endDT.getMinuteOfHour()));
+
+            int minBefore = Minutes.minutesBetween(alarmDT, startDT).getMinutes();
+            counterDialogNumbers = setCounterDialogNumbers(minBefore);
+
+            String toSet = counterDialogNumbers.getDays() + " days, " + counterDialogNumbers.getHours() + " hours, " + counterDialogNumbers.getMins() + " minutes";
+
+            textInputEditText_alarm_datetime.setText(toSet);
             // Set spinner type to reflect type from DB
             spinnerStateSync(calendarEntryTables.get(i).getEventType());
             // Set switch state to reflect alarm status
             switchStateSync(calendarEntryTables.get(i).getEventAlarmStatus());
         }
+    }
+
+    private CounterDialogNumbers setCounterDialogNumbers(int minutesBefore){
+
+        int hoursTotal = minutesBefore / 60;
+        int hoursRest = minutesBefore % 60;
+        int daysTotal = (minutesBefore / 60) / 24;
+        int daysRest = (minutesBefore / 60) % 24;
+
+        Log.d(TAG, "setCounterDialogNumbers: " + hoursTotal);
+        Log.d(TAG, "setCounterDialogNumbers: " + hoursRest);
+        Log.d(TAG, "setCounterDialogNumbers: " + daysTotal);
+        Log.d(TAG, "setCounterDialogNumbers: " + daysRest);
+
+
+        CounterDialogNumbers counterDialogNumbers = new CounterDialogNumbers(daysTotal, daysRest, hoursRest);
+        return counterDialogNumbers;
     }
 
     public static void hideKeyboard(Activity activity) {
@@ -422,7 +494,7 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
 
     @Override
     public void onTokenStatusResponse(int responseCode, String responseString) {
-        if(responseCode > 0){
+        if(responseCode != 1){
             Log.d(TAG, "onTokenStatusResponse: Auth failed");
             sessionManager.invalidateToken();
         } else {
@@ -433,11 +505,13 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
     @Override
     public void onHttpRequestResponse(int responseCode, String responseJson, String requestName) {
         Log.d(TAG, "onHttpRequestResponse: Response");
+        Log.d(TAG, "onHttpRequestResponse: " + responseCode);
+        Log.d(TAG, "onHttpRequestResponse: " + requestName);
+        Log.d(TAG, "onHttpRequestResponse: " + responseJson);
         // TODO Perform check for return code
         if(responseCode == 200){
             final Handler handler = new Handler();
             if(requestName.equals(HTTP_INSERT_OR_UPDATE)){
-                Log.d(TAG, "onHttpRequestResponse: " + HTTP_INSERT_OR_UPDATE);
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                 //findViewById(R.id.failurePanel).setVisibility(View.VISIBLE);
                 findViewById(R.id.successPanel).setVisibility(View.VISIBLE);
@@ -449,12 +523,24 @@ public class EventAddActivity extends AppCompatActivity implements SessionManage
                     }
                 }, 3000);
             } else if(requestName.equals(HTTP_GET_SINGULAR)){
-                Log.d(TAG, "onHttpRequestResponse: " + HTTP_GET_SINGULAR);
                 setupViewData(responseJson);
             }
         } else {
             // Server error
             // TODO implement error handling for server responses in HttpRequestBuilder
         }
+    }
+
+    @Override
+    public void counterDialogResponse(DialogFragment dialog, CounterDialogNumbers counterDialogNumbers, String responseType) {
+        if(responseType.equals(CounterDialog.POSITIVE)){
+            Log.d(TAG, "counterDialogResponse: POSTITIVE");
+            this.counterDialogNumbers = counterDialogNumbers;
+            String toSet = counterDialogNumbers.getDays() + " days, " + counterDialogNumbers.getHours() + " hours, " + counterDialogNumbers.getMins() + " minutes";
+            textInputEditText_alarm_datetime.setText(toSet);
+        } else {
+            Log.d(TAG, "counterDialogResponse: NEGATIVE");
+        }
+        textInputEditText_alarm_datetime.clearFocus();
     }
 }
